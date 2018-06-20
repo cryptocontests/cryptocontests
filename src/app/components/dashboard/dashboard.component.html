@@ -1,0 +1,7 @@
+<mat-toolbar color="primary" class="mat-elevation-z4">
+  <span fxFlex>CryptoContests</span>
+</mat-toolbar>
+
+<mat-divider></mat-divider>
+
+<cc-contest-grid [contests]="contests$ | async"></cc-contest-grid>
