@@ -1,7 +1,17 @@
 <mat-toolbar color="primary" class="mat-elevation-z4">
   <span fxFlex>CryptoContests</span>
+  <button mat-raised-button color="accent" routerLink="/contests/create">
+    CREATE NEW CONTEST
+  </button>
 </mat-toolbar>
 
-<mat-divider></mat-divider>
+<mat-tab-group>
+  <mat-tab label="Upcoming Contests"> Content 2 </mat-tab>
+  <mat-tab label="Ongoing Contests" fxLayout="row" fxLayoutAlign="center center">
+    <cc-contest-grid [contests]="contests$ | async"></cc-contest-grid>
+  </mat-tab>
+  <mat-tab label="Ended Contests"> Content 3 </mat-tab>
+</mat-tab-group>
 
-<cc-contest-grid [contests]="contests$ | async"></cc-contest-grid>
+<!-- <mat-divider></mat-divider>
+ -->

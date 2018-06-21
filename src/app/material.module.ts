@@ -4,7 +4,6 @@ import {
   MatBadgeModule,
   MatAutocompleteModule,
   MatBottomSheetModule,
-  MatAccordionDisplayMode,
   MatButtonToggleModule,
   MatCardModule,
   MatCheckboxModule,
@@ -28,6 +27,7 @@ import {
   MatSliderModule,
   MatSlideToggleModule
 } from '@angular/material';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   exports: [
@@ -56,7 +56,8 @@ import {
     MatSelectModule,
     MatSidenavModule,
     MatSliderModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    FlexLayoutModule
   ]
 })
 export class MaterialModule {}

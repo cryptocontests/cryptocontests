@@ -17,6 +17,8 @@ export function contestReducer(
   state = initialState,
   action: ContestActions
 ): State {
+  console.log('this is the reducer');
+  console.log(state);
   switch (action.type) {
     case ContestActionTypes.LoadedContests: {
       return adapter.addAll(action.payload, state);
@@ -28,12 +30,13 @@ export function contestReducer(
   }
 }
 
+export const getContestState = createFeatureSelector<State>('contest');
 export const {
   selectIds,
   selectEntities,
   selectAll,
   selectTotal
-} = adapter.getSelectors();
+} = adapter.getSelectors(getContestState);
 
 export const selectOnGoingContests = createSelector(
   selectAll,

@@ -11,5 +11,7 @@ export class ContestGridComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log(this.contests);
+  }
 }

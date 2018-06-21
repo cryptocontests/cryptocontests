@@ -3,6 +3,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Contest } from '../../state/contest.model';
 import { State, selectAll } from '../../state/reducers/contest.reducer';
+import { LoadContests } from '../../state/actions/contest.actions';
 
 @Component({
   selector: 'cc-dashboard',
@@ -15,6 +16,10 @@ export class DashboardComponent implements OnInit {
   constructor(private store: Store<State>) {}
 
   ngOnInit() {
-    this.store.select(selectAll);
+    this.contests$ = this.store.select(selectAll);
+    this.store.dispatch(new LoadContests());
+
+    this.store.subscribe(state => console.log(state));
+    this.contests$.subscribe(state => console.log(state));
   }
 }

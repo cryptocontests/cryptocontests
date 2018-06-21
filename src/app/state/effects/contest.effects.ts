@@ -3,11 +3,13 @@ import { Action } from '@ngrx/store';
 import { Actions, Effect } from '@ngrx/effects';
 import { EthereumService } from '../../services/ethereum.service';
 import { Observable } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, catchError } from 'rxjs/operators';
 import {
   LoadContests,
   LoadedContests,
-  ContestActionTypes
+  CreateContest,
+  ContestActionTypes,
+  ContestCreated
 } from '../actions/contest.actions';
 import { Contest } from '../contest.model';
 
@@ -17,13 +19,27 @@ export class ContestEffects {
     private actions$: Actions,
     private ethereumService: EthereumService
   ) {}
-  /*
+
   @Effect()
   loadContests$: Observable<Action> = this.actions$
     .ofType<LoadContests>(ContestActionTypes.LoadContests)
-    .switchMap((loadAction: LoadContests) =>
-      this.ethereumService
-        .getContests()
-        .map((contests: Contest[]) => new LoadedContests(contests))
-    ); */
+    .pipe(
+      switchMap((loadAction: LoadContests) =>
+        this.ethereumService
+          .getContests()
+          .pipe(map((contests: Contest[]) => new LoadedContests(contests)))
+      )
+    );
+
+  @Effect()
+  createContest$: Observable<Action> = this.actions$
+    .ofType<CreateContest>(ContestActionTypes.CreateContest)
+    .pipe(
+      switchMap((createAction: CreateContest) =>
+        this.ethereumService.createContest(createAction.payload).pipe(
+          map(() => new ContestCreated())
+          // catchError(err => Observable.empty())
+        )
+      )
+    );
 }
