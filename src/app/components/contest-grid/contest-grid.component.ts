@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { Contest } from '../../state/contest.model';
 
 @Component({
@@ -6,12 +6,13 @@ import { Contest } from '../../state/contest.model';
   templateUrl: './contest-grid.component.html',
   styleUrls: ['./contest-grid.component.css']
 })
-export class ContestGridComponent implements OnInit {
+export class ContestGridComponent {
   @Input('contests') contests: Contest[];
+  @Output('contestSelected') contestSelected = new EventEmitter<string>();
 
   constructor() {}
 
-  ngOnInit() {
-    console.log(this.contests);
+  selectContest(contest: Contest) {
+    this.contestSelected.emit(contest.id);
   }
 }

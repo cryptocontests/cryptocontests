@@ -3,7 +3,8 @@ export interface Contest {
   title: string;
   description: string;
   prize: number;
+  createdDate: number;
   initialDate: number;
   endDate: number;
-  createdDate: number;
+  tags: string[];
 }

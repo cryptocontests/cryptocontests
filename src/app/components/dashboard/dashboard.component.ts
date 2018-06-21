@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Contest } from '../../state/contest.model';
 import { State, selectAll } from '../../state/reducers/contest.reducer';
 import { LoadContests } from '../../state/actions/contest.actions';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'cc-dashboard',
@@ -13,7 +14,7 @@ import { LoadContests } from '../../state/actions/contest.actions';
 export class DashboardComponent implements OnInit {
   contests$: Observable<Contest[]>;
 
-  constructor(private store: Store<State>) {}
+  constructor(private store: Store<State>, private router: Router) {}
 
   ngOnInit() {
     this.contests$ = this.store.select(selectAll);
@@ -21,5 +22,9 @@ export class DashboardComponent implements OnInit {
 
     this.store.subscribe(state => console.log(state));
     this.contests$.subscribe(state => console.log(state));
+  }
+
+  selectContest($event: any) {
+    this.router.navigate(['/contest', $event]);
   }
 }

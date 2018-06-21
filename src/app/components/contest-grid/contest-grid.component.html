@@ -1,12 +1,21 @@
-<mat-grid-list cols="4" fxFlex="80%" fxAlign="center">
-  <mat-grid-tile *ngFor="let contest of contests" class="contest-tile">
-    <mat-card fxFlex>
-      <mat-card-header>
-        <mat-card-title>
-          {{contest.title}}
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content></mat-card-content>
+<mat-grid-list cols="3">
+  <mat-grid-tile *ngFor="let contest of contests" fxLayout="column" fxLayoutAlign="start center">
+    <mat-card mat-ripple fxFlex class="mat-elevation-z6 contest-tile" fxLayout="column" (click)="selectContest(contest)">
+      <img mat-card-image class="contest-preview" fxFlex src="https://material.angular.io/assets/img/examples/shiba1.jpg" />
+      <mat-card-content class="no-margin">
+        <div fxLayout="column" fxLayoutAlign="center stretch" fxLayoutGap="6%">
+          <div fxLayout="row">
+            <span class="title" fxFlex>{{contest.title}}</span>
+            <span class="subtitle">{{contest.prize}}</span>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <mat-chip-list fxFlex>
+              <mat-chip *ngFor="let tag of contest.tags">{{tag}}</mat-chip>
+            </mat-chip-list>
+            <span>{{contest.endDate | date}}</span>
+          </div>
+        </div>
+      </mat-card-content>
     </mat-card>
   </mat-grid-tile>
 </mat-grid-list>

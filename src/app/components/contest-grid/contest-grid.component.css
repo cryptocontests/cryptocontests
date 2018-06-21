@@ -1,3 +1,9 @@
 .contest-tile {
-  padding: 8px;
+  margin: 8px;
+  height: 96%;
+}
+
+.contest-preview {
+  object-fit: cover;
+  overflow: hidden;
 }

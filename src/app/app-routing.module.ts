@@ -1,3 +1,4 @@
+import { ContestDetailComponent } from './components/contest-detail/contest-detail.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -5,14 +6,16 @@ import { CreateContestComponent } from './components/create-contest/create-conte
 
 const routes: Routes = [
   {
+    path: 'contest/create',
+    component: CreateContestComponent
+  },
+  {
     path: 'contests',
-    component: DashboardComponent,
-    children: [
-      {
-        path: 'create',
-        component: CreateContestComponent
-      }
-    ]
+    component: DashboardComponent
+  },
+  {
+    path: 'contest/:id',
+    component: ContestDetailComponent
   },
   {
     path: '',

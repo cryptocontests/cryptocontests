@@ -16,13 +16,17 @@ import { contestReducer } from './state/reducers/contest.reducer';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CreateContestComponent } from './components/create-contest/create-contest.component';
 import { ContestGridComponent } from './components/contest-grid/contest-grid.component';
+import { EthereumService } from './services/ethereum.service';
+import { EthereumModule } from './ethereum/ethereum.module';
+import { ContestDetailComponent } from './components/contest-detail/contest-detail.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
     CreateContestComponent,
-    ContestGridComponent
+    ContestGridComponent,
+    ContestDetailComponent
   ],
   imports: [
     BrowserModule,
@@ -35,9 +39,10 @@ import { ContestGridComponent } from './components/contest-grid/contest-grid.com
     }),
     StoreRouterConnectingModule.forRoot({ stateKey: 'router' }),
     EffectsModule.forRoot([ContestEffects]),
-    !environment.production ? StoreDevtoolsModule.instrument() : []
+    !environment.production ? StoreDevtoolsModule.instrument() : [],
+    EthereumModule
   ],
-  providers: [],
+  providers: [EthereumService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

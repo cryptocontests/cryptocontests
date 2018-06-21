@@ -18,13 +18,13 @@ export class EthereumService {
         prize: 100,
         endDate: 90000000,
         initialDate: 10000000,
-        createdDate: 243423432
+        createdDate: 243423432,
+        tags: ['nature', 'dogs']
       })
       .map(c => ({
         ...c,
         id: '' + Math.random()
       }));
-    console.log(mock);
     return observableOf(mock);
   }
 
