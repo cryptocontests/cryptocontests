@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { Actions, Effect } from '@ngrx/effects';
-import { EthereumService } from '../../services/ethereum.service';
+import { ContestContractService } from '../../services/contest-contract.service';
 import { Observable } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import {
@@ -17,7 +17,7 @@ import { Contest } from '../contest.model';
 export class ContestEffects {
   constructor(
     private actions$: Actions,
-    private ethereumService: EthereumService
+    private contestContract: ContestContractService
   ) {}
 
   @Effect()
@@ -25,7 +25,7 @@ export class ContestEffects {
     .ofType<LoadContests>(ContestActionTypes.LoadContests)
     .pipe(
       switchMap((loadAction: LoadContests) =>
-        this.ethereumService
+        this.contestContract
           .getContests()
           .pipe(map((contests: Contest[]) => new LoadedContests(contests)))
       )
@@ -36,7 +36,7 @@ export class ContestEffects {
     .ofType<CreateContest>(ContestActionTypes.CreateContest)
     .pipe(
       switchMap((createAction: CreateContest) =>
-        this.ethereumService.createContest(createAction.payload).pipe(
+        this.contestContract.createContest(createAction.payload).pipe(
           map(() => new ContestCreated())
           // catchError(err => Observable.empty())
         )

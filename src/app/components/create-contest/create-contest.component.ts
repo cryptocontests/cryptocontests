@@ -1,15 +1,102 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
+import {
+  FormControl,
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
+import { FileUploader } from 'ng2-file-upload';
+
+import * as _moment from 'moment';
+// tslint:disable-next-line:no-duplicate-imports
+import { default as _rollupMoment } from 'moment';
+import { Store } from '@ngrx/store';
+import { State } from '../../state/reducers/contest.reducer';
+import { Contest } from '../../state/contest.model';
+import { CreateContest } from '../../state/actions/contest.actions';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import {
+  MatChipInputEvent,
+  MatAutocompleteSelectedEvent
+} from '@angular/material';
+
+const moment = _rollupMoment || _moment;
+const URL = 'https://evening-anchorage-3159.herokuapp.com/api/';
 
 @Component({
   selector: 'cc-create-contest',
   templateUrl: './create-contest.component.html',
   styleUrls: ['./create-contest.component.css']
 })
-export class CreateContestComponent implements OnInit {
+export class CreateContestComponent {
+  public uploader: FileUploader = new FileUploader({ url: URL });
+  contestForm: FormGroup;
+  tags: string[] = [];
+  separatorKeysCodes = [ENTER, COMMA];
 
-  constructor() { }
+  @ViewChild('tagInput') tagInput: ElementRef;
 
-  ngOnInit() {
+  constructor(private store: Store<State>, private formBuilder: FormBuilder) {
+    this.buildForm();
   }
 
+  private buildForm() {
+    this.contestForm = this.formBuilder.group({
+      title: ['', Validators.required],
+      description: ['', Validators.required],
+      prize: ['', Validators.required],
+      initialDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+      tags: ''
+    });
+  }
+
+  /**
+   * Management of the tags component
+   */
+
+  add(event: MatChipInputEvent) {
+    const input = event.input;
+    const value = event.value;
+
+    // Add our fruit
+    if ((value || '').trim()) {
+      this.tags.push(value.trim());
+    }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+
+    console.log(this.contestForm.value.tags);
+    this.contestForm.value.tags = null;
+  }
+
+  remove(tag: string) {
+    const index = this.tags.indexOf(tag);
+    if (index >= 0) this.tags.splice(index, 1);
+  }
+
+  selected(event: MatAutocompleteSelectedEvent): void {
+    this.tags.push(event.option.viewValue);
+    this.tagInput.nativeElement.value = '';
+    this.contestForm.value.tags = null;
+  }
+
+  cancel() {}
+
+  createContest() {
+    const contest: Contest = {
+      id: null,
+      title: this.contestForm.value.title,
+      description: this.contestForm.value.description,
+      prize: this.contestForm.value.prize,
+      createdDate: null,
+      initialDate: this.contestForm.value.initialDate.valueOf(),
+      endDate: this.contestForm.value.endDate.valueOf(),
+      tags: this.tags
+    };
+    this.store.dispatch(new CreateContest(contest));
+  }
 }

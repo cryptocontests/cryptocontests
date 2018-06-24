@@ -2,6 +2,7 @@ import { EntityAdapter, createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Contest } from '../contest.model';
 import { ContestActions, ContestActionTypes } from '../actions/contest.actions';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { Dictionary } from '@ngrx/entity/src/models';
 
 export interface State extends EntityState<Contest> {
   // additional entities state properties
@@ -17,8 +18,6 @@ export function contestReducer(
   state = initialState,
   action: ContestActions
 ): State {
-  console.log('this is the reducer');
-  console.log(state);
   switch (action.type) {
     case ContestActionTypes.LoadedContests: {
       return adapter.addAll(action.payload, state);
@@ -46,3 +45,9 @@ export const selectOnGoingContests = createSelector(
         contest.initialDate < Date.now() && contest.endDate > Date.now()
     )
 );
+
+export const selectContestById = (id: string) =>
+  createSelector(
+    selectEntities,
+    (entities: Dictionary<Contest>) => entities[id]
+  );

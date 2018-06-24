@@ -1,13 +1,20 @@
+import { SmartContractService } from './../web3/services/smart-contract.service';
 import { Injectable } from '@angular/core';
 import { Observable, of as observableOf } from 'rxjs';
 import { Contest } from '../state/contest.model';
 import * as _ from 'lodash';
+import { Web3Service } from '../web3/services/web3.service';
+
+const contractAddress = '';
+const contractAbi = [];
 
 @Injectable({
   providedIn: 'root'
 })
-export class EthereumService {
-  constructor() {}
+export class ContestContractService extends SmartContractService {
+  constructor(private web3Service: Web3Service) {
+    super(web3Service, contractAbi, contractAddress);
+  }
 
   public getContests(): Observable<Contest[]> {
     const mock = _
@@ -29,6 +36,6 @@ export class EthereumService {
   }
 
   public createContest(contest: Contest): Observable<void> {
-    return null;
+    return this.contract;
   }
 }

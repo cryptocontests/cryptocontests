@@ -1,12 +1,12 @@
 <mat-grid-list cols="3">
   <mat-grid-tile *ngFor="let contest of contests" fxLayout="column" fxLayoutAlign="start center">
     <mat-card mat-ripple fxFlex class="mat-elevation-z6 contest-tile" fxLayout="column" (click)="selectContest(contest)">
-      <img mat-card-image class="contest-preview" fxFlex src="https://material.angular.io/assets/img/examples/shiba1.jpg" />
+      <img mat-card-image class="crop-image" fxFlex src="https://material.angular.io/assets/img/examples/shiba1.jpg" />
       <mat-card-content class="no-margin">
         <div fxLayout="column" fxLayoutAlign="center stretch" fxLayoutGap="6%">
           <div fxLayout="row">
             <span class="title" fxFlex>{{contest.title}}</span>
-            <span class="subtitle">{{contest.prize}}</span>
+            <span class="subtitle">{{contest.prize}} ETH</span>
           </div>
           <div fxLayout="row" fxLayoutAlign="center center">
             <mat-chip-list fxFlex>

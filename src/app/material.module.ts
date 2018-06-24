@@ -27,6 +27,7 @@ import {
   MatSliderModule,
   MatSlideToggleModule
 } from '@angular/material';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
@@ -40,6 +41,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatCheckboxModule,
     MatChipsModule,
     MatDatepickerModule,
+    MatMomentDateModule,
     MatDialogModule,
     MatDividerModule,
     MatExpansionModule,

@@ -19,12 +19,9 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.contests$ = this.store.select(selectAll);
     this.store.dispatch(new LoadContests());
-
-    this.store.subscribe(state => console.log(state));
-    this.contests$.subscribe(state => console.log(state));
   }
 
-  selectContest($event: any) {
-    this.router.navigate(['/contest', $event]);
+  selectContest(contestId: string) {
+    this.router.navigate(['/contest', contestId]);
   }
 }

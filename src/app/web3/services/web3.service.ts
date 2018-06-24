@@ -1,0 +1,54 @@
+import { Injectable } from '@angular/core';
+import Web3 from 'web3';
+
+declare let window: any;
+
+export enum EthereumNetwork {
+  MAINNET = 1,
+  MORDEN = 2,
+  ROPSTEN = 3,
+  KOVAN = 4,
+  RYNKEBY = 42
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class Web3Service {
+  protected web3: any;
+  private accounts: string[] = [];
+
+  constructor() {
+    if (!this.web3) this.initWeb3();
+    if (this.accounts.length === 0) {
+      this.getAccounts().then(accounts => (this.accounts = accounts));
+    }
+  }
+
+  initWeb3() {
+    if (this.isWeb3Present()) {
+      // Use Mist/MetaMask's provider
+      this.web3 = new Web3(window.web3.currentProvider);
+    }
+  }
+
+  public getWeb3() {
+    return this.web3;
+  }
+
+  public isWeb3Present(): boolean {
+    return typeof window.web3 !== 'undefined';
+  }
+
+  public getNetworkVersion(): string {
+    return EthereumNetwork[this.web3.version.network];
+  }
+
+  public async getAccounts(): Promise<string[]> {
+    return this.web3.eth.getAccounts();
+  }
+
+  public newContract(contractAbi: any, contractAddress: string) {
+    return new this.web3.eth.Contract(contractAbi, contractAddress);
+  }
+}

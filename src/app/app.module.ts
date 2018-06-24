@@ -1,11 +1,14 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
+
+import { FileUploadModule } from 'ng2-file-upload';
 
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -16,9 +19,11 @@ import { contestReducer } from './state/reducers/contest.reducer';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CreateContestComponent } from './components/create-contest/create-contest.component';
 import { ContestGridComponent } from './components/contest-grid/contest-grid.component';
-import { EthereumService } from './services/ethereum.service';
-import { EthereumModule } from './ethereum/ethereum.module';
+import { Web3Module } from './web3/web3.module';
+import { ContestContractService } from './services/contest-contract.service';
 import { ContestDetailComponent } from './components/contest-detail/contest-detail.component';
+import { TagsComponent } from './components/tags/tags.component';
+import { ParticipationsGridComponent } from './components/participations-grid/participations-grid.component';
 
 @NgModule({
   declarations: [
@@ -26,13 +31,17 @@ import { ContestDetailComponent } from './components/contest-detail/contest-deta
     DashboardComponent,
     CreateContestComponent,
     ContestGridComponent,
-    ContestDetailComponent
+    ContestDetailComponent,
+    TagsComponent,
+    ParticipationsGridComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    AppRoutingModule,
+    ReactiveFormsModule,
     MaterialModule,
+    FileUploadModule,
+    AppRoutingModule,
     StoreModule.forRoot({
       contest: contestReducer,
       router: routerReducer
@@ -40,9 +49,9 @@ import { ContestDetailComponent } from './components/contest-detail/contest-deta
     StoreRouterConnectingModule.forRoot({ stateKey: 'router' }),
     EffectsModule.forRoot([ContestEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
-    EthereumModule
+    Web3Module
   ],
-  providers: [EthereumService],
+  providers: [ContestContractService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

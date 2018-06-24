@@ -1,9 +1,5 @@
 .contest-tile {
   margin: 8px;
   height: 96%;
-}
-
-.contest-preview {
-  object-fit: cover;
-  overflow: hidden;
+  cursor: pointer;
 }
