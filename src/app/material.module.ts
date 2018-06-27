@@ -24,6 +24,7 @@ import {
   MatRippleModule,
   MatSelectModule,
   MatSidenavModule,
+  MatProgressSpinnerModule,
   MatSliderModule,
   MatSlideToggleModule
 } from '@angular/material';
@@ -57,6 +58,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatRippleModule,
     MatSelectModule,
     MatSidenavModule,
+    MatProgressSpinnerModule,
     MatSliderModule,
     MatSlideToggleModule,
     FlexLayoutModule

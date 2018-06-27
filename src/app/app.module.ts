@@ -25,7 +25,7 @@ import { ContestDetailComponent } from './components/contest-detail/contest-deta
 import { TagsComponent } from './components/tags/tags.component';
 import { ParticipationsGridComponent } from './components/participations-grid/participations-grid.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-import { transactionReducer } from './web3/state/reducers/transaction.reducer';
+import { LoadingComponent } from './components/loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -36,9 +36,10 @@ import { transactionReducer } from './web3/state/reducers/transaction.reducer';
     ContestDetailComponent,
     TagsComponent,
     ParticipationsGridComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    LoadingComponent
   ],
-  entryComponents: [ConfirmDialogComponent],
+  entryComponents: [ConfirmDialogComponent, LoadingComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

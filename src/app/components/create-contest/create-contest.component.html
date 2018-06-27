@@ -5,7 +5,7 @@
     </button>
     <span fxFlex>New contest</span>
 
-    <button mat-raised-button color="accent" (click)="createContest()">
+    <button mat-raised-button color="accent" (click)="createContest()" [disabled]="!contestForm.valid">
       CREATE CONTEST
     </button>
   </mat-toolbar>

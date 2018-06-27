@@ -51,7 +51,7 @@ export class CreateContestComponent {
   private buildForm() {
     this.contestForm = this.formBuilder.group({
       title: ['', Validators.required],
-      description: ['', Validators.required],
+      description: '',
       prize: ['', Validators.required],
       initialDate: ['', Validators.required],
       participationLimitDate: ['', Validators.required],

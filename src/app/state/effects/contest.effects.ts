@@ -14,13 +14,15 @@ import {
 import { Contest } from '../contest.model';
 import { Router } from '@angular/router';
 import { TransactionState } from '../../web3/state/transaction.model';
+import { GlobalLoadingService } from '../../services/global-loading.service';
 
 @Injectable()
 export class ContestEffects {
   constructor(
     private actions$: Actions,
     private contestContract: ContestContractService,
-    private router: Router
+    private router: Router,
+    private globalLoading: GlobalLoadingService
   ) {}
 
   @Effect()
@@ -38,9 +40,11 @@ export class ContestEffects {
   createContest$: Observable<Action> = this.actions$
     .ofType<CreateContest>(ContestActionTypes.CreateContest)
     .pipe(
+      tap(() => this.globalLoading.show()),
       switchMap((createAction: CreateContest) =>
         this.contestContract.createContest(createAction.payload).pipe(
-          map((txState: TransactionState) => new ContestPending(txState))
+          map((txState: TransactionState) => new ContestPending(txState)),
+          tap(() => this.globalLoading.hide())
           // catchError(err => Observable.empty())
         )
       )

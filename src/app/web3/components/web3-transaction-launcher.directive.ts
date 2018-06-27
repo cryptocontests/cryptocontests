@@ -33,8 +33,7 @@ export class Web3TransactionLauncherDirective {
     );
 
     overlayRef.attach(transactionListComponent);
-    console.log('hiii');
 
-    overlayRef.backdropClick().subscribe(() => overlayRef.detach());
+    overlayRef.backdropClick().subscribe(() => overlayRef.dispose());
   }
 }
