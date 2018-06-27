@@ -1,5 +1,5 @@
-var ContestController = artifacts.require("./ContestController.sol");
+var Migrations = artifacts.require("./Migrations.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(ContestController);
+  deployer.deploy(Migrations);
 };
