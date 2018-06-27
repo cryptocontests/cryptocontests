@@ -23,11 +23,12 @@
         <mat-card-content>
           <div fxLayout="row" fxLayoutGap="8px">
             <div fxFlex fxLayout="column" fxLayoutGap="8px">
-              <span>{{contest?.description}}</span>
+              <span fxFlex>{{contest?.description}}</span>
               <cc-tags [tags]="contest?.tags" [clickable]="false"></cc-tags>
             </div>
             <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="center stretch">
               <span fxFlex>Created date: {{contest?.createdDate | date}}</span>
+              <span fxFlex>Participation limit date: {{contest?.participationLimitDate | date}}</span>
               <span fxFlex>Initial date: {{contest?.initialDate | date}}</span>
               <span fxFlex>End date: {{contest?.endDate | date}}</span>
             </div>

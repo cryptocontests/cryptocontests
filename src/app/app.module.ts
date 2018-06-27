@@ -24,6 +24,8 @@ import { ContestContractService } from './services/contest-contract.service';
 import { ContestDetailComponent } from './components/contest-detail/contest-detail.component';
 import { TagsComponent } from './components/tags/tags.component';
 import { ParticipationsGridComponent } from './components/participations-grid/participations-grid.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { transactionReducer } from './web3/state/reducers/transaction.reducer';
 
 @NgModule({
   declarations: [
@@ -33,8 +35,10 @@ import { ParticipationsGridComponent } from './components/participations-grid/pa
     ContestGridComponent,
     ContestDetailComponent,
     TagsComponent,
-    ParticipationsGridComponent
+    ParticipationsGridComponent,
+    ConfirmDialogComponent
   ],
+  entryComponents: [ConfirmDialogComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

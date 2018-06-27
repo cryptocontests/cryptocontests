@@ -1,0 +1,9 @@
+<mat-nav-list>
+  <mat-list-item *ngFor="let transaction of transactions$ | async" (click)="selectTransaction(transaction)">
+    {{transaction.name}}
+    <mat-icon [matBadge]="transaction.confirmations" matBadgeColor="accent">check_circle</mat-icon>
+    <button mat-icon-button (click)="openInExplorer(transaction.id)" [matBadgeHidden]="!transaction.confirmations" [matBadge]="transaction.confirmations">
+      <mat-icon>{{transaction.confirmations ? 'launch' : 'query_builder'}}</mat-icon>
+    </button>
+  </mat-list-item>
+</mat-nav-list>

@@ -1,7 +1,7 @@
 import { Contest, getContestPhase } from './../../state/contest.model';
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import * as fromReducer from '../../state/reducers/contest.reducer';
 
@@ -17,7 +17,7 @@ export class ContestDetailComponent implements OnInit {
   constructor(
     private store: Store<fromReducer.State>,
     private route: ActivatedRoute,
-    private location: Location
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -29,6 +29,6 @@ export class ContestDetailComponent implements OnInit {
   }
 
   goBack($event) {
-    this.location.back();
+    this.router.navigate(['/contests']);
   }
 }

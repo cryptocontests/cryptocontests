@@ -11,6 +11,7 @@ export interface Contest {
   prize: number;
   createdDate: number;
   initialDate: number;
+  participationLimitDate: number;
   endDate: number;
   tags: string[];
   participations?: Participation[];

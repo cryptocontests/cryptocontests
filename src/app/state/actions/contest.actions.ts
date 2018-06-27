@@ -1,11 +1,12 @@
 import { Action } from '@ngrx/store';
 import { Contest } from '../contest.model';
+import { TransactionState } from '../../web3/state/transaction.model';
 
 export enum ContestActionTypes {
   LoadContests = '[LoadContests] LoadContests',
   LoadedContests = '[LoadedContests] LoadedContests',
   CreateContest = '[CreateContest] CreateContest',
-  ContestCreated = '[ContestCreated] ContestCreated'
+  ContestPending = '[ContestPending] ContestPending'
 }
 
 export class LoadContests implements Action {
@@ -24,14 +25,14 @@ export class CreateContest implements Action {
   constructor(public payload: Contest) {}
 }
 
-export class ContestCreated implements Action {
-  readonly type = ContestActionTypes.ContestCreated;
+export class ContestPending implements Action {
+  readonly type = ContestActionTypes.ContestPending;
 
-  //  constructor(payload: Contest) {}
+  constructor(public transactionState: TransactionState) {}
 }
 
 export type ContestActions =
   | LoadContests
   | LoadedContests
   | CreateContest
-  | ContestCreated;
+  | ContestPending;

@@ -17,8 +17,11 @@ import { CreateContest } from '../../state/actions/contest.actions';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import {
   MatChipInputEvent,
-  MatAutocompleteSelectedEvent
+  MatAutocompleteSelectedEvent,
+  MatDialog
 } from '@angular/material';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { Router } from '@angular/router';
 
 const moment = _rollupMoment || _moment;
 const URL = 'https://evening-anchorage-3159.herokuapp.com/api/';
@@ -36,7 +39,12 @@ export class CreateContestComponent {
 
   @ViewChild('tagInput') tagInput: ElementRef;
 
-  constructor(private store: Store<State>, private formBuilder: FormBuilder) {
+  constructor(
+    private store: Store<State>,
+    private formBuilder: FormBuilder,
+    private dialog: MatDialog,
+    private router: Router
+  ) {
     this.buildForm();
   }
 
@@ -46,6 +54,7 @@ export class CreateContestComponent {
       description: ['', Validators.required],
       prize: ['', Validators.required],
       initialDate: ['', Validators.required],
+      participationLimitDate: ['', Validators.required],
       endDate: ['', Validators.required],
       tags: ''
     });
@@ -84,7 +93,19 @@ export class CreateContestComponent {
     this.contestForm.value.tags = null;
   }
 
-  cancel() {}
+  /**
+   * Cancel contest: confirm cancellation
+   */
+  cancel() {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        dialogTitle: 'Cancel new contest'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.router.navigate(['/contests']);
+    });
+  }
 
   createContest() {
     const contest: Contest = {
@@ -94,6 +115,7 @@ export class CreateContestComponent {
       prize: this.contestForm.value.prize,
       createdDate: null,
       initialDate: this.contestForm.value.initialDate.valueOf(),
+      participationLimitDate: this.contestForm.value.participationLimitDate.valueOf(),
       endDate: this.contestForm.value.endDate.valueOf(),
       tags: this.tags
     };

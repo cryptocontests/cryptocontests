@@ -1,0 +1,3 @@
+<button mat-icon-button web3TransactionLauncher>
+  <mat-icon [matBadge]="confirmedTransactions$ | async" [matBadgeHidden]="(confirmedTransactions$ | async) === 0" matBadgeColor="accent">swap_horizontal_circle</mat-icon>
+</button>

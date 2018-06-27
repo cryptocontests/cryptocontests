@@ -1,3 +1,4 @@
+import { ContestPhase, getContestPhase } from './../contest.model';
 import { EntityAdapter, createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Contest } from '../contest.model';
 import { ContestActions, ContestActionTypes } from '../actions/contest.actions';
@@ -37,14 +38,12 @@ export const {
   selectTotal
 } = adapter.getSelectors(getContestState);
 
-export const selectOnGoingContests = createSelector(
-  selectAll,
-  (contests: Contest[]) =>
+export const selectContestsByPhase = (contestPhase: ContestPhase) =>
+  createSelector(selectAll, (contests: Contest[]) =>
     contests.filter(
-      (contest: Contest) =>
-        contest.initialDate < Date.now() && contest.endDate > Date.now()
+      (contest: Contest) => getContestPhase(contest) === contestPhase
     )
-);
+  );
 
 export const selectContestById = (id: string) =>
   createSelector(

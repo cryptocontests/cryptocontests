@@ -3,21 +3,24 @@ import { Action } from '@ngrx/store';
 import { Actions, Effect } from '@ngrx/effects';
 import { ContestContractService } from '../../services/contest-contract.service';
 import { Observable } from 'rxjs';
-import { switchMap, map, catchError } from 'rxjs/operators';
+import { switchMap, map, catchError, tap } from 'rxjs/operators';
 import {
   LoadContests,
   LoadedContests,
   CreateContest,
   ContestActionTypes,
-  ContestCreated
+  ContestPending
 } from '../actions/contest.actions';
 import { Contest } from '../contest.model';
+import { Router } from '@angular/router';
+import { TransactionState } from '../../web3/state/transaction.model';
 
 @Injectable()
 export class ContestEffects {
   constructor(
     private actions$: Actions,
-    private contestContract: ContestContractService
+    private contestContract: ContestContractService,
+    private router: Router
   ) {}
 
   @Effect()
@@ -37,7 +40,7 @@ export class ContestEffects {
     .pipe(
       switchMap((createAction: CreateContest) =>
         this.contestContract.createContest(createAction.payload).pipe(
-          map(() => new ContestCreated())
+          map((txState: TransactionState) => new ContestPending(txState))
           // catchError(err => Observable.empty())
         )
       )
