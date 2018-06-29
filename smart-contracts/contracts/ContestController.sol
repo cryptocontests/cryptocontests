@@ -13,7 +13,7 @@ contract ContestController {
         // using imageHash for index key
         mapping (address => Participation) participations;
         address[] participactionsAccounts;
-
+        
         string title;
         uint256 startContest;
         uint256 endContest;
@@ -21,15 +21,15 @@ contract ContestController {
         uint256 award;
     }
     
-    mapping (address => mapping(bytes32  => Contest)) contests;
+    mapping (address  => Contest) contests;
     address[] public contestAccounts; // array with all contests owner accounts
     
     // set new contest with owner address as key index
     function setNewContest(string _title, uint256 _startContest, uint256 _endContest, uint256 _timetoCandidature) public payable {
-        bytes32 hashContest = getHashContest(msg.sender, _title, _startContest);
-        require(contests[msg.sender][hashContest].award == 0);
+        //bytes32 hashContest = getHashContest(msg.sender, _title, _startContest);
+        require(contests[msg.sender].award == 0);
         
-        Contest storage contest = contests[msg.sender][hashContest];
+        Contest memory contest = contests[msg.sender];
         
         contest.title = _title;
         contest.startContest = _startContest;
@@ -39,23 +39,35 @@ contract ContestController {
 
         contestAccounts.push(msg.sender) - 1;                        
     }
+    
+    function getContest(address _contestAcc) public view 
+        returns (string _title, uint256 _startContest, uint256 _endContest, uint256 _timeToCandidatures, uint256 _award, uint256 participationCount) {
+        return (
+            contests[_contestAcc].title, 
+            contests[_contestAcc].startContest, 
+            contests[_contestAcc].endContest, 
+            contests[_contestAcc].timeToCandidatures, 
+            contests[_contestAcc].award, 
+            contests[_contestAcc].participactionsAccounts.length);
+    }
 
-    function setNewParticipation(address _address, bytes32 _hashContest, string _title) public {
-        contests[_address][_hashContest].participations[msg.sender].owner = msg.sender;
-        contests[_address][_hashContest].participations[msg.sender].title = _title;
-        contests[_address][_hashContest].participactionsAccounts.push(msg.sender) - 1;
+    function setNewParticipation(address _address, string _title) public {
+        contests[_address].participactionsAccounts.push(msg.sender);
+        contests[_address].participations[msg.sender].title = _title;
+        // ...
     }
     
-    function countContests() view public returns (uint256) {
+    function getParticipation(address _contestAcc, address _partAcc) public view returns(string _title, uint256 _votes){
+        return (
+            contests[_contestAcc].participations[_partAcc].title,
+            contests[_contestAcc].participations[_partAcc].votes);
+    }
+    
+    function getTotalParticipationsByContest(address _contestAcc) public view returns(uint256 participationsCount){
+        return contests[_contestAcc].participactionsAccounts.length;
+    }
+    
+    function getContestsCount() public constant returns (uint256 contestsCount) {
         return contestAccounts.length;
     }
-
-    function getHashContest (address _address, string _title, uint256 _startContest) public pure returns (bytes32){
-        return keccak256(_address, _title, _startContest);
-    }   
-
-    function getBalance(address _address, bytes32 _hashContest) public view returns (uint256){
-        return contests[_address][_hashContest].award;
-    }
-
 }
