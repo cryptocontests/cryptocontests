@@ -1,9 +1,11 @@
 <mat-card @transactionList [style.transformOrigin]="'right top'" class="panel">
-  <mat-card-header>
-    <mat-card-title fxFlex>Transactions</mat-card-title>
-    <button mat-icon-button (click)="clearTransactions()">
-      <mat-icon></mat-icon>
-    </button>
+  <mat-card-header fxLayout="row" fxLayout="center center">
+    <mat-card-title-group fxFlex>
+      <mat-card-title>Transactions</mat-card-title>
+      <button mat-icon-button (click)="clearTransactions()">
+        <mat-icon>clear_all</mat-icon>
+      </button>
+    </mat-card-title-group>
   </mat-card-header>
   <mat-divider></mat-divider>
   <mat-nav-list>
@@ -13,8 +15,8 @@
         {{transaction.confirmations ? 'check_circle' : 'query_builder'}}</mat-icon>
       <span matLine>{{transaction.name}}</span>
       <span matLine class="hash">{{transaction.id}}</span>
-      <a [href]="'https://etherscan.com/tx/' + transaction.id" class="launcher">
-        <mat-icon [inline]="true">launch</mat-icon>
+      <a mat-icon-button [href]="'https://etherscan.com/tx/' + transaction.id" class="launcher">
+        <mat-icon matListIcon>launch</mat-icon>
       </a>
     </mat-list-item>
   </mat-nav-list>

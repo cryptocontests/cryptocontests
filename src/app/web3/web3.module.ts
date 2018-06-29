@@ -4,8 +4,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Web3Service } from './services/web3.service';
 import { CryptoConverterPipe } from './crypto-converter.pipe';
-import { StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
 import { TransactionListComponent } from './components/transaction-list/transaction-list.component';
 import {
   MatBadgeModule,
@@ -14,6 +12,7 @@ import {
   MatButtonModule,
   MatCardModule
 } from '@angular/material';
+import { FlexLayoutModule } from '@angular/flex-layout';
 import { Web3TransactionLauncherDirective } from './components/web3-transaction-launcher.directive';
 import { Web3TransactionButtonComponent } from './components/web3-transaction-button/web3-transaction-button.component';
 import { TransactionStateService } from './services/transaction-state.service';
@@ -23,6 +22,7 @@ import { TransactionStateService } from './services/transaction-state.service';
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
+    FlexLayoutModule,
     MatCardModule,
     MatBadgeModule,
     MatButtonModule,
