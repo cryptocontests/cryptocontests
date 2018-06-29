@@ -1,9 +1,22 @@
-<mat-nav-list>
-  <mat-list-item *ngFor="let transaction of transactions$ | async" (click)="selectTransaction(transaction)">
-    {{transaction.name}}
-    <mat-icon [matBadge]="transaction.confirmations" matBadgeColor="accent">check_circle</mat-icon>
-    <button mat-icon-button (click)="openInExplorer(transaction.id)" [matBadgeHidden]="!transaction.confirmations" [matBadge]="transaction.confirmations">
-      <mat-icon>{{transaction.confirmations ? 'launch' : 'query_builder'}}</mat-icon>
+<mat-card @transactionList [style.transformOrigin]="'right top'" class="panel">
+  <mat-card-header>
+    <mat-card-title fxFlex>Transactions</mat-card-title>
+    <button mat-icon-button (click)="clearTransactions()">
+      <mat-icon></mat-icon>
     </button>
-  </mat-list-item>
-</mat-nav-list>
+  </mat-card-header>
+  <mat-divider></mat-divider>
+  <mat-nav-list>
+    <mat-list-item *ngFor="let transaction of transactions" (click)="selectTransaction(transaction)">
+      <mat-icon matListIcon class="badge-icon confirmations-icon" [ngClass]="transaction.confirmations ? 'green' : 'fade'" mat-list-icon
+        [matBadge]="transaction.confirmations" [matBadgeHidden]="!transaction.confirmations" matBadgeColor="accent">
+        {{transaction.confirmations ? 'check_circle' : 'query_builder'}}</mat-icon>
+      <span matLine>{{transaction.name}}</span>
+      <span matLine class="hash">{{transaction.id}}</span>
+      <a [href]="'https://etherscan.com/tx/' + transaction.id" class="launcher">
+        <mat-icon [inline]="true">launch</mat-icon>
+      </a>
+    </mat-list-item>
+  </mat-nav-list>
+
+</mat-card>

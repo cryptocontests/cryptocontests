@@ -5,7 +5,8 @@ import { take } from 'rxjs/operators';
 import { Contest } from '../state/contest.model';
 import * as _ from 'lodash';
 import { Web3Service } from '../web3/services/web3.service';
-import { TransactionState } from '../web3/state/transaction.model';
+import { TransactionState } from '../web3/transaction.model';
+import { TransactionStateService } from '../web3/services/transaction-state.service';
 
 const contractAddress = '';
 const contractAbi = [];
@@ -14,7 +15,10 @@ const contractAbi = [];
   providedIn: 'root'
 })
 export class ContestContractService extends SmartContractService {
-  constructor(private web3Service: Web3Service) {
+  constructor(
+    private web3Service: Web3Service,
+    private transactionStates: TransactionStateService
+  ) {
     super(web3Service, contractAbi, contractAddress);
   }
 
@@ -39,10 +43,11 @@ export class ContestContractService extends SmartContractService {
   }
 
   public createContest(contest: Contest): Observable<TransactionState> {
-    const observable = this.eventsToObservable(
-      this.contract.methods['']().send()
+    this.transactionStates.registerTransaction(
+      this.contract.methods['']().send(),
+      contest.title
     );
-    this.registerTransaction$(observable, contest.title);
-    return observable.pipe(take(1));
+
+    return observableOf();
   }
 }

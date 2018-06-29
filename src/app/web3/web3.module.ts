@@ -1,30 +1,33 @@
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Web3Service } from './services/web3.service';
 import { CryptoConverterPipe } from './crypto-converter.pipe';
 import { StoreModule } from '@ngrx/store';
-import * as fromTransaction from './state/reducers/transaction.reducer';
 import { EffectsModule } from '@ngrx/effects';
-import { TransactionEffects } from './state/effects/transaction.effects';
 import { TransactionListComponent } from './components/transaction-list/transaction-list.component';
 import {
   MatBadgeModule,
   MatIconModule,
   MatListModule,
-  MatButtonModule
+  MatButtonModule,
+  MatCardModule
 } from '@angular/material';
 import { Web3TransactionLauncherDirective } from './components/web3-transaction-launcher.directive';
 import { Web3TransactionButtonComponent } from './components/web3-transaction-button/web3-transaction-button.component';
+import { TransactionStateService } from './services/transaction-state.service';
 
 @NgModule({
   imports: [
     CommonModule,
+    BrowserModule,
+    BrowserAnimationsModule,
+    MatCardModule,
     MatBadgeModule,
     MatButtonModule,
     MatIconModule,
-    MatListModule,
-    StoreModule.forFeature('transaction', fromTransaction.transactionReducer),
-    EffectsModule.forFeature([TransactionEffects])
+    MatListModule
   ],
   declarations: [
     CryptoConverterPipe,
@@ -33,7 +36,7 @@ import { Web3TransactionButtonComponent } from './components/web3-transaction-bu
     Web3TransactionButtonComponent
   ],
   entryComponents: [TransactionListComponent],
-  providers: [Web3Service],
+  providers: [Web3Service, TransactionStateService],
   exports: [
     TransactionListComponent,
     CryptoConverterPipe,

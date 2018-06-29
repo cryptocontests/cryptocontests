@@ -1,0 +1,42 @@
+.panel {
+  padding: 0;
+}
+
+mat-card-header {
+  padding: 24px 24px 0 24px;
+}
+
+mat-nav-list {
+  padding-top: 0;
+}
+
+.launcher {
+  vertical-align: middle;
+  margin-left: 16px;
+  right: 0;
+  pointer-events: none;
+}
+
+.confirmations-icon {
+  margin-right: 8px;
+}
+
+.badge-icon {
+  font-size: 32px !important;
+  height: 32px !important;
+  width: 32px !important;
+  line-height: 32px !important;
+}
+
+.green {
+  color: green;
+}
+
+.hash {
+  opacity: 0.7;
+  font-size: 12em;
+}
+
+.fade {
+  opacity: 0.7;
+}

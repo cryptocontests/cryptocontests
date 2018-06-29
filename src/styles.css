@@ -29,3 +29,7 @@ body {
   object-fit: cover;
   overflow: hidden;
 }
+
+.badge-icon {
+  font-size: 32px !important;
+}

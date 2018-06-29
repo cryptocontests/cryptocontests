@@ -2,17 +2,24 @@ import { TransactionListComponent } from './transaction-list/transaction-list.co
 import { Directive, ElementRef, HostListener } from '@angular/core';
 import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
+import { Store } from '@ngrx/store';
+import { TransactionStateService } from '../services/transaction-state.service';
 
 @Directive({
   selector: '[web3TransactionLauncher]'
 })
 export class Web3TransactionLauncherDirective {
-  constructor(private elementRef: ElementRef, private overlay: Overlay) {}
+  constructor(
+    private elementRef: ElementRef,
+    private overlay: Overlay,
+    private transactionState: TransactionStateService
+  ) {}
 
   @HostListener('click')
   launchPanel() {
     const overlayConfig: OverlayConfig = new OverlayConfig({
-      hasBackdrop: false
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backgorund'
     });
     overlayConfig.positionStrategy = this.overlay.position().connectedTo(
       this.elementRef,
@@ -21,7 +28,7 @@ export class Web3TransactionLauncherDirective {
         originY: 'bottom'
       },
       {
-        overlayX: 'start',
+        overlayX: 'end',
         overlayY: 'top'
       }
     );
@@ -35,5 +42,7 @@ export class Web3TransactionLauncherDirective {
     overlayRef.attach(transactionListComponent);
 
     overlayRef.backdropClick().subscribe(() => overlayRef.dispose());
+
+    this.transactionState.markTransactionsSeen();
   }
 }

@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 import { Contest } from '../contest.model';
-import { TransactionState } from '../../web3/state/transaction.model';
+import { TransactionState } from '../../web3/transaction.model';
 
 export enum ContestActionTypes {
   LoadContests = '[LoadContests] LoadContests',

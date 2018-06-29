@@ -13,8 +13,9 @@ import {
 } from '../actions/contest.actions';
 import { Contest } from '../contest.model';
 import { Router } from '@angular/router';
-import { TransactionState } from '../../web3/state/transaction.model';
+import { TransactionState } from '../../web3/transaction.model';
 import { GlobalLoadingService } from '../../services/global-loading.service';
+import { TransactionStateService } from '../../web3/services/transaction-state.service';
 
 @Injectable()
 export class ContestEffects {
