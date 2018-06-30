@@ -12,7 +12,7 @@
     <mat-tab label="Upcoming Contests">
       <div fxFlex fxLayoutAlign="center center">
         <mat-card fxFlex>
-          <cc-contest-grid [contests]="upconmingContests$ | async" (contestSelected)="selectContest($event)">
+          <cc-contest-grid [contests]="upcomingContests$ | async" (contestSelected)="selectContest($event)">
           </cc-contest-grid>
         </mat-card>
       </div>

@@ -20,8 +20,8 @@ export function contestReducer(
   action: ContestActions
 ): State {
   switch (action.type) {
-    case ContestActionTypes.LoadedContests: {
-      return adapter.addAll(action.payload, state);
+    case ContestActionTypes.LoadedContest: {
+      return adapter.addOne(action.payload, state);
     }
 
     default: {

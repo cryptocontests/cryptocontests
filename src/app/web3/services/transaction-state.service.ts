@@ -10,35 +10,7 @@ import { withLatestFrom } from 'rxjs/operators';
 })
 export class TransactionStateService {
   private nextId = 0;
-  private transactions: TransactionState[] = [
-    {
-      id: 0,
-      seen: false,
-      confirmations: false,
-      hash: 'jkdfññlajdsflñas',
-      name: 'my contest',
-      receipt: null,
-      error: null
-    },
-    {
-      id: 1,
-      seen: true,
-      confirmations: 5,
-      hash: 'jkdfññlajdsflñas',
-      name: 'my contest',
-      receipt: null,
-      error: null
-    },
-    {
-      id: 2,
-      seen: false,
-      confirmations: 9,
-      hash: 'jkdfññlajdsflñas',
-      name: 'my contest',
-      receipt: null,
-      error: null
-    }
-  ];
+  private transactions: TransactionState[] = [];
   private subscribers: Array<(txStates: TransactionState[]) => any> = [];
 
   constructor() {}
@@ -48,7 +20,7 @@ export class TransactionStateService {
    * @param promiEvent
    * @param transactionName
    */
-  public registerTransaction(promiEvent: PromiEvent<any>, name: string) {
+  public registerTransaction(promiEvent: PromiEvent<any>, name: string): void {
     const transactionState = this.registerEvents(promiEvent, name);
     this.transactions.push(transactionState);
     this.updateTransactionState();
@@ -64,6 +36,9 @@ export class TransactionStateService {
     this.updateTransactionState();
   }
 
+  /**
+   * Mark all current transactions as seen
+   */
   public markTransactionsSeen() {
     this.transactions = this.transactions.map((tx: TransactionState) => ({
       ...tx,
@@ -74,9 +49,8 @@ export class TransactionStateService {
 
   public subscribeToChanges(
     subscriberFn: (transactionState: TransactionState[]) => any
-  ) {
+  ): void {
     this.subscribers.push(subscriberFn);
-    this.updateTransactionState();
   }
 
   private registerEvents(

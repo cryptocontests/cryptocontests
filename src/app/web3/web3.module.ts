@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Web3Service } from './services/web3.service';
 import { CryptoConverterPipe } from './crypto-converter.pipe';
-import { TransactionListComponent } from './components/transaction-list/transaction-list.component';
+import { TransactionListComponent } from './components/web3-transaction-list/web3-transaction-list.component';
 import {
   MatBadgeModule,
   MatIconModule,

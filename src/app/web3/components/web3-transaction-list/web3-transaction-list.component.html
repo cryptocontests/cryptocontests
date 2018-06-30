@@ -14,7 +14,7 @@
         [matBadge]="transaction.confirmations" [matBadgeHidden]="!transaction.confirmations" matBadgeColor="accent">
         {{transaction.confirmations ? 'check_circle' : 'query_builder'}}</mat-icon>
       <span matLine>{{transaction.name}}</span>
-      <span matLine class="hash">{{transaction.id}}</span>
+      <span matLine class="hash">{{transaction.hash}}</span>
       <a mat-icon-button [href]="'https://etherscan.com/tx/' + transaction.id" class="launcher">
         <mat-icon matListIcon>launch</mat-icon>
       </a>

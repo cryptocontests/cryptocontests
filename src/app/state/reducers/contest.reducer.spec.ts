@@ -1,4 +1,4 @@
-import { reducer, initialState } from './contest.reducer';
+import { contestReducer, initialState } from './contest.reducer';
 
 describe('Contest Reducer', () => {
   describe('unknown action', () => {

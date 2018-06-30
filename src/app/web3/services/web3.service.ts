@@ -16,13 +16,9 @@ export enum EthereumNetwork {
 })
 export class Web3Service {
   protected web3: any;
-  private accounts: string[] = [];
 
   constructor() {
     if (!this.web3) this.initWeb3();
-    if (this.accounts.length === 0) {
-      this.getAccounts().then(accounts => (this.accounts = accounts));
-    }
   }
 
   initWeb3() {
@@ -46,6 +42,11 @@ export class Web3Service {
 
   public async getAccounts(): Promise<string[]> {
     return this.web3.eth.getAccounts();
+  }
+
+  public async getDefaultAccount(): Promise<string> {
+    const accounts = await this.getAccounts();
+    return accounts[0];
   }
 
   public newContract(contractAbi: any, contractAddress: string) {

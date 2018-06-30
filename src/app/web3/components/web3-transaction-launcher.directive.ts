@@ -1,4 +1,4 @@
-import { TransactionListComponent } from './transaction-list/transaction-list.component';
+import { TransactionListComponent } from './web3-transaction-list/web3-transaction-list.component';
 import { Directive, ElementRef, HostListener } from '@angular/core';
 import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';

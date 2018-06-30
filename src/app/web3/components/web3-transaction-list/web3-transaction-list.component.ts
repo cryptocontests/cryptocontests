@@ -13,8 +13,8 @@ import {
 
 @Component({
   selector: 'web3-transaction-list',
-  templateUrl: './transaction-list.component.html',
-  styleUrls: ['./transaction-list.component.css'],
+  templateUrl: './web3-transaction-list.component.html',
+  styleUrls: ['./web3-transaction-list.component.css'],
   animations: [
     trigger('transactionList', [
       state(

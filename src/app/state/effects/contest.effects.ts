@@ -1,3 +1,4 @@
+import { TransactionReceipt } from 'web3/types';
 import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { Actions, Effect } from '@ngrx/effects';
@@ -6,16 +7,14 @@ import { Observable } from 'rxjs';
 import { switchMap, map, catchError, tap } from 'rxjs/operators';
 import {
   LoadContests,
-  LoadedContests,
+  LoadedContest,
   CreateContest,
   ContestActionTypes,
   ContestPending
 } from '../actions/contest.actions';
 import { Contest } from '../contest.model';
 import { Router } from '@angular/router';
-import { TransactionState } from '../../web3/transaction.model';
 import { GlobalLoadingService } from '../../services/global-loading.service';
-import { TransactionStateService } from '../../web3/services/transaction-state.service';
 
 @Injectable()
 export class ContestEffects {
@@ -33,7 +32,7 @@ export class ContestEffects {
       switchMap((loadAction: LoadContests) =>
         this.contestContract
           .getContests()
-          .pipe(map((contests: Contest[]) => new LoadedContests(contests)))
+          .pipe(map((contests: Contest) => new LoadedContest(contests)))
       )
     );
 
@@ -44,8 +43,9 @@ export class ContestEffects {
       tap(() => this.globalLoading.show()),
       switchMap((createAction: CreateContest) =>
         this.contestContract.createContest(createAction.payload).pipe(
-          map((txState: TransactionState) => new ContestPending(txState)),
-          tap(() => this.globalLoading.hide())
+          map((receipt: TransactionReceipt) => new ContestPending(receipt)),
+          tap(() => this.globalLoading.hide()),
+          tap(() => this.router.navigate(['/contests']))
           // catchError(err => Observable.empty())
         )
       )

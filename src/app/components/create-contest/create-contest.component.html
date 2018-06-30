@@ -34,7 +34,7 @@
                     {{tag}}
                     <mat-icon matChipRemove>cancel</mat-icon>
                   </mat-chip>
-                  <input placeholder="Tags" #tagInput formControlName="tags" [matAutocomplete]="auto" [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  <input placeholder="Tags" #tagInput formControlName="tags" matAutocomplete="auto" [matChipInputFor]="tagsList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                     [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="add($event)" />
                 </mat-chip-list>
                 <!--     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">

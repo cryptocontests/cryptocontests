@@ -96,7 +96,7 @@ export class CreateContestComponent {
   /**
    * Cancel contest: confirm cancellation
    */
-  cancel() {
+  cancel(event) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         dialogTitle: 'Cancel new contest'
