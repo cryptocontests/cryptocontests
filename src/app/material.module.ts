@@ -25,6 +25,7 @@ import {
   MatSelectModule,
   MatSidenavModule,
   MatProgressSpinnerModule,
+  MatSnackBarModule,
   MatSliderModule,
   MatSlideToggleModule
 } from '@angular/material';
@@ -46,6 +47,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatDialogModule,
     MatDividerModule,
     MatExpansionModule,
+    MatSnackBarModule,
     MatFormFieldModule,
     MatGridListModule,
     MatIconModule,

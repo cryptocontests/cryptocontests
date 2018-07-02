@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { Actions, Effect } from '@ngrx/effects';
 import { ContestContractService } from '../../services/contest-contract.service';
-import { Observable } from 'rxjs';
+import { Observable, of as observableOf } from 'rxjs';
 import { switchMap, map, catchError, tap } from 'rxjs/operators';
 import {
   LoadContests,
@@ -15,6 +15,7 @@ import {
 import { Contest } from '../contest.model';
 import { Router } from '@angular/router';
 import { GlobalLoadingService } from '../../services/global-loading.service';
+import { MatSnackBar } from '@angular/material';
 
 @Injectable()
 export class ContestEffects {
@@ -22,8 +23,9 @@ export class ContestEffects {
     private actions$: Actions,
     private contestContract: ContestContractService,
     private router: Router,
-    private globalLoading: GlobalLoadingService
-  ) {}
+    private globalLoading: GlobalLoadingService,
+    public snackBar: MatSnackBar
+  ) { }
 
   @Effect()
   loadContests$: Observable<Action> = this.actions$
@@ -37,7 +39,7 @@ export class ContestEffects {
     );
 
   @Effect()
-  createContest$: Observable<Action> = this.actions$
+  createContest$: Observable<any> = this.actions$
     .ofType<CreateContest>(ContestActionTypes.CreateContest)
     .pipe(
       tap(() => this.globalLoading.show()),
@@ -45,9 +47,12 @@ export class ContestEffects {
         this.contestContract.createContest(createAction.payload).pipe(
           map((receipt: TransactionReceipt) => new ContestPending(receipt)),
           tap(() => this.globalLoading.hide()),
-          tap(() => this.router.navigate(['/contests']))
-          // catchError(err => Observable.empty())
+          catchError(err => observableOf(this.snackBar.open('There was an error creating the contest:' + err)))
         )
-      )
+      ),
+      tap(() => this.snackBar.open('Contest creation requested: wait for the transaction to confirm', null, {
+        duration: 3000
+      })),
+      tap(() => this.router.navigate(['/contests']))
     );
 }

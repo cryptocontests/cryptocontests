@@ -24,7 +24,6 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { Router } from '@angular/router';
 
 const moment = _rollupMoment || _moment;
-const URL = 'https://evening-anchorage-3159.herokuapp.com/api/';
 
 @Component({
   selector: 'cc-create-contest',
@@ -32,7 +31,7 @@ const URL = 'https://evening-anchorage-3159.herokuapp.com/api/';
   styleUrls: ['./create-contest.component.css']
 })
 export class CreateContestComponent {
-  public uploader: FileUploader = new FileUploader({ url: URL });
+
   contestForm: FormGroup;
   tags: string[] = [];
   separatorKeysCodes = [ENTER, COMMA];
