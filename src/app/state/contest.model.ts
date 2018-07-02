@@ -14,7 +14,14 @@ export interface Contest {
   participationLimitDate: number;
   endDate: number;
   tags: string[];
-  participations?: Participation[];
+}
+
+export interface Participation {
+  creator: string;
+  date: number;
+  contentHash: string;
+  content?: any;
+  votes: number;
 }
 
 export function getContestPhase(contest: Contest): ContestPhase {
@@ -22,10 +29,4 @@ export function getContestPhase(contest: Contest): ContestPhase {
   else if (Date.now() >= contest.initialDate && Date.now() < contest.endDate) {
     return ContestPhase.ONGOING;
   } else return ContestPhase.ENDED;
-}
-
-export interface Participation {
-  creator: string;
-  date: number;
-  content: string;
 }

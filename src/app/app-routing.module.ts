@@ -15,7 +15,12 @@ const routes: Routes = [
   },
   {
     path: 'contest/:id',
-    component: ContestDetailComponent
+    component: ContestDetailComponent,
+  /*   children: [
+      {
+        path: 'participation/:id'
+      }
+    ] */
   },
   {
     path: '',

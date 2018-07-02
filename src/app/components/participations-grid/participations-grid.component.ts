@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { Participation } from '../../state/contest.model';
 
 @Component({
   selector: 'cc-participations-grid',
@@ -6,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./participations-grid.component.css']
 })
 export class ParticipationsGridComponent implements OnInit {
+
+  @Input('participations') participations: Participation[];
 
   constructor() { }
 

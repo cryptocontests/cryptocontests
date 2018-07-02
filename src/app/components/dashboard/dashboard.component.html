@@ -12,7 +12,7 @@
     <mat-tab label="Upcoming Contests">
       <div fxFlex fxLayoutAlign="center center">
         <mat-card fxFlex>
-          <cc-contest-grid [contests]="upcomingContests$ | async" (contestSelected)="selectContest($event)">
+          <cc-contest-grid [contests]="upcomingContests$" (contestSelected)="selectContest($event)">
           </cc-contest-grid>
         </mat-card>
       </div>
@@ -21,7 +21,7 @@
     <mat-tab label="Ongoing Contests">
       <div fxFlex fxLayoutAlign="center center">
         <mat-card fxFlex>
-          <cc-contest-grid [contests]="ongoingContests$ | async" (contestSelected)="selectContest($event)">
+          <cc-contest-grid [contests]="ongoingContests$" (contestSelected)="selectContest($event)">
           </cc-contest-grid>
         </mat-card>
       </div>
@@ -29,7 +29,7 @@
     <mat-tab label="Ended Contests">
       <div fxFlex fxLayoutAlign="center center">
         <mat-card fxFlex>
-          <cc-contest-grid [contests]="endedContests$ | async" (contestSelected)="selectContest($event)">
+          <cc-contest-grid [contests]="endedContests$" (contestSelected)="selectContest($event)">
           </cc-contest-grid>
         </mat-card>
       </div>

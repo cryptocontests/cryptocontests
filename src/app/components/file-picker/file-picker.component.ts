@@ -3,22 +3,22 @@ import {
   OnInit,
   Input,
   ViewChild
-} from "@angular/core";
+} from '@angular/core';
 import {
   ReadMode,
   ReadFile,
   FilePickerDirective
-} from "ngx-file-helpers";
+} from 'ngx-file-helpers';
 
 @Component({
-  selector: "cc-file-picker",
-  templateUrl: "./file-picker.component.html",
-  styleUrls: ["./file-picker.component.css"]
+  selector: 'cc-file-picker',
+  templateUrl: './file-picker.component.html',
+  styleUrls: ['./file-picker.component.css']
 })
 export class FilePickerComponent implements OnInit {
   public readMode = ReadMode.dataURL;
 
-  @Input("multiple") multiple = false;
+  @Input('multiple') multiple = false;
 
   file: ReadFile;
 

@@ -1,4 +1,4 @@
-import { ContestPhase, getContestPhase } from './../contest.model';
+import { ContestPhase, getContestPhase, Participation } from './../contest.model';
 import { EntityAdapter, createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Contest } from '../contest.model';
 import { ContestActions, ContestActionTypes } from '../actions/contest.actions';
@@ -7,12 +7,14 @@ import { Dictionary } from '@ngrx/entity/src/models';
 
 export interface State extends EntityState<Contest> {
   // additional entities state properties
+  participations: Participation[];
 }
 
 export const adapter: EntityAdapter<Contest> = createEntityAdapter<Contest>();
 
 export const initialState: State = adapter.getInitialState({
   // additional entity state properties
+  participations: []
 });
 
 export function contestReducer(
@@ -22,6 +24,12 @@ export function contestReducer(
   switch (action.type) {
     case ContestActionTypes.LoadedContest: {
       return adapter.addOne(action.payload, state);
+    }
+    case ContestActionTypes.LoadedParticipation: {
+      const participations = state.participations;
+      return Object.assign({
+        participations: participations.push(action.payload)
+      }, state);
     }
 
     default: {

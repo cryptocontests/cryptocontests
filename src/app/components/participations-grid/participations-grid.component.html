@@ -1,3 +1,5 @@
-<p>
-  participations-grid works!
-</p>
+<mat-grid-list cols="3">
+  <mat-grid-tile *ngFor="let participation of participations" fxLayout="column" fxLayoutAlign="start center">
+    <img [src]="participation.content" class="crop-image">
+  </mat-grid-tile>
+</mat-grid-list>

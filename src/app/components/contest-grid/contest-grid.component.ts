@@ -1,5 +1,6 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { Contest } from '../../state/contest.model';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'cc-contest-grid',
@@ -7,7 +8,7 @@ import { Contest } from '../../state/contest.model';
   styleUrls: ['./contest-grid.component.css']
 })
 export class ContestGridComponent {
-  @Input('contests') contests: Contest[];
+  @Input('contests') contests: Observable<Contest[]>;
   @Output('contestSelected') contestSelected = new EventEmitter<string>();
 
   constructor() {}
