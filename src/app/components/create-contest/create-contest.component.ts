@@ -5,8 +5,6 @@ import {
   FormGroup,
   Validators
 } from '@angular/forms';
-import { FileUploader } from 'ng2-file-upload';
-
 import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
 import { default as _rollupMoment } from 'moment';
