@@ -121,8 +121,9 @@ contract ContestController {
     
     function payToWinner(address _contestAcc) public {
         assert(now >= contests[_contestAcc].endContest);
+        assert(msg.sender == contests[_contestAcc].actualWinnerAccount);
         assert(contests[_contestAcc].award > 0);
-
+        
         uint256 amount = contests[_contestAcc].award;
         contests[_contestAcc].award = 0;
         msg.sender.transfer(amount);
