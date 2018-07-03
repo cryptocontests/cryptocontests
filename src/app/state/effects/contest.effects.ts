@@ -14,7 +14,7 @@ import {
 } from '../actions/contest.actions';
 import { Contest } from '../contest.model';
 import { Router } from '@angular/router';
-import { GlobalLoadingService } from '../../services/global-loading.service';
+import { GlobalLoadingService } from '../../loading/global-loading.service';
 import { MatSnackBar } from '@angular/material';
 
 @Injectable()
@@ -43,8 +43,10 @@ export class ContestEffects {
     .ofType<CreateContest>(ContestActionTypes.CreateContest)
     .pipe(
       tap(() => this.globalLoading.show()),
+      tap(console.log),
       switchMap((createAction: CreateContest) =>
         this.contestContract.createContest(createAction.payload).pipe(
+          tap(console.log),
           map((receipt: TransactionReceipt) => new ContestPending(receipt)),
           tap(() => this.globalLoading.hide()),
           catchError(err => observableOf(this.snackBar.open('There was an error creating the contest:' + err)))

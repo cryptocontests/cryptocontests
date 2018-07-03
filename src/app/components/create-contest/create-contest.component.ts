@@ -20,6 +20,7 @@ import {
 } from '@angular/material';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { Router } from '@angular/router';
+import { CryptoCurrency } from '../../web3/transaction.model';
 
 const moment = _rollupMoment || _moment;
 
@@ -109,7 +110,10 @@ export class CreateContestComponent {
       id: null,
       title: this.contestForm.value.title,
       description: this.contestForm.value.description,
-      prize: this.contestForm.value.prize,
+      prize: {
+        value: this.contestForm.value.prize,
+        currency: CryptoCurrency.ETH
+      },
       createdDate: null,
       initialDate: this.contestForm.value.initialDate.valueOf(),
       participationLimitDate: this.contestForm.value.participationLimitDate.valueOf(),

@@ -11,3 +11,16 @@ export interface TransactionState {
   seen: boolean;
   error: any;
 }
+
+export enum Fiat {
+  EUR = 'EUR', USD = 'USD'
+}
+export enum CryptoCurrency {
+  BTC = 'BTC', ETH = 'ETH', WEIS = 'WEIS'
+}
+export type Currency = Fiat | CryptoCurrency;
+
+export interface CryptoValue {
+  currency: CryptoCurrency;
+  value: number;
+}

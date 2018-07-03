@@ -1,3 +1,5 @@
+import { CryptoValue } from '../web3/transaction.model';
+
 export enum ContestPhase {
   UPCOMING = 'UPCOMING',
   ONGOING = 'ONGOING',
@@ -8,7 +10,7 @@ export interface Contest {
   id: string;
   title: string;
   description: string;
-  prize: number;
+  prize: CryptoValue;
   createdDate: number;
   initialDate: number;
   participationLimitDate: number;

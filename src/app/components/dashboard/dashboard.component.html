@@ -7,31 +7,26 @@
     </button>
   </mat-toolbar>
 
-  <mat-tab-group fxFlex [selectedIndex]="1" dynamicHeight="false">
+  <mat-tab-group fxFlex="grow" [selectedIndex]="1" dynamicHeight="false">
 
     <mat-tab label="Upcoming Contests">
       <div fxFlex fxLayoutAlign="center center">
-        <mat-card fxFlex>
-          <cc-contest-grid [contests]="upcomingContests$" (contestSelected)="selectContest($event)">
-          </cc-contest-grid>
-        </mat-card>
+        <cc-contest-grid fxFlex [contests]="upcomingContests$" (contestSelected)="selectContest($event)">
+        </cc-contest-grid>
       </div>
     </mat-tab>
 
     <mat-tab label="Ongoing Contests">
       <div fxFlex fxLayoutAlign="center center">
-        <mat-card fxFlex>
-          <cc-contest-grid [contests]="ongoingContests$" (contestSelected)="selectContest($event)">
-          </cc-contest-grid>
-        </mat-card>
+        <cc-contest-grid fxFlex [contests]="ongoingContests$" (contestSelected)="selectContest($event)">
+        </cc-contest-grid>
       </div>
     </mat-tab>
+
     <mat-tab label="Ended Contests">
       <div fxFlex fxLayoutAlign="center center">
-        <mat-card fxFlex>
-          <cc-contest-grid [contests]="endedContests$" (contestSelected)="selectContest($event)">
-          </cc-contest-grid>
-        </mat-card>
+        <cc-contest-grid fxFlex [contests]="endedContests$" (contestSelected)="selectContest($event)">
+        </cc-contest-grid>
       </div>
     </mat-tab>
   </mat-tab-group>

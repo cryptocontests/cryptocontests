@@ -16,6 +16,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { Web3TransactionLauncherDirective } from './components/web3-transaction-launcher.directive';
 import { Web3TransactionButtonComponent } from './components/web3-transaction-button/web3-transaction-button.component';
 import { TransactionStateService } from './services/transaction-state.service';
+import { CurrencyService } from './services/currency.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   imports: [
@@ -27,7 +29,8 @@ import { TransactionStateService } from './services/transaction-state.service';
     MatBadgeModule,
     MatButtonModule,
     MatIconModule,
-    MatListModule
+    MatListModule,
+    HttpClientModule
   ],
   declarations: [
     CryptoConverterPipe,
@@ -36,7 +39,7 @@ import { TransactionStateService } from './services/transaction-state.service';
     Web3TransactionButtonComponent
   ],
   entryComponents: [TransactionListComponent],
-  providers: [Web3Service, TransactionStateService],
+  providers: [Web3Service, TransactionStateService, CurrencyService],
   exports: [
     TransactionListComponent,
     CryptoConverterPipe,

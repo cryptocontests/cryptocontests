@@ -1,12 +1,12 @@
-<mat-grid-list cols="3" *ngLoading="contests;error:errorRef;empty:emptyRef">
+<mat-grid-list cols="3" *ngLoading="contests;empty:'The search returned no contests';error:errorRef">
   <mat-grid-tile *ngFor="let contest of contests | async" fxLayout="column" fxLayoutAlign="start center">
-    <mat-card mat-ripple fxFlex class="mat-elevation-z6 contest-tile" fxLayout="column" (click)="selectContest(contest)">
+    <mat-card mat-ripple fxFlex class="mat-elevation-z2 contest-tile" fxLayout="column" (click)="selectContest(contest)">
       <img mat-card-image class="crop-image" fxFlex src="https://material.angular.io/assets/img/examples/shiba1.jpg" />
       <mat-card-content class="no-margin">
         <div fxLayout="column" fxLayoutAlign="center stretch" fxLayoutGap="6%">
           <div fxLayout="row">
             <span class="title" fxFlex>{{contest.title}}</span>
-            <span class="subtitle">{{contest.prize}} ETH</span>
+            <span class="subtitle">{{contest.prize | cryptoConvert: 'ETH'}} ETH</span>
           </div>
           <div fxLayout="row" fxLayoutAlign="center center">
             <mat-chip-list fxFlex>
@@ -21,4 +21,3 @@
 </mat-grid-list>
 
 <ng-template #errorRef>There was an error getting the contests</ng-template>
-<ng-template #emptyRef>There are no contest for this search</ng-template>

@@ -1,0 +1,13 @@
+mat-icon {
+  height: 120px;
+  width: 120px;
+  font-size: 120px;
+}
+
+.dull {
+  opacity: 0.8;
+}
+
+span {
+  margin-bottom: 32px;
+}

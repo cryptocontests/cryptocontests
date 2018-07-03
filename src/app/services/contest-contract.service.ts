@@ -16,6 +16,8 @@ import { Contest } from '../state/contest.model';
 import * as _ from 'lodash';
 import { Web3Service } from '../web3/services/web3.service';
 import { TransactionStateService } from '../web3/services/transaction-state.service';
+import { CryptoCurrency } from '../web3/transaction.model';
+import { CurrencyService } from '../web3/services/currency.service';
 declare function require(url: string);
 
 const ContestController = require('./../../../build/contracts/ContestController.json');
@@ -26,7 +28,8 @@ const ContestController = require('./../../../build/contracts/ContestController.
 export class ContestContractService extends SmartContractService {
   constructor(
     private web3Service: Web3Service,
-    private transactionStates: TransactionStateService
+    private transactionStates: TransactionStateService,
+    private currencyService: CurrencyService
   ) {
     super(web3Service, ContestController.abi, environment.contractAddress);
   }
@@ -63,7 +66,10 @@ export class ContestContractService extends SmartContractService {
                 initialDate: response.startDate,
                 participationLimitDate: response.timeToCandidatures,
                 endDate: response.endDate,
-                prize: response.award
+                prize: {
+                  value: response.award,
+                  currency: CryptoCurrency.WEIS
+                }
               }
           )
         )
@@ -86,7 +92,7 @@ export class ContestContractService extends SmartContractService {
           )
           .send({
             from: address,
-            value: contest.prize * 1000000000000000000,
+            value: this.currencyService.ethToWeis(contest.prize.value),
             gas: 4712388,
             gasPrice: 20
           })

@@ -4,7 +4,7 @@
       <mat-icon>arrow_back</mat-icon>
     </button>
     <span fxFlex>{{contest?.title}}</span>
-    <span>{{contest?.prize}} ETH</span>
+    <span>{{contest?.prize | cryptoConvert: 'ETH'}} ETH</span>
     <mat-chip>{{contest ? getContestPhase(contest) : ''}}</mat-chip>
     <button mat-raised-button color="accent" routerLink="/contest/create">
       PARTICIPATE

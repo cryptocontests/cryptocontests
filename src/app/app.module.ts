@@ -23,13 +23,13 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CreateContestComponent } from './components/create-contest/create-contest.component';
 import { ContestGridComponent } from './components/contest-grid/contest-grid.component';
 import { Web3Module } from './web3/web3.module';
+import { LoadingUtilsModule } from './loading/loading-utils.module';
+
 import { ContestContractService } from './services/contest-contract.service';
 import { ContestDetailComponent } from './components/contest-detail/contest-detail.component';
 import { TagsComponent } from './components/tags/tags.component';
 import { ParticipationsGridComponent } from './components/participations-grid/participations-grid.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-import { LoadingComponent } from './components/loading/loading.component';
-import { LoadingDirective } from './loading.directive';
 import { FilePickerComponent } from './components/file-picker/file-picker.component';
 
 @NgModule({
@@ -42,13 +42,10 @@ import { FilePickerComponent } from './components/file-picker/file-picker.compon
     TagsComponent,
     ParticipationsGridComponent,
     ConfirmDialogComponent,
-    LoadingComponent,
-    LoadingDirective,
     FilePickerComponent
   ],
   entryComponents: [
-    ConfirmDialogComponent,
-    LoadingComponent
+    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -68,7 +65,8 @@ import { FilePickerComponent } from './components/file-picker/file-picker.compon
     !environment.production
       ? StoreDevtoolsModule.instrument()
       : [],
-    Web3Module
+    Web3Module,
+    LoadingUtilsModule
   ],
   providers: [ContestContractService],
   bootstrap: [AppComponent]
