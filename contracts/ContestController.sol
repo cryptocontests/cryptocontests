@@ -14,6 +14,7 @@ contract ContestController {
         bytes32[] participactionsAccounts;
         
         string title;
+        string tags;
         bytes32 ipfsHash; 
         uint256 startContest; // date
         uint256 endContest;  // date
@@ -32,6 +33,7 @@ contract ContestController {
     // set new contest with owner address as key index
     function setNewContest(
         string _title, 
+        string _tags,
         uint256 _startContest, 
         uint256 _endContest, 
         uint256 _timetoCandidature, 
@@ -48,6 +50,7 @@ contract ContestController {
         Contest memory contest = contests[contestHash];
         
         contest.title = _title;
+        contest.tags = _tags;
         contest.ipfsHash = _ipfsHash;
         contest.startContest = _startContest;
         contest.endContest = _endContest;
@@ -62,6 +65,7 @@ contract ContestController {
     function getContest(bytes32 _contestHash) public view 
         returns (
             string title,
+            string tags,
             bytes32 ipfsHash,
             uint256 startContest, 
             uint256 endContest, 
@@ -71,6 +75,7 @@ contract ContestController {
             uint256 participationCount) {
         
         title = contests[_contestHash].title;
+        tags = contests[_contestHash].tags;
         ipfsHash = contests[_contestHash].ipfsHash;
         startContest = contests[_contestHash].startContest; 
         endContest = contests[_contestHash].endContest; 
