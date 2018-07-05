@@ -14,14 +14,16 @@ export interface Hashable<T> {
 export interface Contest {
   id: string;
   title: string;
-  description: string;
-  imageHash: Hashable<Buffer>;
+  additionalContent: Hashable<{ description: string; image: Buffer }>;
   prize: CryptoValue;
   createdDate: number;
   initialDate: number;
   participationLimitDate: number;
   endDate: number;
   tags: string[];
+  options: {
+    limitParticipations: number; // 0 means no limit
+  };
 }
 
 export interface Participation {

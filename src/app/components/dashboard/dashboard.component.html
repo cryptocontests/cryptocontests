@@ -17,17 +17,13 @@
     </mat-tab>
 
     <mat-tab label="Ongoing Contests">
-      <div fxFlex fxLayoutAlign="center center">
-        <cc-contest-grid fxFlex [contests]="ongoingContests$" (contestSelected)="selectContest($event)">
-        </cc-contest-grid>
-      </div>
+      <cc-contest-grid fxFlex [contests]="ongoingContests$" (contestSelected)="selectContest($event)">
+      </cc-contest-grid>
     </mat-tab>
 
     <mat-tab label="Ended Contests">
-      <div fxFlex fxLayoutAlign="center center">
-        <cc-contest-grid fxFlex [contests]="endedContests$" (contestSelected)="selectContest($event)">
-        </cc-contest-grid>
-      </div>
+      <cc-contest-grid fxFlex class="fill" [contests]="endedContests$" (contestSelected)="selectContest($event)">
+      </cc-contest-grid>
     </mat-tab>
   </mat-tab-group>
 </div>

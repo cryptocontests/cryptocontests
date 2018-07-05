@@ -111,10 +111,12 @@ export class CreateContestComponent {
     const contest: Contest = {
       id: null,
       title: this.contestForm.value.title,
-      description: this.contestForm.value.description,
-      imageHash: {
+      additionalContent: {
         hash: null,
-        content: new Buffer(this.filePicker.getFile().content)
+        content: {
+          description: this.contestForm.value.description,
+          image: new Buffer(this.filePicker.getFile().content)
+        }
       },
       prize: {
         value: this.contestForm.value.prize,
@@ -124,7 +126,10 @@ export class CreateContestComponent {
       initialDate: this.contestForm.value.initialDate.valueOf(),
       participationLimitDate: this.contestForm.value.participationLimitDate.valueOf(),
       endDate: this.contestForm.value.endDate.valueOf(),
-      tags: this.tags
+      tags: this.tags,
+      options: {
+        limitParticipations: 0
+      }
     };
     this.store.dispatch(new CreateContest(contest));
   }

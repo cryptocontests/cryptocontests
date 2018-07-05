@@ -43,13 +43,15 @@ export class ContestEffects {
     .ofType<CreateContest>(ContestActionTypes.CreateContest)
     .pipe(
       tap(() => this.globalLoading.show()),
-      tap(console.log),
       switchMap((createAction: CreateContest) =>
         this.contestContract.createContest(createAction.payload).pipe(
-          tap(console.log),
           map((receipt: TransactionReceipt) => new ContestPending(receipt)),
           tap(() => this.globalLoading.hide()),
-          catchError(err => observableOf(this.snackBar.open('There was an error creating the contest:' + err)))
+          catchError(err => {
+            this.globalLoading.hide();
+            this.snackBar.open(err);
+            return observableOf();
+          })
         )
       ),
       tap(() => this.snackBar.open('Contest creation requested: wait for the transaction to confirm', null, {

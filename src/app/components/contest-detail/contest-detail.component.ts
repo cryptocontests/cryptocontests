@@ -20,7 +20,8 @@ export class ContestDetailComponent implements OnInit {
   constructor(
     private store: Store<fromReducer.State>,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {}
 
   ngOnInit() {
@@ -36,6 +37,6 @@ export class ContestDetailComponent implements OnInit {
   }
 
   goBack($event) {
-    this.router.navigate(['/contests']);
+    this.location.back();
   }
 }

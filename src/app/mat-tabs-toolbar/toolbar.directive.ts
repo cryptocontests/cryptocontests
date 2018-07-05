@@ -16,7 +16,7 @@ export class ToolbarDirective implements OnInit {
   constructor(public viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {
-    this.header._tabListContainer.nativeElement.innerHTML += this.tabsToolbar.content.elementRef.nativeElement.innerHTML;
+    //this.header._tabListContainer.nativeElement.innerHTML += this.tabsToolbar.content.elementRef.nativeElement.innerHTML;
   }
 
 }

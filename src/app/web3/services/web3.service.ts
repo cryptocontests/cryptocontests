@@ -52,4 +52,15 @@ export class Web3Service {
   public newContract(contractAbi: any, contractAddress: string) {
     return new this.web3.eth.Contract(contractAbi, contractAddress);
   }
+
+  public bytesToString(content: any): string {
+    return this.web3.utils.toUtf8(content);
+  }
+
+  public stringToBytes(content: string): any {
+    console.log(content);
+    const c = this.web3.utils.asciiToHex(content);
+    console.log(c);
+    return c;
+  }
 }
