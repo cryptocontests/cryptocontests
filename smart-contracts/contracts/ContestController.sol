@@ -10,8 +10,8 @@ contract ContestController {
     }
     
     struct Contest {
-        mapping (address => Participation) participations;
-        address[] participactionsAccounts;
+        mapping (bytes32 => Participation) participations;
+        bytes32[] participactionsAccounts;
         
         string title;
         uint256 startContest; // date
@@ -22,11 +22,11 @@ contract ContestController {
 
         // Actual winner status after each vote
         uint256 actualWinnerVotes;
-        address actualWinnerAccount;
+        bytes32 actualWinnerAccount;
     }
     
-    mapping (address  => Contest) contests;
-    address[] public contestAccounts; // array with all contests owner accounts
+    mapping (bytes32  => Contest) contests;
+    bytes32[] public contestAccounts; // array with all contests owner accounts
     
     // set new contest with owner address as key index
     function setNewContest(
@@ -37,12 +37,13 @@ contract ContestController {
         uint256 _limitCandidatures) public payable {
         
         require(msg.value > 0);
-        require(contests[msg.sender].award == 0);
+        bytes32 contestHash = keccak256(abi.encodePacked(msg.sender,_title,_startContest));
+        require(contests[contestHash].award == 0);
         assert(_endContest>_startContest);
-        assert(_timetoCandidature >_startContest);
+        assert(_timetoCandidature > _startContest);
         assert(_timetoCandidature < _endContest);
         
-        Contest memory contest = contests[msg.sender];
+        Contest memory contest = contests[contestHash];
         
         contest.title = _title;
         contest.startContest = _startContest;
@@ -52,10 +53,10 @@ contract ContestController {
         contest.limitCandidatures = _limitCandidatures;
         contest.actualWinnerVotes = 0;
 
-        contestAccounts.push(msg.sender) - 1;                        
+        contestAccounts.push(contestHash) - 1;                        
     }
     
-    function getContest(address _contestAcc) public view 
+    function getContest(bytes32 _contestHash) public view 
         returns (
             string _title, 
             uint256 _startContest, 
@@ -65,71 +66,80 @@ contract ContestController {
             uint256 _award, 
             uint256 participationCount) {
         return (
-            contests[_contestAcc].title, 
-            contests[_contestAcc].startContest, 
-            contests[_contestAcc].endContest, 
-            contests[_contestAcc].timeToCandidatures,
-            contests[_contestAcc].limitCandidatures, 
-            contests[_contestAcc].award, 
-            contests[_contestAcc].participactionsAccounts.length);
+            contests[_contestHash].title, 
+            contests[_contestHash].startContest, 
+            contests[_contestHash].endContest, 
+            contests[_contestHash].timeToCandidatures,
+            contests[_contestHash].limitCandidatures, 
+            contests[_contestHash].award, 
+            contests[_contestHash].participactionsAccounts.length);
     }
 
-    function setNewParticipation(address _address, string _title) public {
-        require((contests[_address].limitCandidatures == 0) || (contests[_address].participactionsAccounts.length < contests[_address].limitCandidatures - 1));
-        require(now > contests[_address].startContest); 
-        require(now < contests[_address].startContest + contests[_address].timeToCandidatures);
-        if (contests[_address].limitCandidatures != 0) {
-            require(contests[_address].participactionsAccounts.length < contests[_address].limitCandidatures);
+    function setNewParticipation(bytes32 _contestHash, string _title) public {
+        require((contests[_contestHash].limitCandidatures == 0) || (contests[_contestHash].participactionsAccounts.length < contests[_contestHash].limitCandidatures - 1));
+        require(now > contests[_contestHash].startContest); 
+        require(now < contests[_contestHash].startContest + contests[_contestHash].timeToCandidatures);
+        if (contests[_contestHash].limitCandidatures != 0) {
+            require(contests[_contestHash].participactionsAccounts.length < contests[_contestHash].limitCandidatures);
         }
-        contests[_address].participactionsAccounts.push(msg.sender);
-        contests[_address].participations[msg.sender].title = _title;
+
+        bytes32 participationHash = keccak256(abi.encodePacked(msg.sender,_title));
+        contests[_contestHash].participactionsAccounts.push(participationHash);
+        contests[_contestHash].participations[participationHash].owner = msg.sender;
+        contests[_contestHash].participations[participationHash].title = _title;
     }
     
-    function getParticipation(address _contestAcc, address _partAcc) public view returns(string _title, uint256 _votes){
+    function getParticipation(bytes32 _contestHash, bytes32 _participationHash) public view returns(string _title, uint256 _votes){
         return (
-            contests[_contestAcc].participations[_partAcc].title,
-            contests[_contestAcc].participations[_partAcc].votes);
+            contests[_contestHash].participations[_participationHash].title,
+            contests[_contestHash].participations[_participationHash].votes);
+    }
+
+    function getParticipationsByContest(bytes32 _contestHash) public view returns(bytes32[] _participationsAccounts){
+        return contests[_contestHash].participactionsAccounts;
     }
     
-    function getTotalParticipationsByContest(address _contestAcc) public view returns(uint256 participationsCount){
-        return contests[_contestAcc].participactionsAccounts.length;
+    function getTotalParticipationsByContest(bytes32 _contestHash) public view returns(uint256 participationsCount){
+        return contests[_contestHash].participactionsAccounts.length;
     }
     
-    function getContestsCount() public view returns (uint256 contestsCount) {
+    function getTotalContestsCount() public view returns (uint256 contestsCount) {
         return contestAccounts.length;
     }
 
-    function setVote(address _contestAcc,address _partiAcc) public {
-        require(now > contests[_contestAcc].timeToCandidatures); 
-        require(now < contests[_contestAcc].endContest);
+    function setNewVote(bytes32 _contestHash,bytes32 _participationHash) public {
+        require(now > contests[_contestHash].timeToCandidatures); 
+        require(now < contests[_contestHash].endContest);
         
-        contests[_contestAcc].participations[_partiAcc].votes += 1;
+        contests[_contestHash].participations[_participationHash].votes += 1;
         
         // refresh actual winner status
-        if (contests[_contestAcc].participations[_partiAcc].votes >= contests[_contestAcc].actualWinnerVotes){
-            contests[_contestAcc].actualWinnerVotes = contests[_contestAcc].participations[_partiAcc].votes;
-            contests[_contestAcc].actualWinnerAccount = _partiAcc;
+        if (contests[_contestHash].participations[_participationHash].votes >= contests[_contestHash].actualWinnerVotes){
+            contests[_contestHash].actualWinnerVotes = contests[_contestHash].participations[_participationHash].votes;
+            contests[_contestHash].actualWinnerAccount = _participationHash;
         }
     }
 
-    function resolveContest(address _contestAcc) public view returns (address _addressWinner, uint256 totalVotes) {
-        require(contests[_contestAcc].award > 0);
-        require(now > contests[_contestAcc].endContest);
+    function resolveContest(bytes32 _contestHash) public view returns (address _addressWinner, uint256 totalVotes) {
+        require(contests[_contestHash].award > 0);
+        require(now > contests[_contestHash].endContest);
         
-        return (contests[_contestAcc].actualWinnerAccount, contests[_contestAcc].actualWinnerVotes);
+        return (
+            contests[_contestHash].participations[contests[_contestHash].actualWinnerAccount].owner, 
+            contests[_contestHash].actualWinnerVotes);
     }
     
-    function payToWinner(address _contestAcc) public {
-        assert(now >= contests[_contestAcc].endContest);
-        assert(msg.sender == contests[_contestAcc].actualWinnerAccount);
-        assert(contests[_contestAcc].award > 0);
+    function payToWinner(bytes32 _contestHash) public {
+        assert(now >= contests[_contestHash].endContest);
+        assert(msg.sender == contests[_contestHash].participations[contests[_contestHash].actualWinnerAccount].owner);
+        assert(contests[_contestHash].award > 0);
         
-        uint256 amount = contests[_contestAcc].award;
-        contests[_contestAcc].award = 0;
+        uint256 amount = contests[_contestHash].award;
+        contests[_contestHash].award = 0;
         msg.sender.transfer(amount);
     }
     
-    function fetchContestsPage(uint256 cursor, uint256 howMany) public view returns (address[] values)
+    function fetchContestsPage(uint256 cursor, uint256 howMany) public view returns (bytes32[] values)
     {
         require(contestAccounts.length > 0);
         require(cursor < contestAccounts.length - 1);
@@ -137,14 +147,14 @@ contract ContestController {
         uint256 i;
         
         if (cursor + howMany < contestAccounts.length){
-            values = new address[](howMany);
+            values = new bytes32[](howMany);
             for (i = 0; i < howMany; i++) {
                 values[i] = contestAccounts[i + cursor];
             }
             
         } else {
             uint256 lastPageLength = contestAccounts.length - cursor;
-            values = new address[](lastPageLength);
+            values = new bytes32[](lastPageLength);
             for (i = 0; i < lastPageLength; i++) {
                 values[i] = contestAccounts[cursor + i];
             }
@@ -153,25 +163,25 @@ contract ContestController {
         return (values);
     }
     
-    function fetchParticipationsPage(address _contestAcc, uint256 cursor, uint256 howMany) public view returns (address[] values)
+    function fetchParticipationsPage(bytes32 _contestHash, uint256 cursor, uint256 howMany) public view returns (bytes32[] values)
     {
-        require(contests[_contestAcc].award > 0);
-        require(contests[_contestAcc].participactionsAccounts.length > 0);
-        require(cursor < contests[_contestAcc].participactionsAccounts.length - 1);
+        require(contests[_contestHash].award > 0);
+        require(contests[_contestHash].participactionsAccounts.length > 0);
+        require(cursor < contests[_contestHash].participactionsAccounts.length - 1);
         
         uint256 i;
         
-        if (cursor + howMany < contests[_contestAcc].participactionsAccounts.length){
-            values = new address[](howMany);
+        if (cursor + howMany < contests[_contestHash].participactionsAccounts.length){
+            values = new bytes32[](howMany);
             for (i = 0; i < howMany; i++) {
-                values[i] = contests[_contestAcc].participactionsAccounts[i + cursor];
+                values[i] = contests[_contestHash].participactionsAccounts[i + cursor];
             }
             
         } else {
             uint256 lastPageLength = contestAccounts.length - cursor;
-            values = new address[](lastPageLength);
+            values = new bytes32[](lastPageLength);
             for (i = 0; i < lastPageLength; i++) {
-                values[i] = contests[_contestAcc].participactionsAccounts[cursor + i];
+                values[i] = contests[_contestHash].participactionsAccounts[cursor + i];
             }
         }
         
