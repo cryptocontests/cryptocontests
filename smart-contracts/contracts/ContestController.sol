@@ -14,6 +14,7 @@ contract ContestController {
         bytes32[] participactionsAccounts;
         
         string title;
+        bytes32 ipfsHash; 
         uint256 startContest; // date
         uint256 endContest;  // date
         uint256 timeToCandidatures; // date
@@ -25,8 +26,8 @@ contract ContestController {
         bytes32 actualWinnerAccount;
     }
     
-    mapping (bytes32  => Contest) contests;
-    bytes32[] public contestAccounts; // array with all contests owner accounts
+    mapping (bytes32  => Contest) private contests;
+    bytes32[] private contestAccounts; // array with all contests owner accounts
     
     // set new contest with owner address as key index
     function setNewContest(
@@ -34,7 +35,8 @@ contract ContestController {
         uint256 _startContest, 
         uint256 _endContest, 
         uint256 _timetoCandidature, 
-        uint256 _limitCandidatures) public payable {
+        uint256 _limitCandidatures,
+        bytes32 _ipfsHash) public payable {
         
         require(msg.value > 0);
         bytes32 contestHash = keccak256(abi.encodePacked(msg.sender,_title,_startContest));
@@ -46,6 +48,7 @@ contract ContestController {
         Contest memory contest = contests[contestHash];
         
         contest.title = _title;
+        contest.ipfsHash = _ipfsHash;
         contest.startContest = _startContest;
         contest.endContest = _endContest;
         contest.timeToCandidatures = _timetoCandidature;
@@ -58,21 +61,23 @@ contract ContestController {
     
     function getContest(bytes32 _contestHash) public view 
         returns (
-            string _title, 
-            uint256 _startContest, 
-            uint256 _endContest, 
-            uint256 _timeToCandidatures,
-            uint256 _limitCandidatures, 
-            uint256 _award, 
+            string title,
+            bytes32 ipfsHash,
+            uint256 startContest, 
+            uint256 endContest, 
+            uint256 timeToCandidatures,
+            uint256 limitCandidatures, 
+            uint256 award, 
             uint256 participationCount) {
-        return (
-            contests[_contestHash].title, 
-            contests[_contestHash].startContest, 
-            contests[_contestHash].endContest, 
-            contests[_contestHash].timeToCandidatures,
-            contests[_contestHash].limitCandidatures, 
-            contests[_contestHash].award, 
-            contests[_contestHash].participactionsAccounts.length);
+        
+        title = contests[_contestHash].title;
+        ipfsHash = contests[_contestHash].ipfsHash;
+        startContest = contests[_contestHash].startContest; 
+        endContest = contests[_contestHash].endContest; 
+        timeToCandidatures = contests[_contestHash].timeToCandidatures;
+        limitCandidatures = contests[_contestHash].limitCandidatures; 
+        award = contests[_contestHash].award; 
+        participationCount = contests[_contestHash].participactionsAccounts.length;
     }
 
     function setNewParticipation(bytes32 _contestHash, string _title) public {
@@ -89,10 +94,9 @@ contract ContestController {
         contests[_contestHash].participations[participationHash].title = _title;
     }
     
-    function getParticipation(bytes32 _contestHash, bytes32 _participationHash) public view returns(string _title, uint256 _votes){
-        return (
-            contests[_contestHash].participations[_participationHash].title,
-            contests[_contestHash].participations[_participationHash].votes);
+    function getParticipation(bytes32 _contestHash, bytes32 _participationHash) public view returns(string title, uint256 votes){
+        title = contests[_contestHash].participations[_participationHash].title;
+        votes = contests[_contestHash].participations[_participationHash].votes;
     }
 
     function getParticipationsByContest(bytes32 _contestHash) public view returns(bytes32[] _participationsAccounts){
