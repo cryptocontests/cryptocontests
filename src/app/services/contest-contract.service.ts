@@ -10,7 +10,8 @@ import {
   concatMap,
   flatMap,
   tap,
-  mergeMap
+  mergeMap,
+  withLatestFrom
 } from 'rxjs/operators';
 import { Contest } from '../state/contest.model';
 import * as _ from 'lodash';
@@ -18,6 +19,7 @@ import { Web3Service } from '../web3/services/web3.service';
 import { TransactionStateService } from '../web3/services/transaction-state.service';
 import { CryptoCurrency } from '../web3/transaction.model';
 import { CurrencyService } from '../web3/services/currency.service';
+import { IpfsService, FileReceipt } from '../web3/services/ipfs.service';
 declare function require(url: string);
 
 const ContestController = require('./../../../build/contracts/ContestController.json');
@@ -29,7 +31,8 @@ export class ContestContractService extends SmartContractService {
   constructor(
     private web3Service: Web3Service,
     private transactionStates: TransactionStateService,
-    private currencyService: CurrencyService
+    private currencyService: CurrencyService,
+    private ipfs: IpfsService
   ) {
     super(web3Service, ContestController.abi, environment.contractAddress);
   }
@@ -81,6 +84,9 @@ export class ContestContractService extends SmartContractService {
    * Creates a contest
    */
   public createContest(contest: Contest): Observable<TransactionReceipt> {
+    // TODO: uncomment when the contest includes an image
+    // const pinFile: Observable<FileReceipt> = from(this.ipfs.addFile(<Buffer>contest.imageHash));
+
     return from(this.web3Service.getDefaultAccount()).pipe(
       switchMap(address =>
         this.contract.methods

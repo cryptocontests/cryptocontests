@@ -21,6 +21,7 @@ import {
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { Router } from '@angular/router';
 import { CryptoCurrency } from '../../web3/transaction.model';
+import { FilePickerComponent } from '../file-picker/file-picker.component';
 
 const moment = _rollupMoment || _moment;
 
@@ -36,6 +37,7 @@ export class CreateContestComponent {
   separatorKeysCodes = [ENTER, COMMA];
 
   @ViewChild('tagInput') tagInput: ElementRef;
+  @ViewChild('filePicker') filePicker: FilePickerComponent;
 
   constructor(
     private store: Store<State>,
@@ -110,6 +112,10 @@ export class CreateContestComponent {
       id: null,
       title: this.contestForm.value.title,
       description: this.contestForm.value.description,
+      imageHash: {
+        hash: null,
+        content: new Buffer(this.filePicker.getFile().content)
+      },
       prize: {
         value: this.contestForm.value.prize,
         currency: CryptoCurrency.ETH

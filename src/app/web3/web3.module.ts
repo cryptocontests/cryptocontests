@@ -13,11 +13,12 @@ import {
   MatCardModule
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { HttpClientModule } from '@angular/common/http';
 import { Web3TransactionLauncherDirective } from './components/web3-transaction-launcher.directive';
 import { Web3TransactionButtonComponent } from './components/web3-transaction-button/web3-transaction-button.component';
 import { TransactionStateService } from './services/transaction-state.service';
 import { CurrencyService } from './services/currency.service';
-import { HttpClientModule } from '@angular/common/http';
+import { IpfsService } from './services/ipfs.service';
 
 @NgModule({
   imports: [
@@ -39,7 +40,7 @@ import { HttpClientModule } from '@angular/common/http';
     Web3TransactionButtonComponent
   ],
   entryComponents: [TransactionListComponent],
-  providers: [Web3Service, TransactionStateService, CurrencyService],
+  providers: [Web3Service, TransactionStateService, CurrencyService, IpfsService],
   exports: [
     TransactionListComponent,
     CryptoConverterPipe,

@@ -6,10 +6,16 @@ export enum ContestPhase {
   ENDED = 'ENDED'
 }
 
+export interface Hashable<T> {
+  hash: string;
+  content?: T;
+}
+
 export interface Contest {
   id: string;
   title: string;
   description: string;
+  imageHash: Hashable<Buffer>;
   prize: CryptoValue;
   createdDate: number;
   initialDate: number;
@@ -21,8 +27,7 @@ export interface Contest {
 export interface Participation {
   creator: string;
   date: number;
-  contentHash: string;
-  content?: any;
+  content: Hashable<any>;
   votes: number;
 }
 

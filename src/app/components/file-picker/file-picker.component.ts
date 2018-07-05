@@ -2,7 +2,8 @@ import {
   Component,
   OnInit,
   Input,
-  ViewChild
+  ViewChild,
+  Output
 } from '@angular/core';
 import {
   ReadMode,
@@ -18,31 +19,29 @@ import {
 export class FilePickerComponent implements OnInit {
   public readMode = ReadMode.dataURL;
 
-  @Input('multiple') multiple = false;
+  @Input() multiple = false;
 
   file: ReadFile;
-
   dragging = false;
+
   @ViewChild(FilePickerDirective) private filePicker;
 
   constructor() {}
 
   ngOnInit() {}
 
+  public getFile() {
+    return this.file;
+  }
+
   fileRead(file: ReadFile) {
     // if (!this.multiple && this.files.length > 0) this.files.splice(0, 1);
-
     this.file = file;
   }
 
   removeFile() {
     this.file = undefined;
     this.filePicker.reset();
-  }
-
-  drag(dragging: boolean) {
-    console.log(dragging);
-    this.dragging = dragging;
   }
 
   onReadEnd(fileCount: number) {}
