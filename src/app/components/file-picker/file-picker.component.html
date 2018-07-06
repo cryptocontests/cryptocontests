@@ -1,0 +1,18 @@
+<div fxLayout="column" fxLayoutAlign="start stretch" fxFill style="position:relative">
+  <div fxLayoutAlign="center center" (dragenter)="dragging=true" (dragleave)="dragging=false" (drop)="dragging=false" class="dropzone"
+    [ngxFileDropzone]="readMode" (fileDrop)="fileRead($event)" [class.dragging]="dragging" [ngClass]="file ? 'small-dropzone' : 'fill'">
+    <ng-container *ngIf="!file" [ngTemplateOutlet]="controls"></ng-container>
+  </div>
+  <div *ngIf="file" fxFlex fxLayout="column" class="drop-image fill">
+    <img [src]="file.content" fxFlex mat-card-image class="crop-image fill">
+    <ng-container [ngTemplateOutlet]="controls"></ng-container>
+  </div>
+</div>
+
+<ng-template #controls>
+  <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
+    <span *ngIf="!file">DROP A FILE OR</span>
+    <button mat-raised-button *ngIf="file" (click)="removeFile()">REMOVE FILE</button>
+    <button mat-raised-button color="accent" ngxFilePicker (filePick)="fileRead($event)">PICK FILE</button>
+  </div>
+</ng-template>
