@@ -28,7 +28,7 @@ contract ContestController {
     }
     
     mapping (bytes32  => Contest) private contests;
-    bytes32[] private contestAccounts; // array with all contests owner accounts
+    bytes32[] contestAccounts; // array with all contests owner accounts
     
     // set new contest with owner address as key index
     function setNewContest(
