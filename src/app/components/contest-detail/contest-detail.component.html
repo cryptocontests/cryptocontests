@@ -3,34 +3,34 @@
     <button mat-icon-button (click)="goBack($event)">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <span fxFlex>{{contest?.title}}</span>
-    <span>{{contest?.prize | cryptoConvert: 'ETH'}} ETH</span>
-    <mat-chip>{{contest ? getContestPhase(contest) : ''}}</mat-chip>
-    <button mat-raised-button color="accent" routerLink="/contest/create">
+    <span fxFlex>{{(contest$ | async)?.title}}</span>
+    <span>{{(contest$ | async) ? ((contest$ | async).prize | cryptoConvert: 'ETH') : ''}} ETH</span>
+    <mat-chip>{{(contest$ | async) ? getContestPhase(contest$ | async) : ''}}</mat-chip>
+    <button mat-raised-button color="accent" (click)="openCreateParticipationDialog()">
       PARTICIPATE
     </button>
   </mat-toolbar>
 
-  <div fxLayout="row" fxFlex fxLayoutAlign="center stretch">
+  <div fxLayout="row" fxFlex fxLayoutAlign="center stretch" *ngLoading="contest$">
     <div fxLayout="column" fxFlex="90%" fxLayoutAlign="start stretch">
       <mat-card fxFlex="60%" class="mat-elevation-z2" fxLayout="column">
         <img mat-card-image class="crop-image" fxFlex src="https://material.angular.io/assets/img/examples/shiba1.jpg" />
         <mat-card-header>
           <mat-card-title>
-            {{contest?.title}}
+            {{(contest$ | async)?.title}}
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div fxLayout="row" fxLayoutGap="8px">
             <div fxFlex fxLayout="column" fxLayoutGap="8px">
-              <span fxFlex>{{contest?.description}}</span>
-              <cc-tags [tags]="contest?.tags" [clickable]="false"></cc-tags>
+              <span fxFlex>{{(contest$ | async)?.additionalContent?.content.description}}</span>
+              <cc-tags [tags]="(contest$ | async)?.tags" [clickable]="false"></cc-tags>
             </div>
             <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="center stretch">
-              <span fxFlex>Created date: {{contest?.createdDate | date}}</span>
-              <span fxFlex>Participation limit date: {{contest?.participationLimitDate | date}}</span>
-              <span fxFlex>Initial date: {{contest?.initialDate | date}}</span>
-              <span fxFlex>End date: {{contest?.endDate | date}}</span>
+              <span fxFlex>Created date: {{(contest$ | async)?.createdDate | date}}</span>
+              <span fxFlex>Participation limit date: {{(contest$ | async)?.participationLimitDate | date}}</span>
+              <span fxFlex>Initial date: {{(contest$ | async)?.initialDate | date}}</span>
+              <span fxFlex>End date: {{(contest$ | async)?.endDate | date}}</span>
             </div>
           </div>
         </mat-card-content>

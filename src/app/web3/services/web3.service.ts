@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import Web3 from 'web3';
+import bs58 from 'bs58';
 
 declare let window: any;
 
@@ -58,9 +59,22 @@ export class Web3Service {
   }
 
   public stringToBytes(content: string): any {
-    console.log(content);
-    const c = this.web3.utils.asciiToHex(content);
-    console.log(c);
-    return c;
+    return this.web3.utils.asciiToHex(content);
   }
+
+  // Return bytes32 hex string from base58 encoded ipfs hash,
+  // stripping leading 2 bytes from 34 byte IPFS hash
+  // Assume IPFS defaults: function:0x12=sha2, size:0x20=256 bits
+  getBytes32FromIpfsHash(ipfsListing) {
+    return '0x' + bs58.decode(ipfsListing).slice(2).toString('hex');
+  }
+
+  // Return base58 encoded ipfs hash from bytes32 hex string,
+  getIpfsHashFromBytes32(bytes32Hex) {
+    const hashHex = '1220' + bytes32Hex.slice(2);
+    const hashBytes = Buffer.from(hashHex, 'hex');
+    const hashStr = bs58.encode(hashBytes);
+    return hashStr;
+  }
+
 }

@@ -1,0 +1,22 @@
+<div fxLayout="column" fxLayoutAlign="center stretch">
+
+  <mat-toolbar color="primary" class="mat-elevation-z4" fxLayoutGap="16px">
+    <button mat-icon-button (click)="cancel($event)">
+      <mat-icon>close</mat-icon>
+    </button>
+    <span fxFlex>New participation</span>
+
+    <button mat-raised-button color="accent" (click)="createParticipation()">
+      SUBMIT PARTICIPATION
+    </button>
+  </mat-toolbar>
+
+  <div fxLayout="column" fxLayoutAlign="center stretch" class="form-padding" class="form-padding">
+    <cc-file-picker class="participation-picker" #filePicker></cc-file-picker>
+    <form fxFlex [formGroup]="participationForm">
+      <mat-form-field>
+        <input matInput formControlName="title" placeholder="Title" required>
+      </mat-form-field>
+    </form>
+  </div>
+</div>

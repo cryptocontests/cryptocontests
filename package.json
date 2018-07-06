@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "dev": "ganache-cli -m 'student tent patch puzzle away swing cake toe surprise same purchase range' & npm run migrate",
+    "ganache": "ganache-cli -m 'student tent patch puzzle away swing cake toe surprise same purchase range'",
+    "dev": "npm run ganache & npm run migrate",
     "migrate": "truffle compile && wait-on tcp:8545 && truffle migrate --reset --network ganache",
     "start": "ng serve --watch",
     "build": "ng build && truffle compile",
@@ -33,6 +34,7 @@
     "@ngrx/schematics": "6.0.1",
     "@ngrx/store": "^6.0.1",
     "@ngrx/store-devtools": "^6.0.1",
+    "bs58": "^4.0.1",
     "concurrently": "3.6.0",
     "core-js": "^2.5.4",
     "hammerjs": "^2.0.8",

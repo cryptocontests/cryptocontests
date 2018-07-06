@@ -32,6 +32,7 @@ import { ParticipationsGridComponent } from './components/participations-grid/pa
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { FilePickerComponent } from './components/file-picker/file-picker.component';
 import { MatTabsToolbarModule } from './mat-tabs-toolbar/mat-tabs-toolbar.module';
+import { CreateParticipationComponent } from './components/create-participation/create-participation.component';
 
 @NgModule({
   declarations: [
@@ -43,10 +44,12 @@ import { MatTabsToolbarModule } from './mat-tabs-toolbar/mat-tabs-toolbar.module
     TagsComponent,
     ParticipationsGridComponent,
     ConfirmDialogComponent,
-    FilePickerComponent
+    FilePickerComponent,
+    CreateParticipationComponent
   ],
   entryComponents: [
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    CreateParticipationComponent
   ],
   imports: [
     BrowserModule,

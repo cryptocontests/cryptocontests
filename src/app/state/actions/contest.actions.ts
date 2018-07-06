@@ -9,7 +9,9 @@ export enum ContestActionTypes {
   CreateContest = '[CreateContest] CreateContest',
   ContestPending = '[ContestPending] ContestPending',
   LoadParticipations = '[LoadParticipations] LoadParticipations',
-  LoadedParticipation = '[LoadedParticipation] LoadedParticipation'
+  LoadedParticipation = '[LoadedParticipation] LoadedParticipation',
+  CreateParticipation = '[CreateParticipation] CreateParticipation',
+  ParticipationPending = '[ParticipationPending] ParticipationPending'
 }
 
 export class LoadContests implements Action {
@@ -47,10 +49,25 @@ export class LoadedParticipation implements Action {
   constructor(public payload: Participation) {}
 }
 
+export class CreateParticipation implements Action {
+  readonly type = ContestActionTypes.CreateParticipation;
+
+  constructor(public payload: { contestHash: string, participation: Participation }) {}
+}
+
+export class ParticipationPending implements Action {
+  readonly type = ContestActionTypes.ParticipationPending;
+
+  constructor(public transactionReceipt: TransactionReceipt) {}
+}
+
 export type ContestActions =
   | LoadContests
   | LoadedContest
   | CreateContest
   | ContestPending
   | LoadParticipations
-  | LoadedParticipation;
+  | LoadedParticipation
+  | CreateParticipation
+  | ParticipationPending
+;

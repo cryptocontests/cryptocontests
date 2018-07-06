@@ -42,3 +42,12 @@ body {
 .mat-tab-body-wrapper {
   height: 100%;
 }
+
+mat-dialog-container {
+  padding: 0 !important;
+  font: 500 14px/18px Roboto, 'Helvetica Neue', sans-serif;
+}
+
+.dialog-padding {
+  padding: 24px;
+}

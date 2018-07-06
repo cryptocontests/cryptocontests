@@ -2,7 +2,7 @@ import { environment } from './../../environments/environment';
 import { TransactionReceipt, PromiEvent } from 'web3/types';
 import { SmartContractService } from './../web3/services/smart-contract.service';
 import { Injectable } from '@angular/core';
-import { Observable, range, from, of as observableOf, forkJoin } from 'rxjs';
+import { Observable, range, from, of as observableOf, forkJoin, combineLatest } from 'rxjs';
 import {
   switchMap,
   mergeAll,
@@ -10,18 +10,17 @@ import {
   concatMap,
   flatMap,
   tap,
-  mergeMap,
-  withLatestFrom
+  mergeMap
 } from 'rxjs/operators';
-import { Contest, splitTags, mergeTags } from '../state/contest.model';
+import { Contest, splitTags, mergeTags, Participation } from '../state/contest.model';
 import * as _ from 'lodash';
 import { Web3Service } from '../web3/services/web3.service';
 import { TransactionStateService } from '../web3/services/transaction-state.service';
 import { CryptoCurrency } from '../web3/transaction.model';
 import { CurrencyService } from '../web3/services/currency.service';
 import { IpfsService, FileReceipt, IpfsFile } from '../web3/services/ipfs.service';
-declare function require(url: string);
 
+declare function require(url: string);
 const ContestController = require('./../../../build/contracts/ContestController.json');
 
 @Injectable({
@@ -42,35 +41,31 @@ export class ContestContractService extends SmartContractService {
    */
 
   getDefaultAccount = from(this.web3Service.getDefaultAccount());
-  getTotalContestCount = (address: string) => switchMap(() =>
+  getTotalContestCount = (address: string) =>
     this.contract.methods.getTotalContestsCount().call({
       from: address
     })
-  )
   getContestHashByIndex = (address: string, index: number) =>
     this.contract.methods.contestHashes(index).call({
       from: address
     })
-  getContestByHash = (address: string) => switchMap((contestHash: string) =>
+  getContestByHash = (address: string, contestHash: string) =>
     this.contract.methods.getContest(contestHash).call({
       from: address
     })
-  )
-  // tslint:disable-next-line:member-ordering
-  responseToContest = map((response: any) =>
+  responseToContest = (response: any) =>
         <Contest>{
           id: response.contestHash,
           title: response.title,
-          initialDate: response.startContest,
-          participationLimitDate: response.timeToCandidatures,
-          endDate: response.endContest,
+          initialDate: response.startContest * 1000,
+          participationLimitDate: response.timeToCandidatures * 1000,
+          endDate: response.endContest * 1000,
           prize: {
             value: response.award,
             currency: CryptoCurrency.WEIS
           },
           tags: splitTags(response.tags) // response[1].tags
         }
-    );
 
   /**
    * Gets all the contests
@@ -79,14 +74,14 @@ export class ContestContractService extends SmartContractService {
     let address: string;
     return this.getDefaultAccount.pipe(
       tap(add => (address = add)),
-      this.getTotalContestCount(address),
+      switchMap(() => this.getTotalContestCount(address)),
       switchMap((contestCount: number) => range(0, contestCount)),
       mergeMap(index =>
         from(
           this.getContestHashByIndex(address, index),
         ).pipe(
-          this.getContestByHash(address),
-          this.responseToContest
+          switchMap((contestHash: string) => this.getContestByHash(address, contestHash)),
+          map((response: any) => this.responseToContest(response))
         )
       )
     );
@@ -115,9 +110,9 @@ export class ContestContractService extends SmartContractService {
           .setNewContest(
             contest.title,
             mergeTags(contest.tags),
-            contest.initialDate,
-            contest.endDate,
-            contest.participationLimitDate,
+            contest.initialDate / 1000,
+            contest.endDate / 1000,
+            contest.participationLimitDate / 1000,
             contest.options.limitParticipations,
             '0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf747ce'
           )
@@ -130,6 +125,34 @@ export class ContestContractService extends SmartContractService {
       ),
       tap(txPromise =>
         this.transactionStates.registerTransaction(txPromise, contest.title)
+      ),
+      switchMap(promise => promise)
+    );
+  }
+
+  /**
+   * Creates a participation
+   */
+  public createParticipation(contestHash: string, participation: Participation): Observable<TransactionReceipt> {
+    // Store participation content on ipfs and retrieve hash
+    const participationContent = from(this.ipfs.add(participation.content.content, {pin: false}));
+
+    return combineLatest(this.getDefaultAccount, participationContent).pipe(
+      map(([address, receipt]) =>
+        this.contract.methods
+          .setNewParticipation(
+            contestHash,
+            participation.title,
+            this.web3Service.getBytes32FromIpfsHash(receipt[0].hash)
+          )
+          .send({
+            from: address,
+            gas: 4712388,
+            gasPrice: 20
+          })
+      ),
+      tap(txPromise =>
+        this.transactionStates.registerTransaction(txPromise, participation.title)
       ),
       switchMap(promise => promise)
     );

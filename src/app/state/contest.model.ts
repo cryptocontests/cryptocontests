@@ -28,6 +28,7 @@ export interface Contest {
 }
 
 export interface Participation {
+  title: string;
   creator: string;
   date: number;
   content: Hashable<any>;

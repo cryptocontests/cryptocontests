@@ -5,7 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import * as fromReducer from '../../state/reducers/contest.reducer';
 import { Observable } from 'rxjs';
-import { LoadParticipations } from '../../state/actions/contest.actions';
+import { LoadParticipations, CreateParticipation } from '../../state/actions/contest.actions';
+import { MatDialog } from '@angular/material';
+import { CreateParticipationComponent } from '../create-participation/create-participation.component';
 
 @Component({
   selector: 'cc-contest-detail',
@@ -13,7 +15,9 @@ import { LoadParticipations } from '../../state/actions/contest.actions';
   styleUrls: ['./contest-detail.component.css']
 })
 export class ContestDetailComponent implements OnInit {
-  contest: Contest;
+  contest$: Observable<Contest>;
+  contestTitle: string;
+  contestId: string;
   getContestPhase = getContestPhase;
   participations$: Observable<Participation[]>;
 
@@ -21,17 +25,16 @@ export class ContestDetailComponent implements OnInit {
     private store: Store<fromReducer.State>,
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location
+    private location: Location,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit() {
-    const contestId = this.route.snapshot.paramMap.get('id');
+    this.contestId = this.route.snapshot.paramMap.get('id');
 
-    this.store
-      .select(fromReducer.selectContestById(contestId))
-      .subscribe((contest: Contest) => (this.contest = contest));
+    this.contest$ = this.store.select(fromReducer.selectContestById(this.contestId));
 
-    this.store.dispatch(new LoadParticipations(contestId));
+    this.store.dispatch(new LoadParticipations(this.contestId));
 
     //this.participations$ = this.store.select(fromReducer.)
   }
@@ -39,4 +42,17 @@ export class ContestDetailComponent implements OnInit {
   goBack($event) {
     this.location.back();
   }
+
+  openCreateParticipationDialog(): void {
+    const dialogRef = this.dialog.open(CreateParticipationComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.submitParticipation(result);
+    });
+  }
+
+  submitParticipation(participation: Participation) {
+    this.store.dispatch(new CreateParticipation({contestHash: this.contestId, participation}));
+  }
+
 }

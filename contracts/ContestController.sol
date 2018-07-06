@@ -6,6 +6,7 @@ contract ContestController {
         address owner;
         string title;
         uint256 votes;
+        uint256 creationDate;
         //....
     }
 
@@ -85,18 +86,18 @@ contract ContestController {
         participationCount = contests[_contestHash].participactionsAccounts.length;
     }
 
-    function setNewParticipation(bytes32 _contestHash, string _title) public {
+    function setNewParticipation(bytes32 _contestHash, string _title, bytes32 participationContent) public {
         require((contests[_contestHash].limitCandidatures == 0) || (contests[_contestHash].participactionsAccounts.length < contests[_contestHash].limitCandidatures - 1));
-        require(now > contests[_contestHash].startContest);
-        require(now < contests[_contestHash].startContest + contests[_contestHash].timeToCandidatures);
+        require(block.timestamp > contests[_contestHash].startContest);
+        require(block.timestamp < contests[_contestHash].timeToCandidatures);
         if (contests[_contestHash].limitCandidatures != 0) {
             require(contests[_contestHash].participactionsAccounts.length < contests[_contestHash].limitCandidatures);
         }
 
-        bytes32 participationHash = keccak256(abi.encodePacked(msg.sender,_title));
-        contests[_contestHash].participactionsAccounts.push(participationHash);
-        contests[_contestHash].participations[participationHash].owner = msg.sender;
-        contests[_contestHash].participations[participationHash].title = _title;
+        contests[_contestHash].participactionsAccounts.push(participationContent);
+        contests[_contestHash].participations[participationContent].owner = msg.sender;
+        contests[_contestHash].participations[participationContent].title = _title;
+        contests[_contestHash].participations[participationContent].creationDate = block.timestamp;
     }
 
     function getParticipation(bytes32 _contestHash, bytes32 _participationHash) public view returns(string title, uint256 votes){

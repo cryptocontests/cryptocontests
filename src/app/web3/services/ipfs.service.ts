@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import * as IPFS from 'ipfs-api';
+
+declare function require(url: string);
+const ipfsAPI = require('ipfs-api');
 
 export interface FileReceipt {
   path: string;
@@ -20,10 +22,10 @@ export interface IpfsFile {
 export class IpfsService {
 
   host = 'ipfs.infura.io';
-  ipfs: IPFS;
+  ipfs: any;
 
   constructor() {
-    this.ipfs = new IPFS({ host: this.host, port: 5001, protocol: 'https' });
+    this.ipfs = ipfsAPI({ host: this.host, port: 5001, protocol: 'https' });
   }
 
   public add(data: IpfsContent | IpfsFile[], options: any = {}): Promise<FileReceipt> {
