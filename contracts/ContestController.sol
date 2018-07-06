@@ -15,7 +15,7 @@ contract ContestController {
 
         string title;
         string tags;
-        bytes32 ipfsHash; 
+        bytes32 ipfsHash;
         uint256 startContest; // date
         uint256 endContest;  // date
         uint256 timeToCandidatures; // date
@@ -32,11 +32,11 @@ contract ContestController {
 
     // set new contest with owner address as key index
     function setNewContest(
-        string _title, 
+        string _title,
         string _tags,
-        uint256 _startContest, 
-        uint256 _endContest, 
-        uint256 _timetoCandidature, 
+        uint256 _startContest,
+        uint256 _endContest,
+        uint256 _timetoCandidature,
         uint256 _limitCandidatures,
         bytes32 _ipfsHash) public payable {
 
@@ -46,20 +46,9 @@ contract ContestController {
         assert(_endContest > _startContest);
         assert(_timetoCandidature > _startContest);
         assert(_timetoCandidature < _endContest);
-        
-        Contest memory contest = contests[contestHash];
-        
-        contest.title = _title;
-        contest.tags = _tags;
-        contest.ipfsHash = _ipfsHash;
-        contest.startContest = _startContest;
-        contest.endContest = _endContest;
-        contest.timeToCandidatures = _timetoCandidature;
-        contest.award = msg.value;
-        contest.limitCandidatures = _limitCandidatures;
-        contest.actualWinnerVotes = 0;
 
         contests[contestHash].title = _title;
+        contests[contestHash].tags = _tags;
         contests[contestHash].ipfsHash = _ipfsHash;
         contests[contestHash].startContest = _startContest;
         contests[contestHash].endContest = _endContest;

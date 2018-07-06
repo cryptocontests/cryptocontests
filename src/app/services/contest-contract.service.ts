@@ -13,7 +13,7 @@ import {
   mergeMap,
   withLatestFrom
 } from 'rxjs/operators';
-import { Contest } from '../state/contest.model';
+import { Contest, splitTags, mergeTags } from '../state/contest.model';
 import * as _ from 'lodash';
 import { Web3Service } from '../web3/services/web3.service';
 import { TransactionStateService } from '../web3/services/transaction-state.service';
@@ -36,6 +36,10 @@ export class ContestContractService extends SmartContractService {
   ) {
     super(web3Service, ContestController.abi, environment.contractAddress);
   }
+
+  /**
+   * All this methods composed help return a contest
+   */
 
   getDefaultAccount = from(this.web3Service.getDefaultAccount());
   getTotalContestCount = (address: string) => switchMap(() =>
@@ -64,7 +68,7 @@ export class ContestContractService extends SmartContractService {
             value: response.award,
             currency: CryptoCurrency.WEIS
           },
-          tags: null // response[1].tags
+          tags: splitTags(response.tags) // response[1].tags
         }
     );
 
@@ -110,6 +114,7 @@ export class ContestContractService extends SmartContractService {
         this.contract.methods
           .setNewContest(
             contest.title,
+            mergeTags(contest.tags),
             contest.initialDate,
             contest.endDate,
             contest.participationLimitDate,

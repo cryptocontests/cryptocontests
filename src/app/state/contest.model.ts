@@ -3,6 +3,7 @@ import { CryptoValue } from '../web3/transaction.model';
 export enum ContestPhase {
   UPCOMING = 'UPCOMING',
   ONGOING = 'ONGOING',
+  VOTING = 'VOTING',
   ENDED = 'ENDED'
 }
 
@@ -35,7 +36,24 @@ export interface Participation {
 
 export function getContestPhase(contest: Contest): ContestPhase {
   if (Date.now() < contest.initialDate) return ContestPhase.UPCOMING;
-  else if (Date.now() >= contest.initialDate && Date.now() < contest.endDate) {
+  else if (Date.now() >= contest.initialDate && Date.now() < contest.participationLimitDate) {
     return ContestPhase.ONGOING;
+  } else if (Date.now() >= contest.participationLimitDate && Date.now() < contest.endDate) {
+    return ContestPhase.VOTING;
   } else return ContestPhase.ENDED;
+}
+
+/**
+ * Tags strings merge and separator
+ * This is needed because the tags will be stored in the smart contract as a single string
+ */
+
+const TAG_SEPARATOR = '&';
+
+export function splitTags(tags: string): string[] {
+  return tags.split(TAG_SEPARATOR);
+}
+
+export function mergeTags(tags: string[]): string {
+  return tags.reduce((previous: string, current: string) => previous + TAG_SEPARATOR + current, '');
 }

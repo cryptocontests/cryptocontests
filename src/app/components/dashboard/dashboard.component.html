@@ -10,14 +10,17 @@
   <mat-tab-group fxFlex="grow" [selectedIndex]="1" backgroundColor="primary" toolbar>
     <mat-tabs-toolbar>holaaaaaaaaaaaaa</mat-tabs-toolbar>
     <mat-tab label="Upcoming Contests">
-      <div fxFlex fxLayoutAlign="center center">
-        <cc-contest-grid fxFlex [contests]="upcomingContests$" (contestSelected)="selectContest($event)">
-        </cc-contest-grid>
-      </div>
+      <cc-contest-grid fxFlex [contests]="upcomingContests$" (contestSelected)="selectContest($event)">
+      </cc-contest-grid>
     </mat-tab>
 
     <mat-tab label="Ongoing Contests">
       <cc-contest-grid fxFlex [contests]="ongoingContests$" (contestSelected)="selectContest($event)">
+      </cc-contest-grid>
+    </mat-tab>
+
+    <mat-tab label="On Voting Contests">
+      <cc-contest-grid fxFlex [contests]="votingContests$" (contestSelected)="selectContest($event)">
       </cc-contest-grid>
     </mat-tab>
 

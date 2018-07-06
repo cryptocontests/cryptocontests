@@ -18,6 +18,7 @@ import { Router } from '@angular/router';
 export class DashboardComponent implements OnInit {
   upcomingContests$: Observable<Contest[]>;
   ongoingContests$: Observable<Contest[]>;
+  votingContests$: Observable<Contest[]>;
   endedContests$: Observable<Contest[]>;
 
   constructor(private store: Store<State>, private router: Router) {}
@@ -28,6 +29,9 @@ export class DashboardComponent implements OnInit {
     );
     this.ongoingContests$ = this.store.select(
       selectContestsByPhase(ContestPhase.ONGOING)
+    );
+    this.votingContests$ = this.store.select(
+      selectContestsByPhase(ContestPhase.VOTING)
     );
     this.endedContests$ = this.store.select(
       selectContestsByPhase(ContestPhase.ENDED)
