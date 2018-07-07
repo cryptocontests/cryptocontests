@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Participation } from '../../state/contest.model';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'cc-participations-grid',
@@ -8,7 +9,7 @@ import { Participation } from '../../state/contest.model';
 })
 export class ParticipationsGridComponent implements OnInit {
 
-  @Input('participations') participations: Participation[];
+  @Input('participations') participations: Observable<Participation[]>;
 
   constructor() { }
 

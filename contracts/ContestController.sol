@@ -100,12 +100,19 @@ contract ContestController {
         contests[_contestHash].participations[participationContent].creationDate = block.timestamp;
     }
 
-    function getParticipation(bytes32 _contestHash, bytes32 _participationHash) public view returns(string title, uint256 votes){
+    function getParticipation(bytes32 _contestHash, bytes32 _participationHash) public view returns(bytes32 content, address owner, string title, uint256 creationDate, uint256 votes){
         title = contests[_contestHash].participations[_participationHash].title;
         votes = contests[_contestHash].participations[_participationHash].votes;
+        return (
+          _participationHash,
+          contests[_contestHash].participations[_participationHash].owner,
+          contests[_contestHash].participations[_participationHash].title,
+          contests[_contestHash].participations[_participationHash].creationDate,
+          contests[_contestHash].participations[_participationHash].votes
+        );
     }
 
-    function getParticipationsByContest(bytes32 _contestHash) public view returns(bytes32[] _participationsAccounts){
+    function getParticipationsByContest(bytes32 _contestHash) public view returns(bytes32[]){
         return contests[_contestHash].participactionsAccounts;
     }
 

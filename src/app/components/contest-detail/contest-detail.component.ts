@@ -36,7 +36,7 @@ export class ContestDetailComponent implements OnInit {
 
     this.store.dispatch(new LoadParticipations(this.contestId));
 
-    //this.participations$ = this.store.select(fromReducer.)
+    this.participations$ = this.store.select((state) => fromReducer.getContestState(state).participations[this.contestId]);
   }
 
   goBack($event) {

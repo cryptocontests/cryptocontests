@@ -11,9 +11,11 @@ import {
   CreateContest,
   ContestActionTypes,
   ContestPending,
-  CreateParticipation
+  CreateParticipation,
+  LoadParticipations,
+  LoadedParticipations
 } from '../actions/contest.actions';
-import { Contest } from '../contest.model';
+import { Contest, Participation } from '../contest.model';
 import { Router } from '@angular/router';
 import { GlobalLoadingService } from '../../loading/global-loading.service';
 import { MatSnackBar } from '@angular/material';
@@ -39,47 +41,61 @@ export class ContestEffects {
       )
     );
 
-    @Effect()
-    createContest$: Observable<any> = this.actions$
-      .ofType<CreateContest>(ContestActionTypes.CreateContest)
-      .pipe(
-        tap(() => this.globalLoading.show()),
-        switchMap((createAction: CreateContest) =>
-          this.contestContract.createContest(createAction.payload).pipe(
-            map((receipt: TransactionReceipt) => new ContestPending(receipt)),
-            tap(() => this.globalLoading.hide()),
-            catchError(err => {
-              this.handleError(err);
-              return observableOf();
-            })
-          )
-        ),
-        tap(() => this.snackBar.open('Contest creation requested: wait for the transaction to confirm', null, {
-          duration: 3000
-        })),
-        tap(() => this.router.navigate(['/contests']))
-      );
+  @Effect()
+  createContest$: Observable<any> = this.actions$
+    .ofType<CreateContest>(ContestActionTypes.CreateContest)
+    .pipe(
+      tap(() => this.globalLoading.show()),
+      switchMap((createAction: CreateContest) =>
+        this.contestContract.createContest(createAction.payload).pipe(
+          map((receipt: TransactionReceipt) => new ContestPending(receipt)),
+          tap(() => this.globalLoading.hide()),
+          catchError(err => {
+            this.handleError(err);
+            return observableOf();
+          })
+        )
+      ),
+      tap(() => this.snackBar.open('Contest creation requested: wait for the transaction to confirm', null, {
+        duration: 3000
+      })),
+      tap(() => this.router.navigate(['/contests']))
+    );
 
-      @Effect()
-      createParticipation$: Observable<any> = this.actions$
-        .ofType<CreateContest>(ContestActionTypes.CreateParticipation)
-        .pipe(
-          tap(() => this.globalLoading.show()),
-          switchMap((createAction: CreateParticipation) =>
-            this.contestContract.createParticipation(createAction.payload.contestHash, createAction.payload.participation).pipe(
-              map((receipt: TransactionReceipt) => new ContestPending(receipt)),
-              tap(() => this.globalLoading.hide()),
-              catchError(err => {
-                this.handleError(err);
-                return observableOf();
-              })
-            )
-          ),
-          tap(() => this.snackBar.open('Participation creation requested: wait for the transaction to confirm', null, {
-            duration: 3000
-          })),
-          tap(() => this.router.navigate(['/contests']))
-        );
+  @Effect()
+  loadParticipation$: Observable<Action> = this.actions$
+    .ofType<LoadParticipations>(ContestActionTypes.LoadParticipations)
+    .pipe(
+      switchMap((loadAction: LoadParticipations) =>
+        this.contestContract
+          .getContestParticipations(loadAction.payload)
+          .pipe(map((participations: Participation[]) => new LoadedParticipations({
+            contestHash: loadAction.payload,
+            participations
+          })))
+      )
+    );
+
+  @Effect()
+  createParticipation$: Observable<any> = this.actions$
+    .ofType<CreateContest>(ContestActionTypes.CreateParticipation)
+    .pipe(
+      tap(() => this.globalLoading.show()),
+      switchMap((createAction: CreateParticipation) =>
+        this.contestContract.createParticipation(createAction.payload.contestHash, createAction.payload.participation).pipe(
+          map((receipt: TransactionReceipt) => new ContestPending(receipt)),
+          tap(() => this.globalLoading.hide()),
+          catchError(err => {
+            this.handleError(err);
+            return observableOf();
+          })
+        )
+      ),
+      tap(() => this.snackBar.open('Participation creation requested: wait for the transaction to confirm', null, {
+        duration: 3000
+      })),
+      tap(() => this.router.navigate(['/contests']))
+    );
 
   private handleError(error: any) {
     this.globalLoading.hide();

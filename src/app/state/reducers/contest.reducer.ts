@@ -7,14 +7,14 @@ import { Dictionary } from '@ngrx/entity/src/models';
 
 export interface State extends EntityState<Contest> {
   // additional entities state properties
-  participations: Participation[];
+  participations: {[contestHash: string]: Participation[]};
 }
 
 export const adapter: EntityAdapter<Contest> = createEntityAdapter<Contest>();
 
 export const initialState: State = adapter.getInitialState({
   // additional entity state properties
-  participations: []
+  participations: {}
 });
 
 export function contestReducer(
@@ -25,11 +25,10 @@ export function contestReducer(
     case ContestActionTypes.LoadedContest: {
       return adapter.addOne(action.payload, state);
     }
-    case ContestActionTypes.LoadedParticipation: {
-      const participations = state.participations;
-      return Object.assign({
-        participations: participations.push(action.payload)
-      }, state);
+    case ContestActionTypes.LoadedParticipations: {
+      const addParticipation = { participations: {} };
+      addParticipation.participations[action.payload.contestHash] = action.payload.participations;
+      return Object.assign(state, addParticipation);
     }
 
     default: {
