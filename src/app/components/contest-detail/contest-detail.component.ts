@@ -5,14 +5,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import * as fromReducer from '../../state/reducers/contest.reducer';
 import { Observable } from 'rxjs';
-import { LoadParticipations, CreateParticipation } from '../../state/actions/contest.actions';
+import { LoadParticipations, CreateParticipation, LoadContests, LoadContest } from '../../state/actions/contest.actions';
 import { MatDialog } from '@angular/material';
 import { CreateParticipationComponent } from '../create-participation/create-participation.component';
+import { cardAnimations } from '../card.animations';
 
 @Component({
   selector: 'cc-contest-detail',
   templateUrl: './contest-detail.component.html',
-  styleUrls: ['./contest-detail.component.css']
+  styleUrls: ['./contest-detail.component.css'],
+  animations: cardAnimations
 })
 export class ContestDetailComponent implements OnInit {
   contest$: Observable<Contest>;
@@ -24,7 +26,6 @@ export class ContestDetailComponent implements OnInit {
   constructor(
     private store: Store<fromReducer.State>,
     private route: ActivatedRoute,
-    private router: Router,
     private location: Location,
     public dialog: MatDialog
   ) {}
@@ -32,11 +33,12 @@ export class ContestDetailComponent implements OnInit {
   ngOnInit() {
     this.contestId = this.route.snapshot.paramMap.get('id');
 
-    this.contest$ = this.store.select(fromReducer.selectContestById(this.contestId));
+    this.store.dispatch(new LoadContest(this.contestId));
+    this.contest$ = this.store.select(fromReducer.selectedContest);
 
     this.store.dispatch(new LoadParticipations(this.contestId));
-
-    this.participations$ = this.store.select((state) => fromReducer.getContestState(state).participations[this.contestId]);
+    this.participations$ = this.store.select((state) =>
+      fromReducer.getContestState(state).participations[this.contestId]);
   }
 
   goBack($event) {

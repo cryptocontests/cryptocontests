@@ -10,22 +10,26 @@
   <mat-tab-group fxFlex="grow" [selectedIndex]="1" backgroundColor="primary" toolbar>
     <mat-tabs-toolbar>holaaaaaaaaaaaaa</mat-tabs-toolbar>
     <mat-tab label="Upcoming Contests">
-      <cc-contest-grid fxFlex [contests]="upcomingContests$" (contestSelected)="selectContest($event)">
+      <cc-contest-grid fxFlex [contests]="upcomingContests$ | async" (contestSelected)="selectContest($event)"
+        *ngrxLoading="upcomingContests$;empty:'The search returned no contests'">
       </cc-contest-grid>
     </mat-tab>
 
     <mat-tab label="Ongoing Contests">
-      <cc-contest-grid fxFlex [contests]="ongoingContests$" (contestSelected)="selectContest($event)">
+      <cc-contest-grid fxFlex [contests]="ongoingContests$ | async" (contestSelected)="selectContest($event)"
+        *ngrxLoading="ongoingContests$;empty:'The search returned no contests'">
       </cc-contest-grid>
     </mat-tab>
 
     <mat-tab label="On Voting Contests">
-      <cc-contest-grid fxFlex [contests]="votingContests$" (contestSelected)="selectContest($event)">
+      <cc-contest-grid fxFlex [contests]="votingContests$ | async" (contestSelected)="selectContest($event)"
+        *ngrxLoading="votingContests$;empty:'The search returned no contests'">
       </cc-contest-grid>
     </mat-tab>
 
     <mat-tab label="Ended Contests">
-      <cc-contest-grid fxFlex class="fill" [contests]="endedContests$" (contestSelected)="selectContest($event)">
+      <cc-contest-grid fxFlex [contests]="endedContests$ | async" (contestSelected)="selectContest($event)"
+        *ngrxLoading="votingContests$;empty:'The search returned no contests'">
       </cc-contest-grid>
     </mat-tab>
   </mat-tab-group>

@@ -9,6 +9,10 @@ mat-icon {
   color: #222;
 }
 
+.font {
+  font: 500 14px/18px Roboto, 'Helvetica Neue', sans-serif;
+}
+
 span {
   margin-bottom: 32px;
 }

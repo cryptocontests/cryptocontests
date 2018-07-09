@@ -1,5 +1,5 @@
-<mat-grid-list fxFlex cols="3" *asyncLoading="participations;empty:'This contest has no participations yet'">
-  <mat-grid-tile *ngFor="let participation of participations | async" fxLayout="column" fxLayoutAlign="start center">
-    <img [src]="participation.content.content" class="crop-image">
+<mat-grid-list cols="5">
+  <mat-grid-tile *ngFor="let participation of participations" fxLayout="column" fxLayoutAlign="start center">
+    <img [src]="participation.content.content" class="crop-image participation-tile">
   </mat-grid-tile>
 </mat-grid-list>

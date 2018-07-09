@@ -4,21 +4,24 @@ import { Action } from '@ngrx/store';
 import { Actions, Effect } from '@ngrx/effects';
 import { ContestContractService } from '../../services/contest-contract.service';
 import { Observable, of as observableOf } from 'rxjs';
-import { switchMap, map, catchError, tap } from 'rxjs/operators';
+import { switchMap, map, catchError, tap, filter, take } from 'rxjs/operators';
 import {
   LoadContests,
-  LoadedContest,
+  LoadedContests,
   CreateContest,
   ContestActionTypes,
   ContestPending,
   CreateParticipation,
   LoadParticipations,
-  LoadedParticipations
+  LoadedParticipations,
+  LoadContest,
+  LoadedContest
 } from '../actions/contest.actions';
 import { Contest, Participation } from '../contest.model';
 import { Router } from '@angular/router';
-import { GlobalLoadingService } from '../../loading/global-loading.service';
+import { GlobalLoadingService } from '../../loading/services/global-loading.service';
 import { MatSnackBar } from '@angular/material';
+import { NgrxService } from '../../loading/services/ngrx.service';
 
 @Injectable()
 export class ContestEffects {
@@ -27,7 +30,8 @@ export class ContestEffects {
     private contestContract: ContestContractService,
     private router: Router,
     private globalLoading: GlobalLoadingService,
-    public snackBar: MatSnackBar
+    public snackBar: MatSnackBar,
+    private ngrxService: NgrxService
   ) { }
 
   @Effect()
@@ -36,8 +40,19 @@ export class ContestEffects {
     .pipe(
       switchMap((loadAction: LoadContests) =>
         this.contestContract
-          .getContests()
-          .pipe(map((contests: Contest) => new LoadedContest(contests)))
+          .getContests(loadAction.payload)
+          .pipe(map((contests: Contest[]) => new LoadedContests(contests)))
+      )
+    );
+
+  @Effect()
+  loadContest$: Observable<Action> = this.actions$
+    .ofType<LoadContest>(ContestActionTypes.LoadContest)
+    .pipe(
+      switchMap((loadAction: LoadContest) =>
+        this.contestContract
+          .getContest(loadAction.payload)
+          .pipe(map((contest: Contest) => new LoadedContest(contest)))
       )
     );
 
@@ -93,8 +108,7 @@ export class ContestEffects {
       ),
       tap(() => this.snackBar.open('Participation creation requested: wait for the transaction to confirm', null, {
         duration: 3000
-      })),
-      tap(() => this.router.navigate(['/contests']))
+      }))
     );
 
   private handleError(error: any) {

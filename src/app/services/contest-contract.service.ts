@@ -17,13 +17,15 @@ import {
   concatMap,
   flatMap,
   tap,
-  mergeMap
+  mergeMap,
+  defaultIfEmpty
 } from 'rxjs/operators';
 import {
   Contest,
   splitTags,
   mergeTags,
-  Participation
+  Participation,
+  ContestPhase
 } from '../state/contest.model';
 import * as _ from 'lodash';
 import { Web3Service } from '../web3/services/web3.service';
@@ -112,7 +114,7 @@ export class ContestContractService extends SmartContractService {
         value: response.award,
         currency: CryptoCurrency.WEIS
       },
-      tags: splitTags(response.tags) // response[1].tags
+      tags: splitTags(response.tags)
     };
   responseToParticipation = (
     response: any,
@@ -130,28 +132,39 @@ export class ContestContractService extends SmartContractService {
     };
 
   /**
+   * Get a contest from the contest hash
+   */
+  public getContest(contestHash: string, address?: string): Observable<Contest> {
+    return (address ? observableOf(address) : this.getDefaultAccount).pipe(
+      switchMap((add) => this.getContestByHash(add, contestHash)),
+      map((response: any) =>
+        this.responseToContest(response)
+      )
+    );
+  }
+
+  /**
    * Gets all the contests
    */
-  public getContests(): Observable<Contest> {
+  public getContests(filter: Partial<Contest>): Observable<Contest[]> {
     let address: string;
     return this.getDefaultAccount.pipe(
       tap(add => (address = add)),
       switchMap(() => this.getTotalContestCount(address)),
       switchMap((contestCount: number) =>
-        range(0, contestCount)
-      ),
-      mergeMap(index =>
-        from(
-          this.getContestHashByIndex(address, index)
-        ).pipe(
-          switchMap((contestHash: string) =>
-            this.getContestByHash(address, contestHash)
-          ),
-          map((response: any) =>
-            this.responseToContest(response)
+        forkJoin(
+          _.range(0, contestCount).map((index: number) =>
+            from(
+              this.getContestHashByIndex(address, index)
+            ).pipe(
+              switchMap((contestHash: string) =>
+                this.getContest(contestHash, address)
+              )
+            )
           )
         )
-      )
+      ),
+      defaultIfEmpty([])
     );
   }
 
@@ -231,6 +244,7 @@ export class ContestContractService extends SmartContractService {
           contestHash
         )
       ),
+      tap(console.log),
       switchMap(hashes =>
         forkJoin(
           hashes.map((participationHash: string) =>
@@ -246,6 +260,7 @@ export class ContestContractService extends SmartContractService {
                 )
               )
             ).pipe(
+              tap(console.log),
               map(([response, ipfsFile]) =>
                 this.responseToParticipation(
                   response,
@@ -255,7 +270,8 @@ export class ContestContractService extends SmartContractService {
             )
           )
         )
-      )
+      ),
+      defaultIfEmpty([])
     );
   }
 

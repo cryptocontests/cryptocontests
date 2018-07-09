@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 
-import { LoadingComponent } from './components/loading/loading.component';
+import { LoadingComponent } from '../components/loading/loading.component';
 
 @Injectable({
   providedIn: 'root'

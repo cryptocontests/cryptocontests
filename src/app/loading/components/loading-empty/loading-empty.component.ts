@@ -7,7 +7,7 @@ import { Component, Input } from '@angular/core';
 })
 export class LoadingEmptyComponent {
 
-  @Input() emptyMessage = 'The search returned no results';
+  @Input() customMessage = 'The search returned no results';
 
   constructor() { }
 }

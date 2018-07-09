@@ -8,13 +8,15 @@ import { Dictionary } from '@ngrx/entity/src/models';
 export interface State extends EntityState<Contest> {
   // additional entities state properties
   participations: {[contestHash: string]: Participation[]};
+  selectedContest: string;
 }
 
 export const adapter: EntityAdapter<Contest> = createEntityAdapter<Contest>();
 
 export const initialState: State = adapter.getInitialState({
   // additional entity state properties
-  participations: {}
+  participations: {},
+  selectedContest: null
 });
 
 export function contestReducer(
@@ -22,8 +24,14 @@ export function contestReducer(
   action: ContestActions
 ): State {
   switch (action.type) {
+    case ContestActionTypes.LoadedContests: {
+      return adapter.addMany(action.payload, state);
+    }
     case ContestActionTypes.LoadedContest: {
-      return adapter.addOne(action.payload, state);
+      return adapter.addOne(action.payload, {
+        ...state,
+        selectedContest: action.payload.id
+      });
     }
     case ContestActionTypes.LoadedParticipations: {
       const addParticipation = { participations: {} };
@@ -56,4 +64,9 @@ export const selectContestById = (id: string) =>
   createSelector(
     selectEntities,
     (entities: Dictionary<Contest>) => entities[id]
+  );
+
+export const selectedContest = createSelector(
+    getContestState,
+    (state: State) => state.entities[state.selectedContest]
   );

@@ -7,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class LoadingErrorComponent {
 
-  @Input() errorMessage = 'There was an error getting the results';
+  @Input() customMessage = 'There was an error getting the results';
 
   constructor() { }
 }

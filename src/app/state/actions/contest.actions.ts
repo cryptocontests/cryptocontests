@@ -5,7 +5,9 @@ import { TransactionState } from '../../web3/transaction.model';
 
 export enum ContestActionTypes {
   LoadContests = '[LoadContests] LoadContests',
-  LoadedContest = '[LoadedContests] LoadedContest',
+  LoadedContests = '[LoadedContests] LoadedContests',
+  LoadContest = '[LoadContest] LoadContest',
+  LoadedContest = '[LoadedContest] LoadedContest',
   CreateContest = '[CreateContest] CreateContest',
   ContestPending = '[ContestPending] ContestPending',
   LoadParticipations = '[LoadParticipations] LoadParticipations',
@@ -16,13 +18,23 @@ export enum ContestActionTypes {
 
 export class LoadContests implements Action {
   readonly type = ContestActionTypes.LoadContests;
+  constructor(public payload: Partial<Contest> = {}) {}
 }
 
+export class LoadedContests implements Action {
+  readonly type = ContestActionTypes.LoadedContests;
+  constructor(public payload: Contest[]) {}
+}
+
+export class LoadContest implements Action {
+  readonly type = ContestActionTypes.LoadContest;
+  constructor(public payload: string) {}
+}
 export class LoadedContest implements Action {
   readonly type = ContestActionTypes.LoadedContest;
-
   constructor(public payload: Contest) {}
 }
+
 
 export class CreateContest implements Action {
   readonly type = ContestActionTypes.CreateContest;
@@ -63,6 +75,8 @@ export class ParticipationPending implements Action {
 
 export type ContestActions =
   | LoadContests
+  | LoadedContests
+  | LoadContest
   | LoadedContest
   | CreateContest
   | ContestPending

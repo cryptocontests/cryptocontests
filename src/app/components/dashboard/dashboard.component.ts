@@ -9,6 +9,7 @@ import {
 } from '../../state/reducers/contest.reducer';
 import { LoadContests } from '../../state/actions/contest.actions';
 import { Router } from '@angular/router';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'cc-dashboard',
@@ -29,7 +30,7 @@ export class DashboardComponent implements OnInit {
     );
     this.ongoingContests$ = this.store.select(
       selectContestsByPhase(ContestPhase.ONGOING)
-    );
+    ).pipe(tap(console.log));
     this.votingContests$ = this.store.select(
       selectContestsByPhase(ContestPhase.VOTING)
     );

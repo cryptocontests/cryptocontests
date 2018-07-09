@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class ParticipationsGridComponent implements OnInit {
 
-  @Input('participations') participations: Observable<Participation[]>;
+  @Input('participations') participations: Participation[];
 
   constructor() { }
 
