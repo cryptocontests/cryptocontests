@@ -15,7 +15,7 @@ contract ContestController {
         bytes32[] participactionsAccounts;
 
         string title;
-        string tags;
+        bytes32[] tags;
         bytes32 ipfsHash;
         uint256 startContest; // date
         uint256 endContest;  // date
@@ -31,10 +31,13 @@ contract ContestController {
     mapping (bytes32  => Contest) private contests;
     bytes32[] public contestHashes; // array with all contests owner accounts
 
+    mapping (bytes32 => bytes32[]) public contestsInTags;
+    bytes32[] public allTags;
+
     // set new contest with owner address as key index
     function setNewContest(
         string _title,
-        string _tags,
+        bytes32[] _tags,
         uint256 _startContest,
         uint256 _endContest,
         uint256 _timetoCandidature,
@@ -42,6 +45,7 @@ contract ContestController {
         bytes32 _ipfsHash) public payable {
 
         require(msg.value > 0);
+        require(_tags.length < 5);
         bytes32 contestHash = keccak256(abi.encodePacked(msg.sender,_title,_startContest));
         require(contests[contestHash].award == 0);
         assert(_endContest > _startContest);
@@ -59,13 +63,21 @@ contract ContestController {
         contests[contestHash].actualWinnerVotes = 0;
 
         contestHashes.push(contestHash);
+
+        // Manage the creation of new tags
+        for (uint8 i = 0; i < _tags.length; i++) {
+            if (contestsInTags[_tags[i]].length == 0) {
+                allTags.push(_tags[i]);
+            }
+            contestsInTags[_tags[i]].push(contestHash);
+        }
     }
 
     function getContest(bytes32 _contestHash) public view
         returns (
             bytes32 contestHash,
             string title,
-            string tags,
+            bytes32[] tags,
             bytes32 ipfsHash,
             uint256 startContest,
             uint256 endContest,
@@ -122,6 +134,10 @@ contract ContestController {
 
     function getTotalContestsCount() public view returns (uint256) {
         return contestHashes.length;
+    }
+
+    function getAllTags() public view returns (bytes32[]) {
+        return allTags;
     }
 
     function setNewVote(bytes32 _contestHash,bytes32 _participationHash) public {

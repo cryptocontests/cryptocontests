@@ -3,15 +3,21 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CreateContestComponent } from './components/create-contest/create-contest.component';
+import { ContestGridComponent } from './components/contest-grid/contest-grid.component';
 
 const routes: Routes = [
   {
-    path: 'contest/create',
-    component: CreateContestComponent
+    path: 'contests',
+    component: DashboardComponent,
+    children: [{
+      path: ':phase',
+      component: ContestGridComponent
+    }],
+    runGuardsAndResolvers: 'always',
   },
   {
-    path: 'contests',
-    component: DashboardComponent
+    path: 'contest/create',
+    component: CreateContestComponent
   },
   {
     path: 'contest/:id',
@@ -24,17 +30,17 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/contests',
+    redirectTo: '/contests/ongoing',
     pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: '/contests'
+    redirectTo: '/contests/ongoing'
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { onSameUrlNavigation: 'reload' })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}

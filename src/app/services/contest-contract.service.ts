@@ -1,5 +1,5 @@
 import { environment } from './../../environments/environment';
-import { TransactionReceipt, PromiEvent } from 'web3/types';
+import { TransactionReceipt, PromiEvent, Contract } from 'web3/types';
 import { SmartContractService } from './../web3/services/smart-contract.service';
 import { Injectable } from '@angular/core';
 import {
@@ -22,8 +22,6 @@ import {
 } from 'rxjs/operators';
 import {
   Contest,
-  splitTags,
-  mergeTags,
   Participation,
   ContestPhase
 } from '../state/contest.model';
@@ -44,18 +42,16 @@ const ContestController = require('./../../../build/contracts/ContestController.
 @Injectable({
   providedIn: 'root'
 })
-export class ContestContractService extends SmartContractService {
+export class ContestContractService {
+  protected contract: Contract;
+
   constructor(
     private web3Service: Web3Service,
     private transactionStates: TransactionStateService,
     private currencyService: CurrencyService,
     private ipfs: IpfsService
   ) {
-    super(
-      web3Service,
-      ContestController.abi,
-      environment.contractAddress
-    );
+    this.contract = this.web3Service.newContract(ContestController.abi, environment.contractAddress);
   }
 
   /**
@@ -65,6 +61,10 @@ export class ContestContractService extends SmartContractService {
   getDefaultAccount = from(
     this.web3Service.getDefaultAccount()
   );
+  getAllTags = (address: string) =>
+    this.contract.methods.getAllTags().call({
+      from: address
+    });
   getTotalContestCount = (address: string) =>
     this.contract.methods.getTotalContestsCount().call({
       from: address
@@ -114,7 +114,7 @@ export class ContestContractService extends SmartContractService {
         value: response.award,
         currency: CryptoCurrency.WEIS
       },
-      tags: splitTags(response.tags)
+      tags: response.tags.map(tag => this.web3Service.bytesToString(tag))
     };
   responseToParticipation = (
     response: any,
@@ -130,6 +130,17 @@ export class ContestContractService extends SmartContractService {
       },
       votes: response.votes
     };
+
+
+  /**
+   * Gets all the tags
+   */
+  public getTags(): Observable<string[]> {
+    return this.getDefaultAccount.pipe(
+      switchMap((address: string) => this.getAllTags(address)),
+      map((tags: any[]) => tags.map(tag => this.web3Service.bytesToString(tag)))
+    );
+  }
 
   /**
    * Get a contest from the contest hash
@@ -202,7 +213,7 @@ export class ContestContractService extends SmartContractService {
         this.contract.methods
           .setNewContest(
             contest.title,
-            mergeTags(contest.tags),
+            contest.tags.map(tag => this.web3Service.stringToBytes(tag)),
             contest.initialDate / 1000,
             contest.endDate / 1000,
             contest.participationLimitDate / 1000,
@@ -244,7 +255,6 @@ export class ContestContractService extends SmartContractService {
           contestHash
         )
       ),
-      tap(console.log),
       switchMap(hashes =>
         forkJoin(
           hashes.map((participationHash: string) =>
@@ -260,7 +270,6 @@ export class ContestContractService extends SmartContractService {
                 )
               )
             ).pipe(
-              tap(console.log),
               map(([response, ipfsFile]) =>
                 this.responseToParticipation(
                   response,

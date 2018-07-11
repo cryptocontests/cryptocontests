@@ -9,6 +9,7 @@ export interface State extends EntityState<Contest> {
   // additional entities state properties
   participations: {[contestHash: string]: Participation[]};
   selectedContest: string;
+  tags: string[];
 }
 
 export const adapter: EntityAdapter<Contest> = createEntityAdapter<Contest>();
@@ -16,7 +17,8 @@ export const adapter: EntityAdapter<Contest> = createEntityAdapter<Contest>();
 export const initialState: State = adapter.getInitialState({
   // additional entity state properties
   participations: {},
-  selectedContest: null
+  selectedContest: null,
+  tags: []
 });
 
 export function contestReducer(
@@ -24,6 +26,9 @@ export function contestReducer(
   action: ContestActions
 ): State {
   switch (action.type) {
+    case ContestActionTypes.LoadedTags: {
+      return Object.assign(state, { tags: action.payload });
+    }
     case ContestActionTypes.LoadedContests: {
       return adapter.addMany(action.payload, state);
     }
@@ -70,3 +75,8 @@ export const selectedContest = createSelector(
     getContestState,
     (state: State) => state.entities[state.selectedContest]
   );
+
+export const selectTags = createSelector(
+  getContestState,
+  (state: State) => state.tags
+);

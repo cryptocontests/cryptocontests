@@ -10,7 +10,6 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { LoadingErrorComponent } from './components/loading-error/loading-error.component';
 import { NgrxLoadingDirective } from './directives/ngrx-loading.directive';
 import { SyncLoadingDirective } from './directives/sync-loading.directive';
-import { NgrxService } from './services/ngrx.service';
 
 @NgModule({
   imports: [
@@ -23,6 +22,6 @@ import { NgrxService } from './services/ngrx.service';
     NgrxLoadingDirective, SyncLoadingDirective],
   entryComponents: [LoadingComponent, LoadingEmptyComponent, LoadingErrorComponent],
   exports: [LoadingComponent, SyncLoadingDirective, AsyncLoadingDirective, NgrxLoadingDirective, LoadingEmptyComponent],
-  providers: [GlobalLoadingService, NgrxService]
+  providers: [GlobalLoadingService]
 })
 export class LoadingUtilsModule { }

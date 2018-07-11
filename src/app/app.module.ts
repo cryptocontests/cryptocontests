@@ -31,7 +31,6 @@ import { TagsComponent } from './components/tags/tags.component';
 import { ParticipationsGridComponent } from './components/participations-grid/participations-grid.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { FilePickerComponent } from './components/file-picker/file-picker.component';
-import { MatTabsToolbarModule } from './mat-tabs-toolbar/mat-tabs-toolbar.module';
 import { CreateParticipationComponent } from './components/create-participation/create-participation.component';
 
 @NgModule({
@@ -70,8 +69,7 @@ import { CreateParticipationComponent } from './components/create-participation/
       ? StoreDevtoolsModule.instrument()
       : [],
     Web3Module,
-    LoadingUtilsModule,
-    MatTabsToolbarModule
+    LoadingUtilsModule
   ],
   providers: [ContestContractService],
   bootstrap: [AppComponent]

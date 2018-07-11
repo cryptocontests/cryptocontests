@@ -28,6 +28,7 @@ export abstract class BaseLoading {
   }
 
   protected bindObservable(observable: Observable<any>) {
+    this.showLoading();
     this.subscription = observable.subscribe(
       value => this.showValue(value),
       error => this.showError()
@@ -35,10 +36,9 @@ export abstract class BaseLoading {
   }
 
   protected showValue(value) {
-    console.log(value);
     if (this.isEmpty(value)) this.showEmpty();
     else this.showTemplate(this.templateRef);
-    this.subscription.unsubscribe();
+    if (this.subscription) this.subscription.unsubscribe();
   }
 
   protected showError() {
@@ -47,7 +47,7 @@ export abstract class BaseLoading {
     } else {
       this.showTemplateInput(LoadingErrorComponent, <string>this.getCustomError());
     }
-    this.subscription.unsubscribe();
+    if (this.subscription) this.subscription.unsubscribe();
   }
 
   protected showLoading() {
@@ -55,7 +55,6 @@ export abstract class BaseLoading {
   }
 
   protected showEmpty() {
-    console.log('hey');
     if (this.getCustomEmpty() instanceof TemplateRef || this.getCustomEmpty() instanceof Type) {
       this.showTemplateInput(this.getCustomEmpty());
     } else {

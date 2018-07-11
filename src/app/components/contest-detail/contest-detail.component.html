@@ -11,7 +11,7 @@
     </button>
   </mat-toolbar>
 
-  <div fxLayout="row" fxFlex fxLayoutAlign="center stretch" *ngrxLoading="contest$">
+  <div fxLayout="row" fxFlex fxLayoutAlign="center stretch" *ngrxLoading="contest$;action:contestAction">
     <div fxLayout="column" fxFlex="90%" fxLayoutAlign="start stretch">
       <mat-card [@cardState] fxFlex="60%" class="mat-elevation-z2" fxLayout="column">
         <img mat-card-image class="crop-image" fxFlex src="https://material.angular.io/assets/img/examples/shiba1.jpg" />
@@ -35,7 +35,8 @@
           </div>
         </mat-card-content>
       </mat-card>
-      <cc-participations-grid fxFlex [participations]="participations$ | async" *ngrxLoading="participations$;empty:'This contest has no participations yet'">
+      <cc-participations-grid fxFlex [participations]="participations$ | async"
+        *ngrxLoading="participations$;action:participationsAction;empty:'This contest has no participations yet'">
       </cc-participations-grid>
     </div>
   </div>

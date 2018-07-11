@@ -3,43 +3,33 @@ import {
   Input,
   OnInit,
   TemplateRef,
-  Type,
   ElementRef,
   ViewContainerRef,
   ComponentFactoryResolver
 } from '@angular/core';
 import { BaseLoading, TemplateInput } from './base-loading';
-import { Actions, Effect } from '@ngrx/effects';
 import {
-  switchMap,
   filter,
-  map,
-  tap,
-  withLatestFrom,
-  merge,
-  skip,
-  take,
-  skipUntil,
-  share
+  map
 } from 'rxjs/operators';
-import { Observable, combineLatest, range } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { ActionsSubject } from '@ngrx/store';
-import { NgrxService } from '../services/ngrx.service';
+import { LoadingAction } from '../ngrx-loading.action';
 
 @Directive({
   selector: '[ngrxLoading]'
 })
-export class NgrxLoadingDirective extends BaseLoading
-  implements OnInit {
-  @Input('ngrxLoading') ngrxLoading: Observable<any>;
+export class NgrxLoadingDirective extends BaseLoading {
+  @Input('ngrxLoading') set ngrxLoading(observable: Observable<any>) {
+    this.bindNgrxObservable(observable);
+  }
+  @Input() ngrxLoadingAction: LoadingAction;
   @Input() ngrxLoadingError: TemplateInput;
   @Input() ngrxLoadingEmpty: TemplateInput;
 
   initAction = '@ngrx/store/init';
 
   constructor(
-    private actions$: Actions,
-    private ngrxService: NgrxService,
     private actionSubject: ActionsSubject,
     protected elementRef: ElementRef,
     protected templateRef: TemplateRef<any>,
@@ -62,14 +52,16 @@ export class NgrxLoadingDirective extends BaseLoading
     return this.ngrxLoadingError;
   }
 
-  ngOnInit() {
+  bindNgrxObservable(observable: Observable<any>) {
     this.bindObservable(
       combineLatest(
-        this.actions$,
-        this.ngrxLoading
+        observable,
+        this.actionSubject.pipe(
+          filter((action) => action.hasOwnProperty('originAction')
+            && action['originAction'] === this.ngrxLoadingAction)
+        )
       ).pipe(
-        tap(console.log),
-        map(([first, second]) => second)
+        map(([first, second]) => first)
       )
     );
   }

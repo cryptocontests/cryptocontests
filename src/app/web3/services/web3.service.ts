@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import Web3 from 'web3';
+import { from } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 declare let window: any;
 
@@ -40,13 +42,12 @@ export class Web3Service {
     return EthereumNetwork[this.web3.version.network];
   }
 
-  public async getAccounts(): Promise<string[]> {
+  public getAccounts(): Promise<string[]> {
     return this.web3.eth.getAccounts();
   }
 
-  public async getDefaultAccount(): Promise<string> {
-    const accounts = await this.getAccounts();
-    return accounts[0];
+  public getDefaultAccount(): Promise<string> {
+    return from(this.getAccounts()).pipe(map((accounts: string[]) => accounts[0])).toPromise();
   }
 
   public newContract(contractAbi: any, contractAddress: string) {
@@ -54,11 +55,12 @@ export class Web3Service {
   }
 
   public bytesToString(content: any): string {
-    return this.web3.utils.toUtf8(content);
+    return this.web3.utils.toAscii(content);
   }
 
   public stringToBytes(content: string): any {
-    return this.web3.utils.asciiToHex(content);
+    console.log(this);
+    return this.web3.utils.fromAscii(content);
   }
 
 }

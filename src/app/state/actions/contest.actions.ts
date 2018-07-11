@@ -2,8 +2,11 @@ import { TransactionReceipt } from 'web3/types';
 import { Action } from '@ngrx/store';
 import { Contest, Participation } from '../contest.model';
 import { TransactionState } from '../../web3/transaction.model';
+import { LoadingAction } from '../../loading/ngrx-loading.action';
 
 export enum ContestActionTypes {
+  LoadTags = '[LoadTags] LoadTags',
+  LoadedTags = '[LoadedTags] LoadedTags',
   LoadContests = '[LoadContests] LoadContests',
   LoadedContests = '[LoadedContests] LoadedContests',
   LoadContest = '[LoadContest] LoadContest',
@@ -16,25 +19,34 @@ export enum ContestActionTypes {
   ParticipationPending = '[ParticipationPending] ParticipationPending'
 }
 
+export class LoadTags implements Action {
+  readonly type = ContestActionTypes.LoadTags;
+}
+
+export class LoadedTags implements Action {
+  readonly type = ContestActionTypes.LoadedTags;
+  constructor(public payload: string[]) {}
+}
+
 export class LoadContests implements Action {
   readonly type = ContestActionTypes.LoadContests;
   constructor(public payload: Partial<Contest> = {}) {}
 }
 
-export class LoadedContests implements Action {
+export class LoadedContests implements Action, LoadingAction {
   readonly type = ContestActionTypes.LoadedContests;
-  constructor(public payload: Contest[]) {}
+  constructor(public payload: Contest[], public originAction: LoadContests) {}
 }
 
 export class LoadContest implements Action {
   readonly type = ContestActionTypes.LoadContest;
   constructor(public payload: string) {}
 }
-export class LoadedContest implements Action {
-  readonly type = ContestActionTypes.LoadedContest;
-  constructor(public payload: Contest) {}
-}
 
+export class LoadedContest implements Action, LoadingAction {
+  readonly type = ContestActionTypes.LoadedContest;
+  constructor(public payload: Contest, public originAction: LoadContest) {}
+}
 
 export class CreateContest implements Action {
   readonly type = ContestActionTypes.CreateContest;
@@ -55,10 +67,13 @@ export class LoadParticipations implements Action {
   constructor(public payload: string) {}
 }
 
-export class LoadedParticipations implements Action {
+export class LoadedParticipations implements Action, LoadingAction {
   readonly type = ContestActionTypes.LoadedParticipations;
 
-  constructor(public payload: { contestHash: string, participations: Participation[] }) {}
+  constructor(
+    public payload: { contestHash: string, participations: Participation[] },
+    public originAction: LoadParticipations
+  ) {}
 }
 
 export class CreateParticipation implements Action {
@@ -74,6 +89,8 @@ export class ParticipationPending implements Action {
 }
 
 export type ContestActions =
+  | LoadTags
+  | LoadedTags
   | LoadContests
   | LoadedContests
   | LoadContest

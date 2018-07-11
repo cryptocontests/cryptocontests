@@ -1,36 +1,49 @@
 <div fxLayout="column" fxFill>
-  <mat-toolbar color="primary" class="mat-elevation-z4" fxLayoutGap="16px">
-    <span fxFlex>CryptoContests</span>
-    <web3-transaction-button></web3-transaction-button>
-    <button mat-raised-button color="accent" routerLink="/contest/create">
-      CREATE NEW CONTEST
-    </button>
+  <mat-toolbar color="primary" class="mat-elevation-z4">
+    <mat-toolbar-row fxLayoutGap="16px">
+      <span fxFlex>CryptoContests</span>
+      <web3-transaction-button></web3-transaction-button>
+      <button mat-raised-button color="accent" routerLink="/contest/create">
+        CREATE NEW CONTEST
+      </button>
+    </mat-toolbar-row>
+
+    <mat-toolbar-row fxLayout="row" fxLayoutAlign="center center">
+      <nav mat-tab-nav-bar backgroundColor="primary" fxFlex fxFlexAlign="end">
+        <a mat-tab-link *ngFor="let routeLink of routeLinks; let i = index" [routerLink]="routeLink.link" [active]="activeLinkIndex === i"
+          (click)="activeLinkIndex = i">
+          {{routeLink.label}}</a>
+      </nav>
+      <div fxLayout="row" fxLayoutAlign="center center">
+        <button mat-icon-button><mat-icon>sort</mat-icon></button>
+      </div>
+    </mat-toolbar-row>
+
   </mat-toolbar>
 
-  <mat-tab-group fxFlex="grow" [selectedIndex]="1" backgroundColor="primary" toolbar>
-    <mat-tabs-toolbar>holaaaaaaaaaaaaa</mat-tabs-toolbar>
+  <div fxFlex="grow">
+    <router-outlet></router-outlet>
+  </div>
+  <!--
+  <mat-tab-group fxFlex="grow" [selectedIndex]="1" backgroundColor="primary">
     <mat-tab label="Upcoming Contests">
-      <cc-contest-grid fxFlex [contests]="upcomingContests$ | async" (contestSelected)="selectContest($event)"
-        *ngrxLoading="upcomingContests$;empty:'The search returned no contests'">
+      <cc-contest-grid fxFlex [contests]="upcomingContests$ | async" (contestSelected)="selectContest($event)" *ngrxLoading="upcomingContests$;empty:'The search returned no contests'">
       </cc-contest-grid>
     </mat-tab>
 
     <mat-tab label="Ongoing Contests">
-      <cc-contest-grid fxFlex [contests]="ongoingContests$ | async" (contestSelected)="selectContest($event)"
-        *ngrxLoading="ongoingContests$;empty:'The search returned no contests'">
+      <cc-contest-grid fxFlex [contests]="ongoingContests$ | async" (contestSelected)="selectContest($event)" *ngrxLoading="ongoingContests$;action:action;empty:'The search returned no contests'">
       </cc-contest-grid>
     </mat-tab>
 
     <mat-tab label="On Voting Contests">
-      <cc-contest-grid fxFlex [contests]="votingContests$ | async" (contestSelected)="selectContest($event)"
-        *ngrxLoading="votingContests$;empty:'The search returned no contests'">
+      <cc-contest-grid fxFlex [contests]="votingContests$ | async" (contestSelected)="selectContest($event)" *ngrxLoading="votingContests$;empty:'The search returned no contests'">
       </cc-contest-grid>
     </mat-tab>
 
     <mat-tab label="Ended Contests">
-      <cc-contest-grid fxFlex [contests]="endedContests$ | async" (contestSelected)="selectContest($event)"
-        *ngrxLoading="votingContests$;empty:'The search returned no contests'">
+      <cc-contest-grid fxFlex [contests]="endedContests$ | async" (contestSelected)="selectContest($event)" *ngrxLoading="votingContests$;empty:'The search returned no contests'">
       </cc-contest-grid>
     </mat-tab>
-  </mat-tab-group>
+  </mat-tab-group> -->
 </div>

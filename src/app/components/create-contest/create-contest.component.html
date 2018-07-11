@@ -28,25 +28,21 @@
                   placeholder="Description"></textarea>
               </mat-form-field>
 
-              <mat-form-field [hideRequiredMarker]="false">
+              <mat-form-field>
                 <mat-chip-list #tagsList>
-                  <mat-chip *ngFor="let tag of tags" [selectable]="false" [removable]="true" (removed)="remove(tag)">
-                    {{tag}}
+                  <mat-chip *ngFor="let tag of tags" selectable="false" removable="true" (removed)="remove(tag)">
+                    {{ tag }}
                     <mat-icon matChipRemove>cancel</mat-icon>
                   </mat-chip>
-                  <input placeholder="Tags" #tagInput formControlName="tags" matAutocomplete="auto" [matChipInputFor]="tagsList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="add($event)" />
+                  <input placeholder="Tags" #tagInput formControlName="tags" [matAutocomplete]="auto" [matChipInputFor]="tagsList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="add($event)">
                 </mat-chip-list>
-                <!--     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-                                     <mat-option *ngFor="let fruit of filteredFruits | async" [value]="fruit">
-                    {{ fruit }}
-                  </mat-option>
-
-                https://material.angular.io/components/chips/overview
-
-                </mat-autocomplete>
-             --></mat-form-field>
-
+              </mat-form-field>
+              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                <mat-option *ngFor="let tag of allTags$ | async" [value]="tag">
+                  {{ tag }}
+                </mat-option>
+              </mat-autocomplete>
             </div>
 
             <div fxLayout="column" fxLayoutGap="8px">

@@ -2,3 +2,7 @@ cc-dashboard {
   width: 100%;
   height: 100%;
 }
+
+.mat-tab-lists, .mat-tab-list {
+  height: 100%;
+}

@@ -1,15 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { Contest, ContestPhase } from '../../state/contest.model';
 import {
-  State,
-  selectAll,
-  selectContestsByPhase
+  State
 } from '../../state/reducers/contest.reducer';
-import { LoadContests } from '../../state/actions/contest.actions';
-import { Router } from '@angular/router';
-import { tap } from 'rxjs/operators';
+import { Router, ActivatedRoute } from '@angular/router';
+import { PhasesList, ContestPhase } from '../../state/contest.model';
 
 @Component({
   selector: 'cc-dashboard',
@@ -17,30 +12,18 @@ import { tap } from 'rxjs/operators';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  upcomingContests$: Observable<Contest[]>;
-  ongoingContests$: Observable<Contest[]>;
-  votingContests$: Observable<Contest[]>;
-  endedContests$: Observable<Contest[]>;
+  activeLinkIndex = 1;
+  routeLinks = [
+    { link: '/contests/upcoming', label: 'Upcoming Contests'},
+    { link: '/contests/ongoing', label: 'Ongoing Contests'},
+    { link: '/contests/revision', label: 'Contests On Revision'},
+    { link: '/contests/ended', label: 'Ended Contests'},
+  ];
 
-  constructor(private store: Store<State>, private router: Router) {}
+  constructor(private store: Store<State>, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.upcomingContests$ = this.store.select(
-      selectContestsByPhase(ContestPhase.UPCOMING)
-    );
-    this.ongoingContests$ = this.store.select(
-      selectContestsByPhase(ContestPhase.ONGOING)
-    ).pipe(tap(console.log));
-    this.votingContests$ = this.store.select(
-      selectContestsByPhase(ContestPhase.VOTING)
-    );
-    this.endedContests$ = this.store.select(
-      selectContestsByPhase(ContestPhase.ENDED)
-    );
-    this.store.dispatch(new LoadContests());
+    this.activeLinkIndex = PhasesList.indexOf(ContestPhase[this.route.firstChild.snapshot.paramMap.get('phase').toUpperCase()]);
   }
 
-  selectContest(contestId: string) {
-    this.router.navigate(['/contest', contestId]);
-  }
 }

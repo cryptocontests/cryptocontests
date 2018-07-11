@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, OnInit, ElementRef } from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -9,7 +9,7 @@ import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
 import { default as _rollupMoment } from 'moment';
 import { Store } from '@ngrx/store';
-import { State } from '../../state/reducers/contest.reducer';
+import { State, selectTags } from '../../state/reducers/contest.reducer';
 import { Contest } from '../../state/contest.model';
 import { CreateContest } from '../../state/actions/contest.actions';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -22,6 +22,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { Router } from '@angular/router';
 import { CryptoCurrency } from '../../web3/transaction.model';
 import { FilePickerComponent } from '../file-picker/file-picker.component';
+import { of, Observable } from 'rxjs';
 
 const moment = _rollupMoment || _moment;
 
@@ -30,9 +31,10 @@ const moment = _rollupMoment || _moment;
   templateUrl: './create-contest.component.html',
   styleUrls: ['./create-contest.component.css']
 })
-export class CreateContestComponent {
+export class CreateContestComponent implements OnInit {
 
   contestForm: FormGroup;
+  allTags$: Observable<string[]>;
   tags: string[] = [];
   separatorKeysCodes = [ENTER, COMMA];
 
@@ -46,6 +48,10 @@ export class CreateContestComponent {
     private router: Router
   ) {
     this.buildForm();
+  }
+
+  ngOnInit() {
+    this.allTags$ = this.store.select(selectTags);
   }
 
   private buildForm() {
@@ -68,7 +74,7 @@ export class CreateContestComponent {
     const input = event.input;
     const value = event.value;
 
-    // Add our fruit
+    // Add our tag
     if ((value || '').trim()) {
       this.tags.push(value.trim());
     }
@@ -78,7 +84,6 @@ export class CreateContestComponent {
       input.value = '';
     }
 
-    console.log(this.contestForm.value.tags);
     this.contestForm.value.tags = null;
   }
 
