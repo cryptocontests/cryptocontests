@@ -3,6 +3,12 @@ cc-dashboard {
   height: 100%;
 }
 
-.mat-tab-lists, .mat-tab-list {
+.mat-tab-lists,
+.mat-tab-list {
   height: 100%;
+}
+
+.filter-card {
+  padding: 0px 18px 0px 18px;
+  font-size: 14px;
 }

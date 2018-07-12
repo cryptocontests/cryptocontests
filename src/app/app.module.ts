@@ -6,12 +6,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
-import {
-  StoreRouterConnectingModule,
-  routerReducer
-} from '@ngrx/router-store';
+import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 
 import { FileHelpersModule } from 'ngx-file-helpers';
+
+import { FilterUtilsModule } from 'ng-filter-utils';
 
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -46,10 +45,7 @@ import { CreateParticipationComponent } from './components/create-participation/
     FilePickerComponent,
     CreateParticipationComponent
   ],
-  entryComponents: [
-    ConfirmDialogComponent,
-    CreateParticipationComponent
-  ],
+  entryComponents: [ConfirmDialogComponent, CreateParticipationComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -65,11 +61,10 @@ import { CreateParticipationComponent } from './components/create-participation/
       stateKey: 'router'
     }),
     EffectsModule.forRoot([ContestEffects]),
-    !environment.production
-      ? StoreDevtoolsModule.instrument()
-      : [],
+    !environment.production ? StoreDevtoolsModule.instrument() : [],
     Web3Module,
-    LoadingUtilsModule
+    LoadingUtilsModule,
+    FilterUtilsModule
   ],
   providers: [ContestContractService],
   bootstrap: [AppComponent]

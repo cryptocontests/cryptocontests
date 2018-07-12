@@ -32,7 +32,6 @@ const moment = _rollupMoment || _moment;
   styleUrls: ['./create-contest.component.css']
 })
 export class CreateContestComponent implements OnInit {
-
   contestForm: FormGroup;
   allTags$: Observable<string[]>;
   tags: string[] = [];

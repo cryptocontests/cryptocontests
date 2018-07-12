@@ -9,19 +9,29 @@
     </mat-toolbar-row>
 
     <mat-toolbar-row fxLayout="row" fxLayoutAlign="center center">
-      <nav mat-tab-nav-bar backgroundColor="primary" fxFlex fxFlexAlign="end">
+      <nav mat-tab-nav-bar backgroundColor="primary" fxFlex>
         <a mat-tab-link *ngFor="let routeLink of routeLinks; let i = index" [routerLink]="routeLink.link" [active]="activeLinkIndex === i"
           (click)="activeLinkIndex = i">
           {{routeLink.label}}</a>
       </nav>
       <div fxLayout="row" fxLayoutAlign="center center">
-        <button mat-icon-button><mat-icon>sort</mat-icon></button>
+        <button mat-button [filterToggler]="filter">
+          <mat-icon>filter_list</mat-icon> FILTER
+        </button>
+        <button mat-button [sortByMenu]="sortOptions">
+          <mat-icon>sort</mat-icon> SORT BY
+        </button>
       </div>
     </mat-toolbar-row>
 
   </mat-toolbar>
+  <mat-card class="mat-elevation-z2 filter-card">
+    <filter-toolbar fxFlex #filter>
+      <filter-string title="Title"></filter-string>
+    </filter-toolbar>
+  </mat-card>
 
-  <div fxFlex="grow">
+  <div fxFlex>
     <router-outlet></router-outlet>
   </div>
   <!--

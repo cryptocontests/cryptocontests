@@ -104,6 +104,44 @@
           }
         }
       }
+    },
+    "ng-filter-utils": {
+      "root": "projects/ng-filter-utils",
+      "sourceRoot": "projects/ng-filter-utils/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/ng-filter-utils/tsconfig.lib.json",
+            "project": "projects/ng-filter-utils/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "project": "projects/ng-filter-utils/ng-package.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ng-filter-utils/src/test.ts",
+            "tsConfig": "projects/ng-filter-utils/tsconfig.spec.json",
+            "karmaConfig": "projects/ng-filter-utils/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ng-filter-utils/tsconfig.lib.json",
+              "projects/ng-filter-utils/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**"]
+          }
+        }
+      }
     }
   },
   "defaultProject": "cryptocontests",

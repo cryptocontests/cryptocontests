@@ -51,3 +51,7 @@ mat-dialog-container {
 .dialog-padding {
   padding: 24px;
 }
+
+.small-card-padding {
+  padding: 12px !important;
+}

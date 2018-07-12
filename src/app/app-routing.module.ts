@@ -9,11 +9,18 @@ const routes: Routes = [
   {
     path: 'contests',
     component: DashboardComponent,
-    children: [{
-      path: ':phase',
-      component: ContestGridComponent
-    }],
-    runGuardsAndResolvers: 'always',
+    children: [
+      {
+        path: ':phase',
+        component: ContestGridComponent
+      },
+      {
+        path: '',
+        redirectTo: 'ongoing',
+        pathMatch: 'full'
+      }
+    ],
+    runGuardsAndResolvers: 'always'
   },
   {
     path: 'contest/create',
@@ -21,8 +28,8 @@ const routes: Routes = [
   },
   {
     path: 'contest/:id',
-    component: ContestDetailComponent,
-  /*   children: [
+    component: ContestDetailComponent
+    /*   children: [
       {
         path: 'participation/:id'
       }

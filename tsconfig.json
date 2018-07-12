@@ -11,6 +11,10 @@
     "target": "es5",
     "allowSyntheticDefaultImports": true,
     "typeRoots": ["node_modules/@types"],
-    "lib": ["es2017", "dom"]
+    "lib": ["es2017", "dom"],
+    "paths": {
+      "ng-filter-utils": ["dist/ng-filter-utils"],
+      "ng-filter-utils/*": ["dist/ng-filter-utils/*"]
+    }
   }
 }
