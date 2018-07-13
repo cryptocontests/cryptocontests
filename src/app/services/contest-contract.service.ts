@@ -20,11 +20,7 @@ import {
   mergeMap,
   defaultIfEmpty
 } from 'rxjs/operators';
-import {
-  Contest,
-  Participation,
-  ContestPhase
-} from '../state/contest.model';
+import { Contest, Participation, ContestPhase } from '../state/contest.model';
 import * as _ from 'lodash';
 import { Web3Service } from '../web3/services/web3.service';
 import { TransactionStateService } from '../web3/services/transaction-state.service';
@@ -51,16 +47,17 @@ export class ContestContractService {
     private currencyService: CurrencyService,
     private ipfs: IpfsService
   ) {
-    this.contract = this.web3Service.newContract(ContestController.abi, environment.contractAddress);
+    this.contract = this.web3Service.newContract(
+      ContestController.abi,
+      environment.contractAddress
+    );
   }
 
   /**
    * All this methods composed help return a contest
    */
 
-  getDefaultAccount = from(
-    this.web3Service.getDefaultAccount()
-  );
+  getDefaultAccount = from(this.web3Service.getDefaultAccount());
   getAllTags = (address: string) =>
     this.contract.methods.getAllTags().call({
       from: address
@@ -69,29 +66,18 @@ export class ContestContractService {
     this.contract.methods.getTotalContestsCount().call({
       from: address
     });
-  getContestHashByIndex = (
-    address: string,
-    index: number
-  ) =>
+  getContestHashByIndex = (address: string, index: number) =>
     this.contract.methods.contestHashes(index).call({
       from: address
     });
-  getContestByHash = (
-    address: string,
-    contestHash: string
-  ) =>
+  getContestByHash = (address: string, contestHash: string) =>
     this.contract.methods.getContest(contestHash).call({
       from: address
     });
-  getParticipationsByContestHash = (
-    address: string,
-    contestHash: string
-  ) =>
-    this.contract.methods
-      .getParticipationsByContest(contestHash)
-      .call({
-        from: address
-      });
+  getParticipationsByContestHash = (address: string, contestHash: string) =>
+    this.contract.methods.getParticipationsByContest(contestHash).call({
+      from: address
+    });
   getParticipation = (
     address: string,
     contestHash: string,
@@ -107,8 +93,7 @@ export class ContestContractService {
       id: response.contestHash,
       title: response.title,
       initialDate: response.startContest * 1000,
-      participationLimitDate:
-        response.timeToCandidatures * 1000,
+      participationLimitDate: response.timeToCandidatures * 1000,
       endDate: response.endContest * 1000,
       prize: {
         value: response.award,
@@ -116,10 +101,7 @@ export class ContestContractService {
       },
       tags: response.tags.map(tag => this.web3Service.bytesToString(tag))
     };
-  responseToParticipation = (
-    response: any,
-    ipfsFile: IpfsFile
-  ) =>
+  responseToParticipation = (response: any, ipfsFile: IpfsFile) =>
     <Participation>{
       title: response.title,
       creator: response.owner,
@@ -130,7 +112,6 @@ export class ContestContractService {
       },
       votes: response.votes
     };
-
 
   /**
    * Gets all the tags
@@ -145,12 +126,13 @@ export class ContestContractService {
   /**
    * Get a contest from the contest hash
    */
-  public getContest(contestHash: string, address?: string): Observable<Contest> {
+  public getContest(
+    contestHash: string,
+    address?: string
+  ): Observable<Contest> {
     return (address ? observableOf(address) : this.getDefaultAccount).pipe(
-      switchMap((add) => this.getContestByHash(add, contestHash)),
-      map((response: any) =>
-        this.responseToContest(response)
-      )
+      switchMap(add => this.getContestByHash(add, contestHash)),
+      map((response: any) => this.responseToContest(response))
     );
   }
 
@@ -164,15 +146,15 @@ export class ContestContractService {
       switchMap(() => this.getTotalContestCount(address)),
       switchMap((contestCount: number) =>
         forkJoin(
-          _.range(0, contestCount).map((index: number) =>
-            from(
-              this.getContestHashByIndex(address, index)
-            ).pipe(
-              switchMap((contestHash: string) =>
-                this.getContest(contestHash, address)
+          _
+            .range(0, contestCount)
+            .map((index: number) =>
+              from(this.getContestHashByIndex(address, index)).pipe(
+                switchMap((contestHash: string) =>
+                  this.getContest(contestHash, address)
+                )
               )
             )
-          )
         )
       ),
       defaultIfEmpty([])
@@ -182,9 +164,7 @@ export class ContestContractService {
   /**
    * Creates a contest
    */
-  public createContest(
-    contest: Contest
-  ): Observable<TransactionReceipt> {
+  public createContest(contest: Contest): Observable<TransactionReceipt> {
     // TODO: uncomment when the contest includes an image
     // const pinFile: Observable<FileReceipt> = from(this.ipfs.addFile(<Buffer>contest.imageHash));
     const ipfsFiles: IpfsFile[] = [
@@ -194,9 +174,7 @@ export class ContestContractService {
       },
       {
         path: 'description.txt',
-        content: new Buffer(
-          contest.additionalContent.content.description
-        )
+        content: new Buffer(contest.additionalContent.content.description)
       }
     ];
     const additionalContestContent = from(
@@ -217,23 +195,18 @@ export class ContestContractService {
             contest.initialDate / 1000,
             contest.endDate / 1000,
             contest.participationLimitDate / 1000,
-            contest.options.limitParticipations,
+            0,
             '0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf747ce'
           )
           .send({
             from: address,
-            value: this.currencyService.ethToWeis(
-              contest.prize.value
-            ),
+            value: this.currencyService.ethToWeis(contest.prize.value),
             gas: 4712388,
             gasPrice: 20
           })
       ),
       tap(txPromise =>
-        this.transactionStates.registerTransaction(
-          txPromise,
-          contest.title
-        )
+        this.transactionStates.registerTransaction(txPromise, contest.title)
       ),
       switchMap(promise => promise)
     );
@@ -250,31 +223,17 @@ export class ContestContractService {
     return this.getDefaultAccount.pipe(
       tap(add => (address = add)),
       switchMap(() =>
-        this.getParticipationsByContestHash(
-          address,
-          contestHash
-        )
+        this.getParticipationsByContestHash(address, contestHash)
       ),
       switchMap(hashes =>
         forkJoin(
           hashes.map((participationHash: string) =>
             combineLatest(
-              this.getParticipation(
-                address,
-                contestHash,
-                participationHash
-              ),
-              this.ipfs.get(
-                this.ipfs.getIpfsHashFromBytes32(
-                  participationHash
-                )
-              )
+              this.getParticipation(address, contestHash, participationHash),
+              this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(participationHash))
             ).pipe(
               map(([response, ipfsFile]) =>
-                this.responseToParticipation(
-                  response,
-                  ipfsFile[0]
-                )
+                this.responseToParticipation(response, ipfsFile[0])
               )
             )
           )
@@ -298,18 +257,13 @@ export class ContestContractService {
       })
     );
 
-    return combineLatest(
-      this.getDefaultAccount,
-      participationContent
-    ).pipe(
+    return combineLatest(this.getDefaultAccount, participationContent).pipe(
       map(([address, receipt]) =>
         this.contract.methods
           .setNewParticipation(
             contestHash,
             participation.title,
-            this.ipfs.getBytes32FromIpfsHash(
-              receipt[0].hash
-            )
+            this.ipfs.getBytes32FromIpfsHash(receipt[0].hash)
           )
           .send({
             from: address,

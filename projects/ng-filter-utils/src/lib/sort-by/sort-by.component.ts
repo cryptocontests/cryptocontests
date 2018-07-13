@@ -5,16 +5,20 @@ import {
   Output,
   EventEmitter,
   ViewChild,
-  Inject
+  Inject,
+  InjectionToken
 } from '@angular/core';
 import { CdkPortal } from '@angular/cdk/portal';
 import { MatRadioChange } from '@angular/material';
-import { SORTING_OPTIONS } from '../sort-by-menu.directive';
+// import { overlayAnimation } from '../animations';
+
+export const SORTING_OPTIONS = new InjectionToken<any>('SORTING_OPTIONS');
 
 @Component({
   selector: 'lib-sorting-menu',
   templateUrl: './sort-by.component.html',
   styleUrls: ['./sort-by.component.css']
+  //  animations: overlayAnimation
 })
 export class SortByComponent {
   @Input() options: string[] = [];

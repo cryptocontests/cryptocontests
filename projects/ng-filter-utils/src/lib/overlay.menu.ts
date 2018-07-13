@@ -16,7 +16,7 @@ export abstract class OverlayMenu {
     overlayConfig.positionStrategy = this.overlay.position().connectedTo(
       this.elementRef,
       {
-        originX: 'start',
+        originX: 'end',
         originY: 'bottom'
       },
       {

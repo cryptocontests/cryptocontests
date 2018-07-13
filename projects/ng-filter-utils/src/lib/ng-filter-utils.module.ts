@@ -5,7 +5,11 @@ import {
   MatRadioModule,
   MatInputModule,
   MatButtonModule,
-  MatIconModule
+  MatIconModule,
+  MatSelectModule,
+  MatDatepickerModule,
+  MatChipsModule,
+  MatAutocompleteModule
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { SortByMenuDirective } from './sort-by-menu.directive';
@@ -13,8 +17,16 @@ import { SortByComponent } from './sort-by/sort-by.component';
 import { FilterToolbarComponent } from './filter-toolbar/filter-toolbar.component';
 import { FilterStringComponent } from './filter-string/filter-string.component';
 import { FilterComponent } from './filter.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FilterTogglerDirective } from './filter-toggler.directive';
+import { FilterNumberComponent } from './filter-number/filter-number.component';
+import { FilterDateComponent } from './filter-date/filter-date.component';
+import { FilterMultioptionComponent } from './filter-multioption/filter-multioption.component';
+import { FilterAutocompleteComponent } from './filter-autocomplete/filter-autocomplete.component';
+import { ChipsAutocompleteComponent } from './chips-autocomplete/chips-autocomplete.component';
+import { FilterGroupComponent } from './filter-group.component';
+import { FilterAdvancedComponent } from './filter-advanced/filter-advanced.component';
+import { PortalModule } from '@angular/cdk/portal';
 
 @NgModule({
   imports: [
@@ -22,10 +34,16 @@ import { FilterTogglerDirective } from './filter-toggler.directive';
     FlexLayoutModule,
     MatCardModule,
     MatRadioModule,
+    MatChipsModule,
+    MatAutocompleteModule,
     MatInputModule,
     MatIconModule,
+    MatDatepickerModule,
+    MatSelectModule,
     MatButtonModule,
-    FormsModule
+    PortalModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   declarations: [
     SortByMenuDirective,
@@ -33,12 +51,24 @@ import { FilterTogglerDirective } from './filter-toggler.directive';
     FilterToolbarComponent,
     FilterStringComponent,
     FilterComponent,
-    FilterTogglerDirective
+    FilterGroupComponent,
+    FilterTogglerDirective,
+    FilterNumberComponent,
+    FilterDateComponent,
+    FilterMultioptionComponent,
+    FilterAutocompleteComponent,
+    ChipsAutocompleteComponent,
+    FilterAdvancedComponent
   ],
   exports: [
     SortByMenuDirective,
     FilterToolbarComponent,
     FilterStringComponent,
+    FilterNumberComponent,
+    FilterDateComponent,
+    FilterAutocompleteComponent,
+    FilterAdvancedComponent,
+    ChipsAutocompleteComponent,
     FilterTogglerDirective
   ],
   entryComponents: [SortByComponent]

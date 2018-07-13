@@ -1,5 +1,5 @@
 <div fxLayout="column" fxFill>
-  <mat-toolbar color="primary" class="mat-elevation-z4">
+  <mat-toolbar color="primary" class="mat-elevation-z2 toolbar">
     <mat-toolbar-row fxLayoutGap="16px">
       <span fxFlex>CryptoContests</span>
       <web3-transaction-button></web3-transaction-button>
@@ -8,9 +8,9 @@
       </button>
     </mat-toolbar-row>
 
-    <mat-toolbar-row fxLayout="row" fxLayoutAlign="center center">
+    <mat-toolbar-row fxLayout="row" fxLayoutAlign="center center" class="height-auto">
       <nav mat-tab-nav-bar backgroundColor="primary" fxFlex>
-        <a mat-tab-link *ngFor="let routeLink of routeLinks; let i = index" [routerLink]="routeLink.link" [active]="activeLinkIndex === i"
+        <a mat-tab-link *ngFor="let routeLink of routeLinks; let i = index" [routerLink]="[routeLink.link]" [active]="activeLinkIndex === i"
           (click)="activeLinkIndex = i">
           {{routeLink.label}}</a>
       </nav>
@@ -23,15 +23,18 @@
         </button>
       </div>
     </mat-toolbar-row>
-
   </mat-toolbar>
-  <mat-card class="mat-elevation-z2 filter-card">
-    <filter-toolbar fxFlex #filter>
-      <filter-string title="Title"></filter-string>
+
+  <mat-card class="mat-elevation-z2 filter-card" [style.z-index]="10">
+    <filter-toolbar #filter fxFlex (valueChanges)="filterChanged($event)">
+      <filter-string title="Title" name="title" (valueChanges)="filterChanged($event)"></filter-string>
+      <filter-number title="Prize" name="prize"></filter-number>
+      <filter-date title="Initial Date" name="initialDate"></filter-date>
+      <filter-autocomplete title="Filter by tags" name="tags" [autocompleteValues]="tags$ | async"></filter-autocomplete>
     </filter-toolbar>
   </mat-card>
 
-  <div fxFlex>
+  <div>
     <router-outlet></router-outlet>
   </div>
   <!--

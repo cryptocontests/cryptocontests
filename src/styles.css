@@ -55,3 +55,8 @@ mat-dialog-container {
 .small-card-padding {
   padding: 12px !important;
 }
+
+.toolbar {
+  position: sticky;
+  z-index: 1000;
+}

@@ -7,7 +7,12 @@ export enum ContestPhase {
   ENDED = 'ENDED'
 }
 
-export const PhasesList = [ContestPhase.UPCOMING, ContestPhase.ONGOING, ContestPhase.REVISION, ContestPhase.ENDED];
+export const PhasesList = [
+  ContestPhase.UPCOMING,
+  ContestPhase.ONGOING,
+  ContestPhase.REVISION,
+  ContestPhase.ENDED
+];
 
 export interface Hashable<T> {
   hash: string;
@@ -24,9 +29,7 @@ export interface Contest {
   participationLimitDate: number;
   endDate: number;
   tags: string[];
-  options: {
-    limitParticipations: number; // 0 means no limit
-  };
+  options: {};
 }
 
 export interface Participation {
@@ -39,9 +42,15 @@ export interface Participation {
 
 export function getContestPhase(contest: Contest): ContestPhase {
   if (Date.now() < contest.initialDate) return ContestPhase.UPCOMING;
-  else if (Date.now() >= contest.initialDate && Date.now() < contest.participationLimitDate) {
+  else if (
+    Date.now() >= contest.initialDate &&
+    Date.now() < contest.participationLimitDate
+  ) {
     return ContestPhase.ONGOING;
-  } else if (Date.now() >= contest.participationLimitDate && Date.now() < contest.endDate) {
+  } else if (
+    Date.now() >= contest.participationLimitDate &&
+    Date.now() < contest.endDate
+  ) {
     return ContestPhase.REVISION;
   } else return ContestPhase.ENDED;
 }

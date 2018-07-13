@@ -12,3 +12,7 @@ cc-dashboard {
   padding: 0px 18px 0px 18px;
   font-size: 14px;
 }
+
+.height-auto {
+  height: auto;
+}

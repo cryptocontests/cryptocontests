@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FilterComponent } from '../filter.component';
+import { FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'filter-string',
@@ -10,9 +11,7 @@ import { FilterComponent } from '../filter.component';
   ]
 })
 export class FilterStringComponent extends FilterComponent implements OnInit {
-  constructor() {
-    super();
+  constructor(protected formBuilder: FormBuilder) {
+    super(formBuilder);
   }
-
-  ngOnInit() {}
 }

@@ -16,9 +16,7 @@ import {
   Portal
 } from '@angular/cdk/portal';
 import { OverlayMenu } from './overlay.menu';
-import { SortByComponent } from './sort-by/sort-by.component';
-
-export const SORTING_OPTIONS = new InjectionToken<any>('SORTING_OPTIONS');
+import { SortByComponent, SORTING_OPTIONS } from './sort-by/sort-by.component';
 
 @Directive({
   selector: '[sortByMenu]'

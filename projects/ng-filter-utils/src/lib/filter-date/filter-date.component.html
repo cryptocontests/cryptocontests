@@ -1,0 +1,13 @@
+<form [formGroup]="formGroup" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
+  <mat-label>{{title}}</mat-label>
+  <mat-form-field floatLabel="never" class="center-field big-field">
+    <input matInput [matDatepicker]="afterPicker" placeholder="After...">
+    <mat-datepicker-toggle matSuffix [for]="afterPicker"></mat-datepicker-toggle>
+    <mat-datepicker #afterPicker></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field floatLabel="never" class="center-field big-field">
+    <input matInput [matDatepicker]="beforePicker" placeholder="...before">
+    <mat-datepicker-toggle matSuffix [for]="beforePicker"></mat-datepicker-toggle>
+    <mat-datepicker #beforePicker></mat-datepicker>
+  </mat-form-field>
+</form>

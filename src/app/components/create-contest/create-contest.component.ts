@@ -131,9 +131,7 @@ export class CreateContestComponent implements OnInit {
       participationLimitDate: this.contestForm.value.participationLimitDate.valueOf(),
       endDate: this.contestForm.value.endDate.valueOf(),
       tags: this.tags,
-      options: {
-        limitParticipations: 0
-      }
+      options: {}
     };
     this.store.dispatch(new CreateContest(contest));
   }
