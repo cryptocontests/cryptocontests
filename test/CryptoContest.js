@@ -1,6 +1,6 @@
 var ContestController = artifacts.require("./ContestController")
 
-contract('ContestController', async function() {
+contract('ContestController', function(accounts) {
 
 let contests;
 
@@ -23,6 +23,10 @@ let contests;
     assert.isTrue(true);
   });
 
+  it("should create 5 judge members", function() {
+    assert.isTrue(true);
+  });
+
   it("should create 5 participations with same account origin", function() {
     assert.isTrue(true);
   });
@@ -32,6 +36,10 @@ let contests;
   });
 
   it("should randomly generate 100 votes among the participants", function() {
+    assert.isTrue(true);
+  });
+
+  it("should cancel candidature", function() {
     assert.isTrue(true);
   });
 
