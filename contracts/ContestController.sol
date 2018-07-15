@@ -99,7 +99,7 @@ contract ContestController is owned {
         uint256 dateEndContest, 
         uint256 limitCandidatures,
         uint256 taxForCandidatures,
-        bytes32 ipfsHash) public payable {
+        bytes32 ipfsHash) public payable returns (bytes32 _contestHash) {
         
         require(msg.value > 0);
         bytes32 contestHash = keccak256(abi.encodePacked(msg.sender,title,dateEndContest));
@@ -126,7 +126,8 @@ contract ContestController is owned {
         addMember(contestHash,owner,"founder");
 
         contestAccounts.push(contestHash) - 1;  
-        emit NewContest(title, contestHash);                      
+        emit NewContest(title, contestHash);  
+        return contestHash;                    
     }
 
     /**

@@ -1,41 +1,38 @@
 var ContestController = artifacts.require("./ContestController")
 
 contract('ContestController', function(accounts) {
+ var ContestControllerInstance;
+ var ContestOwner = accounts[1];
+ var ContestHash;
 
-let contests;
-
-  it("should create 10 contests with some account origin", function() {
-    /*
-    var contests = ContestController.deployed();
-    for (i = 0;i < 10; i++){
-      contests.setNewContest("Título ".concat(i+1),"Fotografía",
-        1533114000, // 01/08/2018 09:00:59
+  it("should create a only simple contest", function() {
+    return ContestController.deployed().then(function(instance){
+      ContestControllerInstance = instance;
+      return ContestControllerInstance.setNewContest(
+        "Concurso Fotográfico Cartel Fiestas Barcelona",
+        "Popular",
+        1533081600, // 01/08/2018 00:00:00
+        1534291200, // 15/08/2018 00:00:00
         1535759999, // 31/08/2018 23:59:59
-        1533686399, // 07/08/2018 23:59:59
         0, // unlimited
-        "QmT4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA");
-    }
-    */
+        5, // tax for candidature
+        "QmT4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA",{from: ContestOwner,value:5}).then(function(data){
+          ContestHash = data[0];
+        })
+    })
+    Console.log(ContestHash);
     assert.isTrue(true);
   });
 
-  it("should create 10 contests with different account origin", function() {
+  it("should create 5 judges members", function() {
     assert.isTrue(true);
   });
 
-  it("should create 5 judge members", function() {
+  it("should create 10 candidatures", function() {
     assert.isTrue(true);
   });
 
-  it("should create 5 participations with same account origin", function() {
-    assert.isTrue(true);
-  });
-
-  it("should create 5 participations with different account origin", function() {
-    assert.isTrue(true);
-  });
-
-  it("should randomly generate 100 votes among the participants", function() {
+    it("should randomly generate 100 votes among the participants", function() {
     assert.isTrue(true);
   });
 
