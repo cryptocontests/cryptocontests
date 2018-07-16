@@ -28,7 +28,7 @@ contract ContestController is owned {
         address owner;
         string title;
         uint256 votes;
-        bytes32 ipfsHash;
+        string ipfsHash;
         uint256 taxBalance;
         bool cancelled;
         address cancelledByMember;
@@ -59,7 +59,7 @@ contract ContestController is owned {
         uint256 dateLimitForCandidatures;
         uint256 dateEndContest;
         uint256 limitCandidatures; // 0 for infinite
-        bytes32 ipfsHash; 
+        string ipfsHash; 
         uint256 taxForCandidatures;
         uint256 award;
 
@@ -100,7 +100,7 @@ contract ContestController is owned {
         uint256 dateEndContest, 
         uint256 limitCandidatures,
         uint256 taxForCandidatures,
-        bytes32 ipfsHash) public payable returns (bytes32 _contestHash) {
+        string ipfsHash) public payable returns (bytes32 _contestHash) {
         
         require(msg.value > 0);
         bytes32 contestHash = keccak256(abi.encodePacked(msg.sender,title,dateEndContest));
@@ -146,7 +146,7 @@ contract ContestController is owned {
             uint256 dateLimitForCandidatures, 
             uint256 dateEndContest, 
             uint256 limitCandidatures,
-            bytes32 ipfsHash,
+            string ipfsHash,
             uint256 taxForCandidatures,
             uint256 award, 
             uint256 candidaturesCount) {
@@ -237,7 +237,7 @@ contract ContestController is owned {
     * @param contestHash contest hash for candidature
     * @param title title for candidature
     */
-    function setNewCandidature(bytes32 contestHash, string title, bytes32 ipfsHash) public payable{
+    function setNewCandidature(bytes32 contestHash, string title, string ipfsHash) public payable{
         require(msg.value >= contests[contestHash].taxForCandidatures);
         
         // checking limit candidatures
