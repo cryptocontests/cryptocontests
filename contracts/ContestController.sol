@@ -33,7 +33,6 @@ contract ContestController is owned {
         bool cancelled;
         address cancelledByMember;
         string reasonForCancellation;
-        //....
     }
 
     struct Member {
@@ -80,8 +79,6 @@ contract ContestController is owned {
     * Create New contest
     * 
     * Set new contest with settings
-    * 
- 
     *
     * @param title title contest
     * @param tags tags for category
@@ -210,7 +207,7 @@ contract ContestController is owned {
     * @param contestHash contest hash
     * @param targetMember judge ethereum address to be removed 
     */
-    function removeMember(bytes32 contestHash, address targetMember) onlyOwner public {
+    function removeMember(bytes32 contestHash, address targetMember) public {
         assert(msg.sender == contests[contestHash].owner);
         require(now < contests[contestHash].dateLimitForMemberRevision);
         require(contests[contestHash].memberId[targetMember] != 0);
@@ -230,7 +227,7 @@ contract ContestController is owned {
      *                        CANDIDATURES                       *
      *************************************************************/
 
-/**
+    /**
     *
     * Add new candidature
     *
@@ -387,25 +384,25 @@ contract ContestController is owned {
         return (values);
     }
     
-    function fetchCandidaturesPage(bytes32 _contestHash, uint256 cursor, uint256 howMany) public view returns (bytes32[] values)
+    function fetchCandidaturesPage(bytes32 contestHash, uint256 cursor, uint256 howMany) public view returns (bytes32[] values)
     {
-        require(contests[_contestHash].award > 0);
-        require(contests[_contestHash].candidaturesAccounts.length > 0);
-        require(cursor < contests[_contestHash].candidaturesAccounts.length - 1);
+        require(contests[contestHash].award > 0);
+        require(contests[contestHash].candidaturesAccounts.length > 0);
+        require(cursor < contests[contestHash].candidaturesAccounts.length - 1);
         
         uint256 i;
         
-        if (cursor + howMany < contests[_contestHash].candidaturesAccounts.length){
+        if (cursor + howMany < contests[contestHash].candidaturesAccounts.length){
             values = new bytes32[](howMany);
             for (i = 0; i < howMany; i++) {
-                values[i] = contests[_contestHash].candidaturesAccounts[i + cursor];
+                values[i] = contests[contestHash].candidaturesAccounts[i + cursor];
             }
             
         } else {
             uint256 lastPageLength = contestAccounts.length - cursor;
             values = new bytes32[](lastPageLength);
             for (i = 0; i < lastPageLength; i++) {
-                values[i] = contests[_contestHash].candidaturesAccounts[cursor + i];
+                values[i] = contests[contestHash].candidaturesAccounts[cursor + i];
             }
         }
         
