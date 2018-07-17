@@ -168,7 +168,11 @@ contract ContestController is owned {
     /*************************************************************
      *                         JUDGE MEMBERS                     *
      *************************************************************/
-     
+    modifier theOwnerOf(bytes32 contestHash){
+        require(msg.sender == contests[contestHash].owner);
+        _;
+    }
+
     /**
     *
     * Add judge member
@@ -179,8 +183,7 @@ contract ContestController is owned {
     * @param targetMember judge ethereum address
     * @param memberName judge name
     */
-    function addMember(bytes32 contestHash, address targetMember, string memberName) public {
-        assert(msg.sender == contests[contestHash].owner);
+    function addMember(bytes32 contestHash, address targetMember, string memberName) public theOwnerOf(contestHash){
         require(now < contests[contestHash].dateLimitForMemberRevision);
 
         uint id = contests[contestHash].memberId[targetMember];
@@ -207,8 +210,7 @@ contract ContestController is owned {
     * @param contestHash contest hash
     * @param targetMember judge ethereum address to be removed 
     */
-    function removeMember(bytes32 contestHash, address targetMember) public {
-        assert(msg.sender == contests[contestHash].owner);
+    function removeMember(bytes32 contestHash, address targetMember) public theOwnerOf(contestHash){
         require(now < contests[contestHash].dateLimitForMemberRevision);
         require(contests[contestHash].memberId[targetMember] != 0);
         
@@ -227,6 +229,12 @@ contract ContestController is owned {
      *                        CANDIDATURES                       *
      *************************************************************/
 
+    modifier validAddress(address to) {
+        require (to != address(0));
+        require(to != address(this));
+        _;
+    }
+
     /**
     *
     * Add new candidature
@@ -234,7 +242,7 @@ contract ContestController is owned {
     * @param contestHash contest hash for candidature
     * @param title title for candidature
     */
-    function setNewCandidature(bytes32 contestHash, string title, string ipfsHash) public payable{
+    function setNewCandidature(bytes32 contestHash, string title, string ipfsHash) public validAddress(msg.sender) payable{
         require(msg.value >= contests[contestHash].taxForCandidatures);
         
         // checking limit candidatures
@@ -314,7 +322,7 @@ contract ContestController is owned {
      *                 SOLVE CONTEST & REFUND                    *
      *************************************************************/
 
-    function solveContest(bytes32 contestHash) public returns (address _addressWinner, uint256 totalVotes) {
+    function solveContest(bytes32 contestHash) public theOwnerOf(contestHash) returns (address _addressWinner, uint256 totalVotes){
         require(contests[contestHash].award > 0);
         require(now > contests[contestHash].dateEndContest);
         
@@ -346,7 +354,7 @@ contract ContestController is owned {
     }
     
     function refundToCandidates(bytes32 contestHash, bytes32 candidatureHash) public {
-        assert(now >= contests[contestHash].dateEndContest);
+        require(now >= contests[contestHash].dateEndContest);
         assert(msg.sender == contests[contestHash].candidatures[candidatureHash].owner);
         require(contests[contestHash].award == 0);
         
