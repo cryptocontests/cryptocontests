@@ -1,0 +1,19 @@
+<mat-card [@overlayMenu] class="sort">
+	<mat-card-header>
+		<mat-card-title>{{title}}</mat-card-title>
+	</mat-card-header>
+
+	<mat-card-content fxLayout="column" fxLayoutGap="16px">
+		<mat-radio-group [(ngModel)]="selectedProperty" (change)="sortChanged()" fxLayout="column" fxLayoutGap="12px">
+			<ng-container *ngFor="let option of options">
+				<mat-radio-button [value]="option">{{option}}</mat-radio-button>
+			</ng-container>
+		</mat-radio-group>
+		<div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
+			<mat-button-toggle-group (change)="sortChanged()" [(ngModel)]="sortOrder">
+				<mat-button-toggle value="asc">ASCENDING</mat-button-toggle>
+				<mat-button-toggle value="desc">DESCENDING</mat-button-toggle>
+			</mat-button-toggle-group>
+		</div>
+	</mat-card-content>
+</mat-card>

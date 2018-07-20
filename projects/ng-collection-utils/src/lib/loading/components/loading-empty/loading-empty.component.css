@@ -1,0 +1,18 @@
+mat-icon {
+  height: 120px;
+  width: 120px;
+  font-size: 120px;
+}
+
+.dull {
+  opacity: 0.4;
+  color: #222;
+}
+
+.font {
+  font: 500 14px/18px Roboto, 'Helvetica Neue', sans-serif;
+}
+
+span {
+  margin-bottom: 32px;
+}

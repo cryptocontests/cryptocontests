@@ -47,7 +47,9 @@ export class Web3Service {
   }
 
   public getDefaultAccount(): Promise<string> {
-    return from(this.getAccounts()).pipe(map((accounts: string[]) => accounts[0])).toPromise();
+    return from(this.getAccounts())
+      .pipe(map((accounts: string[]) => accounts[0]))
+      .toPromise();
   }
 
   public newContract(contractAbi: any, contractAddress: string) {
@@ -55,12 +57,10 @@ export class Web3Service {
   }
 
   public bytesToString(content: any): string {
-    return this.web3.utils.toAscii(content);
+    return this.web3.utils.toAscii(content).replace(/\W/g, '');
   }
 
   public stringToBytes(content: string): any {
-    console.log(this);
     return this.web3.utils.fromAscii(content);
   }
-
 }

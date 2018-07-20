@@ -1,0 +1,15 @@
+<form [formGroup]="dummyGroup">
+	<mat-form-field fxLayout="row" fxLayoutGap="12px" fxLayoutAlign="center center" mat-ripple [overlayTrigger]="multioptions">
+		<mat-label>{{title}}</mat-label>
+		<input matInput [(ngModel)]="value" formControlName="input">
+		<button mat-icon-button matSuffix><mat-icon>arrow_drop_down</mat-icon></button>
+	</mat-form-field>
+</form>
+
+<ng-template #multioptions>
+	<form [formGroup]="formGroup" fxLayout="column" fxLayoutGap="12px" fxLayoutAlign="center start">
+		<ng-container *ngFor="let option of options">
+			<mat-checkbox matInput [formControlName]="option">{{option}}</mat-checkbox>
+		</ng-container>
+	</form>
+</ng-template>

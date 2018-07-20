@@ -33,10 +33,23 @@
               <span fxFlex>End date: {{(contest$ | async)?.endDate | date}}</span>
             </div>
           </div>
+          <mat-horizontal-stepper linear="true" #stepper>
+            <mat-step label="Created">
+              {{(contest$ | async)?.createdDate | date}}
+            </mat-step>
+            <mat-step label="Participate">
+              {{(contest$ | async)?.initialDate | date}}
+            </mat-step>
+            <mat-step label="Revision">
+              {{(contest$ | async)?.participationLimitDate | date}}
+            </mat-step>
+            <mat-step label="End">
+              {{(contest$ | async)?.endDate | date}}
+            </mat-step>
+          </mat-horizontal-stepper>
         </mat-card-content>
       </mat-card>
-      <cc-participations-grid fxFlex [participations]="participations$ | async"
-        *ngrxLoading="participations$;action:participationsAction;empty:'This contest has no participations yet'">
+      <cc-participations-grid fxFlex [participations]="participations$ | async" *ngrxLoading="participations$;action:participationsAction;empty:'This contest has no participations yet'">
       </cc-participations-grid>
     </div>
   </div>

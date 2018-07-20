@@ -1,9 +1,0 @@
-<form [formGroup]="formGroup" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
-  <mat-form-field floatLabel="never" class="center-field big-field">
-    <mat-placeholder style="color:brown">{{title}}</mat-placeholder>
-    <input matInput type="text" value="" [(ngModel)]="value" [formControlName]="name">
-    <button mat-button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
-      <mat-icon>close</mat-icon>
-    </button>
-  </mat-form-field>
-</form>

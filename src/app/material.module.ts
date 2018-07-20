@@ -27,7 +27,8 @@ import {
   MatProgressSpinnerModule,
   MatSnackBarModule,
   MatSliderModule,
-  MatSlideToggleModule
+  MatSlideToggleModule,
+  MatStepperModule
 } from '@angular/material';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -60,6 +61,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatRippleModule,
     MatSelectModule,
     MatSidenavModule,
+    MatStepperModule,
     MatProgressSpinnerModule,
     MatSliderModule,
     MatSlideToggleModule,

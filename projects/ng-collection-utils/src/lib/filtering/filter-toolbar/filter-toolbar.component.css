@@ -1,0 +1,36 @@
+.full-width {
+  width: 100%;
+}
+
+.center-field {
+  top: 3px;
+}
+
+.small-field {
+  width: 3em;
+}
+
+.normal-field {
+  width: 5em;
+}
+
+.big-field {
+  width: 8em;
+}
+
+.filter-card {
+  padding: 0 16px 0 16px !important;
+  z-index: 10;
+}
+
+.toolbar {
+  font-size: 16px;
+}
+
+.divider {
+  width: 100% !important;
+}
+
+.mat-form-field-wrapper {
+  padding: 0 0 6px 0;
+}

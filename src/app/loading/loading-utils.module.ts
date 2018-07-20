@@ -18,10 +18,26 @@ import { SyncLoadingDirective } from './directives/sync-loading.directive';
     MatIconModule,
     FlexLayoutModule
   ],
-  declarations: [LoadingComponent, AsyncLoadingDirective, LoadingEmptyComponent, LoadingErrorComponent,
-    NgrxLoadingDirective, SyncLoadingDirective],
-  entryComponents: [LoadingComponent, LoadingEmptyComponent, LoadingErrorComponent],
-  exports: [LoadingComponent, SyncLoadingDirective, AsyncLoadingDirective, NgrxLoadingDirective, LoadingEmptyComponent],
+  declarations: [
+    LoadingComponent,
+    AsyncLoadingDirective,
+    LoadingEmptyComponent,
+    LoadingErrorComponent,
+    NgrxLoadingDirective,
+    SyncLoadingDirective
+  ],
+  entryComponents: [
+    LoadingComponent,
+    LoadingEmptyComponent,
+    LoadingErrorComponent
+  ],
+  exports: [
+    LoadingComponent,
+    SyncLoadingDirective,
+    AsyncLoadingDirective,
+    NgrxLoadingDirective,
+    LoadingEmptyComponent
+  ],
   providers: [GlobalLoadingService]
 })
-export class LoadingUtilsModule { }
+export class LoadingUtilsModule {}

@@ -1,0 +1,7 @@
+.mat-card {
+  padding: 20px !important;
+}
+
+.sort {
+  transform-origin: right top;
+}

@@ -13,8 +13,8 @@
     "typeRoots": ["node_modules/@types"],
     "lib": ["es2017", "dom"],
     "paths": {
-      "ng-filter-utils": ["dist/ng-filter-utils"],
-      "ng-filter-utils/*": ["dist/ng-filter-utils/*"]
+      "ng-collection-utils": ["dist/ng-collection-utils"],
+      "ng-collection-utils/*": ["dist/ng-collection-utils/*"]
     }
   }
 }

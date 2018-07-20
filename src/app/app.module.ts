@@ -10,7 +10,7 @@ import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 
 import { FileHelpersModule } from 'ngx-file-helpers';
 
-import { FilterUtilsModule } from 'ng-filter-utils';
+import { CollectionUtilsModule } from 'ng-collection-utils';
 
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -64,7 +64,7 @@ import { CreateParticipationComponent } from './components/create-participation/
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     Web3Module,
     LoadingUtilsModule,
-    FilterUtilsModule
+    CollectionUtilsModule
   ],
   providers: [ContestContractService],
   bootstrap: [AppComponent]
