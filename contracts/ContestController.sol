@@ -40,6 +40,12 @@ contract ContestController is owned {
         string name;
         bytes32 candidatureHash;
     }
+
+    struct Multihash {
+        bytes32 hash_tail;
+        uint8 hash_function;
+        uint8 hash_size;
+    }
     
     struct Contest {
         mapping (bytes32 => Candidature) candidatures;
@@ -88,6 +94,10 @@ contract ContestController is owned {
     * @param limitCandidatures limit candidatures for contest. 0 = unlimited
     * @param taxForCandidatures required tax for each candidature
     * @param ipfsHash hash for photo set in ipfs
+    *
+    * itself specifies the hash function and length of the hash in the first two bytes of the multihash. 
+    * In the examples above the first two bytes in hex is 1220, where 12 denotes that this is the 
+    * SHA256 hash function and 20 is the length of the hash in bytes - 32 bytes.
     */
     function setNewContest(
         string title, 
@@ -197,7 +207,7 @@ contract ContestController is owned {
         judge.member = targetMember;
         judge.name = memberName;
 
-        contests[contestHash].members[id] = judge; //Member({member:targetMember, name: memberName});
+        contests[contestHash].members[id] = judge;
         emit MembershipChanged(memberName, targetMember, true);
     }
     
@@ -275,7 +285,8 @@ contract ContestController is owned {
         return contests[contestHash].candidaturesAccounts.length;
     }
 
-    function cancelCandidature(bytes32 contestHash, bytes32 candidatureHash, string reason) public {
+    function cancelCandidature(bytes32 contestHash, bytes32 candidatureHash, string reason) external {
+        // only judge member for cancellations
         uint id = contests[contestHash].memberId[msg.sender];
         require(id != 0);
         require(!contests[contestHash].candidatures[candidatureHash].cancelled);
@@ -296,7 +307,7 @@ contract ContestController is owned {
      *                         VOTATION                          *
      *************************************************************/
 
-    function setNewVote(bytes32 contestHash,bytes32 candidatureHash) public {
+    function setNewVote(bytes32 contestHash,bytes32 candidatureHash) external {
         require(now > contests[contestHash].dateLimitForCandidatures); 
         require(now < contests[contestHash].dateEndContest);
         uint id = contests[contestHash].memberId[msg.sender];
