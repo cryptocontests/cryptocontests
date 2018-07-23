@@ -1,4 +1,4 @@
-<mat-card fxLayout="column" fxFlex fxLayoutAlign="center stretch" *ngIf="show" [@filter] class="filter-card toolbar">
+<mat-card fxLayout="column" fxFlex fxLayoutAlign="center stretch" *ngIf="show" [@filter] class="filter-card filter-toolbar animate-topdown">
   <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
     <div fxFlex fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
       <ng-content></ng-content>
@@ -9,9 +9,7 @@
     </button>
   </div>
 
-  <mat-divider *ngIf="expanded"></mat-divider>
-
-  <div *ngIf="expanded" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" [@filter]>
+  <div *ngIf="expanded" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" [@filter] class="animate-topdown">
     <ng-template [cdkPortalOutlet]="advancedPortal"></ng-template>
   </div>
 </mat-card>
