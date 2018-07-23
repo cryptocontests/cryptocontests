@@ -1,26 +1,15 @@
 import { environment } from './../../environments/environment';
 import { TransactionReceipt, PromiEvent, Contract } from 'web3/types';
-import { SmartContractService } from './../web3/services/smart-contract.service';
 import { Injectable } from '@angular/core';
 import {
   Observable,
-  range,
   from,
   of as observableOf,
   forkJoin,
   combineLatest
 } from 'rxjs';
-import {
-  switchMap,
-  mergeAll,
-  map,
-  concatMap,
-  flatMap,
-  tap,
-  mergeMap,
-  defaultIfEmpty
-} from 'rxjs/operators';
-import { Contest, Participation, ContestPhase } from '../state/contest.model';
+import { switchMap, map, tap, defaultIfEmpty } from 'rxjs/operators';
+import { Contest, Candidature, ContestPhase } from '../state/contest.model';
 import * as _ from 'lodash';
 import { Web3Service } from '../web3/services/web3.service';
 import { TransactionStateService } from '../web3/services/transaction-state.service';
@@ -74,26 +63,24 @@ export class ContestContractService {
     this.contract.methods.getContest(contestHash).call({
       from: address
     });
-  getParticipationsByContestHash = (address: string, contestHash: string) =>
-    this.contract.methods.getParticipationsByContest(contestHash).call({
+  getCandidaturesByContestHash = (address: string, contestHash: string) =>
+    this.contract.methods.getCandidaturesByContest(contestHash).call({
       from: address
     });
-  getParticipation = (
+  getCandidature = (
     address: string,
     contestHash: string,
-    participationHash: string
+    candidatureHash: string
   ) =>
-    this.contract.methods
-      .getParticipation(contestHash, participationHash)
-      .call({
-        from: address
-      });
+    this.contract.methods.getCandidature(contestHash, candidatureHash).call({
+      from: address
+    });
   responseToContest = (response: any) =>
     <Contest>{
       id: response.contestHash,
       title: response.title,
       initialDate: response.startContest * 1000,
-      participationLimitDate: response.timeToCandidatures * 1000,
+      candidatureLimitDate: response.timeToCandidatures * 1000,
       endDate: response.endContest * 1000,
       prize: {
         value: response.award,
@@ -101,8 +88,8 @@ export class ContestContractService {
       },
       tags: response.tags.map(tag => this.web3Service.bytesToString(tag))
     };
-  responseToParticipation = (response: any, ipfsFile: IpfsFile) =>
-    <Participation>{
+  responseToCandidature = (response: any, ipfsFile: IpfsFile) =>
+    <Candidature>{
       title: response.title,
       creator: response.owner,
       date: response.creationDate,
@@ -191,12 +178,14 @@ export class ContestContractService {
         this.contract.methods
           .setNewContest(
             contest.title,
-            contest.tags.map(tag => this.web3Service.stringToBytes(tag)),
+            contest.tags.map(this.web3Service.stringToBytes),
             contest.initialDate / 1000,
+            contest.candidatureLimitDate / 1000,
             contest.endDate / 1000,
-            contest.participationLimitDate / 1000,
-            0,
-            '0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf747ce'
+            this.currencyService.ethToWeis(contest.taxForCandidature.value),
+            '0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf747ce',
+            contest.judges[0].address,
+            contest.judges[0].name
           )
           .send({
             from: address,
@@ -213,27 +202,25 @@ export class ContestContractService {
   }
 
   /**
-   * Gets all the participations for the given contest
+   * Gets all the candidatures for the given contest
    */
-  public getContestParticipations(
+  public getContestCandidatures(
     contestHash: string
-  ): Observable<Participation[]> {
+  ): Observable<Candidature[]> {
     let address: string;
 
     return this.getDefaultAccount.pipe(
       tap(add => (address = add)),
-      switchMap(() =>
-        this.getParticipationsByContestHash(address, contestHash)
-      ),
+      switchMap(() => this.getCandidaturesByContestHash(address, contestHash)),
       switchMap(hashes =>
         forkJoin(
-          hashes.map((participationHash: string) =>
+          hashes.map((candidatureHash: string) =>
             combineLatest(
-              this.getParticipation(address, contestHash, participationHash),
-              this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(participationHash))
+              this.getCandidature(address, contestHash, candidatureHash),
+              this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(candidatureHash))
             ).pipe(
               map(([response, ipfsFile]) =>
-                this.responseToParticipation(response, ipfsFile[0])
+                this.responseToCandidature(response, ipfsFile[0])
               )
             )
           )
@@ -244,25 +231,25 @@ export class ContestContractService {
   }
 
   /**
-   * Creates a participation
+   * Creates a candidature
    */
-  public createParticipation(
+  public createCandidature(
     contestHash: string,
-    participation: Participation
+    candidature: Candidature
   ): Observable<TransactionReceipt> {
-    // Store participation content on ipfs and retrieve hash
-    const participationContent = from(
-      this.ipfs.add(participation.content.content, {
+    // Store candidature content on ipfs and retrieve hash
+    const candidatureContent = from(
+      this.ipfs.add(candidature.content.content, {
         pin: false
       })
     );
 
-    return combineLatest(this.getDefaultAccount, participationContent).pipe(
+    return combineLatest(this.getDefaultAccount, candidatureContent).pipe(
       map(([address, receipt]) =>
         this.contract.methods
-          .setNewParticipation(
+          .setNewCandidature(
             contestHash,
-            participation.title,
+            candidature.title,
             this.ipfs.getBytes32FromIpfsHash(receipt[0].hash)
           )
           .send({
@@ -272,10 +259,7 @@ export class ContestContractService {
           })
       ),
       tap(txPromise =>
-        this.transactionStates.registerTransaction(
-          txPromise,
-          participation.title
-        )
+        this.transactionStates.registerTransaction(txPromise, candidature.title)
       ),
       switchMap(promise => promise)
     );

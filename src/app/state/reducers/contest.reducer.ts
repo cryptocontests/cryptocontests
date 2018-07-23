@@ -1,4 +1,4 @@
-import { ContestPhase, getContestPhase, Participation } from './../contest.model';
+import { ContestPhase, getContestPhase, Candidature } from './../contest.model';
 import { EntityAdapter, createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Contest } from '../contest.model';
 import { ContestActions, ContestActionTypes } from '../actions/contest.actions';
@@ -7,7 +7,7 @@ import { Dictionary } from '@ngrx/entity/src/models';
 
 export interface State extends EntityState<Contest> {
   // additional entities state properties
-  participations: {[contestHash: string]: Participation[]};
+  candidatures: { [contestHash: string]: Candidature[] };
   selectedContest: string;
   tags: string[];
 }
@@ -16,7 +16,7 @@ export const adapter: EntityAdapter<Contest> = createEntityAdapter<Contest>();
 
 export const initialState: State = adapter.getInitialState({
   // additional entity state properties
-  participations: {},
+  candidatures: {},
   selectedContest: null,
   tags: []
 });
@@ -38,10 +38,11 @@ export function contestReducer(
         selectedContest: action.payload.id
       });
     }
-    case ContestActionTypes.LoadedParticipations: {
-      const addParticipation = { participations: {} };
-      addParticipation.participations[action.payload.contestHash] = action.payload.participations;
-      return Object.assign(state, addParticipation);
+    case ContestActionTypes.LoadedCandidatures: {
+      const addCandidature = { candidatures: {} };
+      addCandidature.candidatures[action.payload.contestHash] =
+        action.payload.candidatures;
+      return Object.assign(state, addCandidature);
     }
 
     default: {
@@ -72,9 +73,9 @@ export const selectContestById = (id: string) =>
   );
 
 export const selectedContest = createSelector(
-    getContestState,
-    (state: State) => state.entities[state.selectedContest]
-  );
+  getContestState,
+  (state: State) => state.entities[state.selectedContest]
+);
 
 export const selectTags = createSelector(
   getContestState,

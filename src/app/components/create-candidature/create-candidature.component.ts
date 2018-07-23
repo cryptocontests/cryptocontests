@@ -2,47 +2,46 @@ import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { FilePickerComponent } from '../file-picker/file-picker.component';
-import { Participation } from '../../state/contest.model';
+import { Candidature } from '../../state/contest.model';
 
 @Component({
-  selector: 'cc-create-participation',
-  templateUrl: './create-participation.component.html',
-  styleUrls: ['./create-participation.component.css']
+  selector: 'cc-create-candidature',
+  templateUrl: './create-candidature.component.html',
+  styleUrls: ['./create-candidature.component.css']
 })
-export class CreateParticipationComponent {
-  participationForm: FormGroup;
+export class CreateCandidatureComponent {
+  candidatureForm: FormGroup;
   @ViewChild('filePicker') filePicker: FilePickerComponent;
 
   constructor(
-    public dialogRef: MatDialogRef<CreateParticipationComponent>,
+    public dialogRef: MatDialogRef<CreateCandidatureComponent>,
     private formBuilder: FormBuilder
   ) {
     this.buildForm();
   }
 
   private buildForm() {
-    this.participationForm = this.formBuilder.group({
+    this.candidatureForm = this.formBuilder.group({
       title: ['', Validators.required]
     });
   }
-
 
   cancel($event) {
     this.dialogRef.close();
   }
 
-  createParticipation() {
-    const participation: Participation = {
-      title: this.participationForm.value.title,
+  createCandidature() {
+    const candidature: Candidature = {
+      title: this.candidatureForm.value.title,
       creator: null,
       date: null,
       content: {
         hash: null,
         content: new Buffer(this.filePicker.file.content)
       },
-      votes: 0
+      votes: 0,
+      cancelled: false
     };
-    this.dialogRef.close(participation);
+    this.dialogRef.close(candidature);
   }
-
 }

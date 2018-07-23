@@ -4,16 +4,16 @@
     <button mat-icon-button (click)="cancel($event)">
       <mat-icon>close</mat-icon>
     </button>
-    <span fxFlex>New participation</span>
+    <span fxFlex>New candidature</span>
 
-    <button mat-raised-button color="accent" (click)="createParticipation()">
-      SUBMIT PARTICIPATION
+    <button mat-raised-button color="accent" (click)="createCandidature()">
+      SUBMIT CANDIDATURE
     </button>
   </mat-toolbar>
 
   <div fxLayout="column" fxLayoutAlign="center stretch" class="form-padding" class="form-padding">
-    <cc-file-picker class="participation-picker" #filePicker></cc-file-picker>
-    <form fxFlex [formGroup]="participationForm">
+    <cc-file-picker class="candidature-picker" #filePicker></cc-file-picker>
+    <form fxFlex [formGroup]="candidatureForm">
       <mat-form-field cdkFocusStart>
         <input matInput formControlName="title" placeholder="Title" required>
       </mat-form-field>

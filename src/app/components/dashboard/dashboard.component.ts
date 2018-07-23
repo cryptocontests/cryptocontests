@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
     'Prize',
     'Creation Date',
     'Initial Date',
-    'Participation Limit Date',
+    'Candidature Limit Date',
     'End Date'
   ];
   tags$: Observable<string[]>;

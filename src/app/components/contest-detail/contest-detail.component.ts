@@ -1,13 +1,22 @@
-import { Contest, getContestPhase, Participation } from './../../state/contest.model';
+import {
+  Contest,
+  getContestPhase,
+  Candidature
+} from './../../state/contest.model';
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import * as fromReducer from '../../state/reducers/contest.reducer';
 import { Observable } from 'rxjs';
-import { LoadParticipations, CreateParticipation, LoadContest, ContestActionTypes } from '../../state/actions/contest.actions';
+import {
+  LoadCandidatures,
+  CreateCandidature,
+  LoadContest,
+  ContestActionTypes
+} from '../../state/actions/contest.actions';
 import { MatDialog } from '@angular/material';
-import { CreateParticipationComponent } from '../create-participation/create-participation.component';
+import { CreateCandidatureComponent } from '../create-candidature/create-candidature.component';
 import { cardAnimations } from '../card.animations';
 
 @Component({
@@ -21,9 +30,9 @@ export class ContestDetailComponent implements OnInit {
   contestTitle: string;
   contestId: string;
   getContestPhase = getContestPhase;
-  participations$: Observable<Participation[]>;
+  candidatures$: Observable<Candidature[]>;
   contestAction: LoadContest;
-  participationsAction: LoadParticipations;
+  participationsAction: LoadCandidatures;
 
   constructor(
     private store: Store<fromReducer.State>,
@@ -39,26 +48,28 @@ export class ContestDetailComponent implements OnInit {
     this.store.dispatch(this.contestAction);
     this.contest$ = this.store.select(fromReducer.selectedContest);
 
-    this.participationsAction = new LoadParticipations(this.contestId);
+    this.participationsAction = new LoadCandidatures(this.contestId);
     this.store.dispatch(this.participationsAction);
-    this.participations$ = this.store.select((state) =>
-      fromReducer.getContestState(state).participations[this.contestId]);
+    this.candidatures$ = this.store.select(
+      state => fromReducer.getContestState(state).candidatures[this.contestId]
+    );
   }
 
   goBack($event) {
     this.location.back();
   }
 
-  openCreateParticipationDialog(): void {
-    const dialogRef = this.dialog.open(CreateParticipationComponent);
+  openCreateCandidatureDialog(): void {
+    const dialogRef = this.dialog.open(CreateCandidatureComponent);
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) this.submitParticipation(result);
+      if (result) this.submitCandidature(result);
     });
   }
 
-  submitParticipation(participation: Participation) {
-    this.store.dispatch(new CreateParticipation({contestHash: this.contestId, participation}));
+  submitCandidature(candidature: Candidature) {
+    this.store.dispatch(
+      new CreateCandidature({ contestHash: this.contestId, candidature })
+    );
   }
-
 }

@@ -24,31 +24,41 @@ export interface Contest {
   title: string;
   additionalContent: Hashable<{ description: string; image: Buffer }>;
   prize: CryptoValue;
+  taxForCandidature: CryptoValue;
   createdDate: number;
   initialDate: number;
-  participationLimitDate: number;
+  candidatureLimitDate: number;
   endDate: number;
   tags: string[];
+  judges: Judge[];
   options: {};
 }
 
-export interface Participation {
+export interface Judge {
+  address: string;
+  name: string;
+}
+
+export interface Candidature {
   title: string;
   creator: string;
   date: number;
   content: Hashable<any>;
   votes: number;
+  cancelled: boolean;
+  cancelledByMember?: string;
+  reasonForCancellation?: string;
 }
 
 export function getContestPhase(contest: Contest): ContestPhase {
   if (Date.now() < contest.initialDate) return ContestPhase.UPCOMING;
   else if (
     Date.now() >= contest.initialDate &&
-    Date.now() < contest.participationLimitDate
+    Date.now() < contest.candidatureLimitDate
   ) {
     return ContestPhase.ONGOING;
   } else if (
-    Date.now() >= contest.participationLimitDate &&
+    Date.now() >= contest.candidatureLimitDate &&
     Date.now() < contest.endDate
   ) {
     return ContestPhase.REVISION;

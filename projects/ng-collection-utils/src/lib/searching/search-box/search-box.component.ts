@@ -6,7 +6,6 @@ import {
   ElementRef,
   ChangeDetectorRef
 } from '@angular/core';
-import { horizontalScale } from '../../animations';
 import { ESCAPE } from '@angular/cdk/keycodes';
 import { ViewEncapsulation } from '@angular/core';
 import { transition, trigger, animate, style } from '@angular/animations';
@@ -21,11 +20,11 @@ import { transition, trigger, animate, style } from '@angular/animations';
         style({
           width: '32px'
         }),
-        animate('300ms ease-in')
+        animate('200ms ease-in')
       ]),
       transition(':leave', [
         animate(
-          '300ms ease-out',
+          '200ms ease-out',
           style({
             width: '32px'
           })
@@ -43,6 +42,8 @@ export class SearchBoxComponent implements OnInit {
 
   @ViewChild('container') container: ElementRef<any>;
 
+  searchValue: string;
+
   constructor(private changeDetectionRef: ChangeDetectorRef) {}
 
   ngOnInit() {}
@@ -58,6 +59,12 @@ export class SearchBoxComponent implements OnInit {
 
   onKeydown($event) {
     if ($event.keyCode === ESCAPE) this.expanded = false;
+  }
+
+  onBlur($event) {
+    if (!this.searchValue) {
+      this.toggleExpanded();
+    }
   }
 
   animationEnded($event) {

@@ -5,6 +5,6 @@
   <mat-form-field appearance="legacy" *ngIf="expanded" floatLabel="never" class="search-input" [@horizontalScale] (@horizontalScale.done)="animationEnded($event)"
     (keydown)="onKeydown($event)">
     <mat-icon matPrefix class="search-icon">search</mat-icon>
-    <input #searchInput matInput [placeholder]="placeholder">
+    <input #searchInput matInput (blur)="onBlur($event)" [placeholder]="placeholder" [(ngModel)]="searchValue">
   </mat-form-field>
 </div>

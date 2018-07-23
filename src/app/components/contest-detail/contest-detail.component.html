@@ -6,7 +6,7 @@
     <span fxFlex>{{(contest$ | async)?.title}}</span>
     <span>{{(contest$ | async) ? ((contest$ | async).prize | cryptoConvert: 'ETH') : ''}} ETH</span>
     <mat-chip>{{(contest$ | async) ? getContestPhase(contest$ | async) : ''}}</mat-chip>
-    <button mat-raised-button color="accent" (click)="openCreateParticipationDialog()">
+    <button mat-raised-button color="accent" (click)="openCreateCandidatureDialog()">
       PARTICIPATE
     </button>
   </mat-toolbar>
@@ -28,7 +28,7 @@
             </div>
             <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="center stretch">
               <span fxFlex>Created date: {{(contest$ | async)?.createdDate | date}}</span>
-              <span fxFlex>Participation limit date: {{(contest$ | async)?.participationLimitDate | date}}</span>
+              <span fxFlex>Candidature limit date: {{(contest$ | async)?.candidatureLimitDate | date}}</span>
               <span fxFlex>Initial date: {{(contest$ | async)?.initialDate | date}}</span>
               <span fxFlex>End date: {{(contest$ | async)?.endDate | date}}</span>
             </div>
@@ -41,7 +41,7 @@
               {{(contest$ | async)?.initialDate | date}}
             </mat-step>
             <mat-step label="Revision">
-              {{(contest$ | async)?.participationLimitDate | date}}
+              {{(contest$ | async)?.candidatureLimitDate | date}}
             </mat-step>
             <mat-step label="End">
               {{(contest$ | async)?.endDate | date}}
@@ -49,8 +49,8 @@
           </mat-horizontal-stepper>
         </mat-card-content>
       </mat-card>
-      <cc-participations-grid fxFlex [participations]="participations$ | async" *ngrxLoading="participations$;action:participationsAction;empty:'This contest has no participations yet'">
-      </cc-participations-grid>
+      <cc-candidature-grid fxFlex [candidatures]="candidatures$ | async" *ngrxLoading="candidatures$;action:participationsAction;empty:'This contest has no candidatures yet'">
+      </cc-candidature-grid>
     </div>
   </div>
 

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Participation } from '../../state/contest.model';
+import { Candidature } from '../../state/contest.model';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -8,12 +8,9 @@ import { Observable } from 'rxjs';
   styleUrls: ['./participations-grid.component.css']
 })
 export class ParticipationsGridComponent implements OnInit {
+  @Input('candidatures') participations: Candidature[];
 
-  @Input('participations') participations: Participation[];
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

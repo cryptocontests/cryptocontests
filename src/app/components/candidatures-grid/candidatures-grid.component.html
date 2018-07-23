@@ -1,0 +1,5 @@
+<mat-grid-list cols="5">
+  <mat-grid-tile *ngFor="let candidature of candidatures" fxLayout="column" fxLayoutAlign="start center">
+    <img [src]="candidature.content.content" class="crop-image candidature-tile">
+  </mat-grid-tile>
+</mat-grid-list>

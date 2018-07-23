@@ -56,10 +56,13 @@ export class CreateContestComponent implements OnInit {
   private buildForm() {
     this.contestForm = this.formBuilder.group({
       title: ['', Validators.required],
+      judgeName: ['', Validators.required],
+      judgeAddress: ['', Validators.required],
       description: '',
       prize: ['', Validators.required],
+      candidatureTax: ['', Validators.required],
       initialDate: ['', Validators.required],
-      participationLimitDate: ['', Validators.required],
+      candidatureLimitDate: ['', Validators.required],
       endDate: ['', Validators.required],
       tags: ''
     });
@@ -114,6 +117,12 @@ export class CreateContestComponent implements OnInit {
   createContest() {
     const contest: Contest = {
       id: null,
+      judges: [
+        {
+          name: this.contestForm.value.judgeName,
+          address: this.contestForm.value.judgeAddress
+        }
+      ],
       title: this.contestForm.value.title,
       additionalContent: {
         hash: null,
@@ -126,9 +135,13 @@ export class CreateContestComponent implements OnInit {
         value: this.contestForm.value.prize,
         currency: CryptoCurrency.ETH
       },
+      taxForCandidature: {
+        value: this.contestForm.value.candidatureTax,
+        currency: CryptoCurrency.ETH
+      },
       createdDate: null,
       initialDate: this.contestForm.value.initialDate.valueOf(),
-      participationLimitDate: this.contestForm.value.participationLimitDate.valueOf(),
+      candidatureLimitDate: this.contestForm.value.candidatureLimitDate.valueOf(),
       endDate: this.contestForm.value.endDate.valueOf(),
       tags: this.tags,
       options: {}

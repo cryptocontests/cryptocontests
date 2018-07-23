@@ -27,10 +27,10 @@ import { LoadingUtilsModule } from './loading/loading-utils.module';
 import { ContestContractService } from './services/contest-contract.service';
 import { ContestDetailComponent } from './components/contest-detail/contest-detail.component';
 import { TagsComponent } from './components/tags/tags.component';
-import { ParticipationsGridComponent } from './components/participations-grid/participations-grid.component';
+import { CandidaturesGridComponent } from './components/candidatures-grid/candidatures-grid.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { FilePickerComponent } from './components/file-picker/file-picker.component';
-import { CreateParticipationComponent } from './components/create-participation/create-participation.component';
+import { CreateCandidatureComponent } from './components/create-candidature/create-candidature.component';
 
 @NgModule({
   declarations: [
@@ -40,12 +40,12 @@ import { CreateParticipationComponent } from './components/create-participation/
     ContestGridComponent,
     ContestDetailComponent,
     TagsComponent,
-    ParticipationsGridComponent,
+    CandidaturesGridComponent,
     ConfirmDialogComponent,
     FilePickerComponent,
-    CreateParticipationComponent
+    CreateCandidatureComponent
   ],
-  entryComponents: [ConfirmDialogComponent, CreateParticipationComponent],
+  entryComponents: [ConfirmDialogComponent, CreateCandidatureComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
