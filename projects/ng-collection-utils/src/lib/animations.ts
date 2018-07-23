@@ -49,8 +49,7 @@ export const horizontalScale: AnimationTriggerMetadata = trigger(
 export const filterAnimation: AnimationTriggerMetadata = trigger('filter', [
   transition(':enter', [
     style({
-      transform: 'translateY(-100%)',
-      opacity: 0
+      height: 0
     }),
     animate('100ms cubic-bezier(0.25, 0.8, 0.25, 1)')
   ]),
@@ -58,8 +57,7 @@ export const filterAnimation: AnimationTriggerMetadata = trigger('filter', [
     animate(
       '100ms cubic-bezier(0.25, 0.8, 0.25, 1)',
       style({
-        transform: 'translateY(-100%)',
-        opacity: 0
+        height: 0
       })
     )
   ])

@@ -1,14 +1,22 @@
-import { Input, ElementRef, TemplateRef, ViewContainerRef, ComponentFactoryResolver, Type, ComponentRef } from '@angular/core';
+import {
+  Input,
+  ElementRef,
+  TemplateRef,
+  ViewContainerRef,
+  ComponentFactoryResolver,
+  Type,
+  ComponentRef
+} from '@angular/core';
 import { LoadingComponent } from '../components/loading/loading.component';
 import { Observable, Subscription } from 'rxjs';
 import { LoadingEmptyComponent } from '../components/loading-empty/loading-empty.component';
 import { LoadingErrorComponent } from '../components/loading-error/loading-error.component';
 import { skip } from 'rxjs/operators';
+import { variable } from '@angular/compiler/src/output/output_ast';
 
 export type TemplateInput = TemplateRef<any> | Type<any> | string;
 
 export abstract class BaseLoading {
-
   private subscription: Subscription;
 
   constructor(
@@ -24,7 +32,10 @@ export abstract class BaseLoading {
   abstract getCustomEmpty(): TemplateInput;
 
   protected isEmpty(value) {
-    return !value || ((length in value || Array.isArray(value)) && value.length === 0);
+    return (
+      !value ||
+      ((length in value || Array.isArray(value)) && value.length === 0)
+    );
   }
 
   protected bindObservable(observable: Observable<any>) {
@@ -36,16 +47,22 @@ export abstract class BaseLoading {
   }
 
   protected showValue(value) {
-    if (this.isEmpty(value)) this.showEmpty();
-    else this.showTemplate(this.templateRef);
+    if (typeof value !== typeof true && this.isEmpty(value)) {
+      this.showEmpty();
+    } else this.showTemplate(this.templateRef);
     if (this.subscription) this.subscription.unsubscribe();
   }
 
   protected showError() {
-    if (this.getCustomError() instanceof TemplateRef || this.getCustomError() instanceof Type) {
+    if (
+      this.getCustomError() instanceof TemplateRef ||
+      this.getCustomError() instanceof Type
+    ) {
       this.showTemplateInput(this.getCustomError());
     } else {
-      this.showTemplateInput(LoadingErrorComponent, <string>this.getCustomError());
+      this.showTemplateInput(LoadingErrorComponent, <string>(
+        this.getCustomError()
+      ));
     }
     if (this.subscription) this.subscription.unsubscribe();
   }
@@ -55,14 +72,22 @@ export abstract class BaseLoading {
   }
 
   protected showEmpty() {
-    if (this.getCustomEmpty() instanceof TemplateRef || this.getCustomEmpty() instanceof Type) {
+    if (
+      this.getCustomEmpty() instanceof TemplateRef ||
+      this.getCustomEmpty() instanceof Type
+    ) {
       this.showTemplateInput(this.getCustomEmpty());
     } else {
-      this.showTemplateInput(LoadingEmptyComponent, <string>this.getCustomEmpty());
+      this.showTemplateInput(LoadingEmptyComponent, <string>(
+        this.getCustomEmpty()
+      ));
     }
   }
 
-  protected showTemplateInput(toShow: TemplateInput, customMessage: string = null) {
+  protected showTemplateInput(
+    toShow: TemplateInput,
+    customMessage: string = null
+  ) {
     let component;
 
     if (toShow instanceof TemplateRef) component = this.showTemplate(toShow);
@@ -73,7 +98,9 @@ export abstract class BaseLoading {
 
   private showComponent(component: Type<any>): ComponentRef<any> {
     this.viewContainer.clear();
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component);
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
+      component
+    );
     return this.viewContainer.createComponent(componentFactory);
   }
 
@@ -81,5 +108,4 @@ export abstract class BaseLoading {
     this.viewContainer.clear();
     this.viewContainer.createEmbeddedView(templateRef);
   }
-
 }

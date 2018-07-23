@@ -1,7 +1,18 @@
-import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Input,
+  OnDestroy
+} from '@angular/core';
 import { Contest, ContestPhase } from '../../state/contest.model';
 import { Observable, Subscription } from 'rxjs';
-import { ContestActionTypes, LoadedContests, LoadContests } from '../../state/actions/contest.actions';
+import {
+  ContestActionTypes,
+  LoadedContests,
+  LoadContests
+} from '../../state/actions/contest.actions';
 import { cardAnimations } from '../card.animations';
 import { Store } from '@ngrx/store';
 import * as fromReducer from '../../state/reducers/contest.reducer';
@@ -36,7 +47,9 @@ export class ContestGridComponent implements OnDestroy {
     this.phase = this.route.snapshot.paramMap.get('phase');
     this.action = new LoadContests();
     this.store.dispatch(this.action);
-    this.contests$ = this.store.select(fromReducer.selectContestsByPhase(ContestPhase[this.phase.toUpperCase()]));
+    this.contests$ = this.store.select(
+      fromReducer.selectContestsByPhase(ContestPhase[this.phase.toUpperCase()])
+    );
   }
 
   ngOnDestroy() {
@@ -44,11 +57,12 @@ export class ContestGridComponent implements OnDestroy {
     // don't then we will continue to run our initialiseInvites()
     // method on every navigationEnd event.
     if (this.navigationSubscription) {
-       this.navigationSubscription.unsubscribe();
+      this.navigationSubscription.unsubscribe();
     }
   }
 
   selectContest(contest: Contest) {
+    console.log(contest);
     this.router.navigate(['/contest', contest.id]);
     // this.contestSelected.emit(contest.id);
   }

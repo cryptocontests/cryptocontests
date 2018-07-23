@@ -114,9 +114,10 @@ contract ContestController is owned {
         uint256 taxForCandidatures,
         string ipfsHash,
         address initialJudge,
-        string judgeName) public payable returns (bytes32 _contestHash) {
+        string judgeName) public payable returns (bytes32 contestHash) {
 
         require(msg.value > 0, "The contest must have a prize");
+        require(taxForCandidatures > 0, "Making a candidature must cost a stake");
         bytes32 contestHash = keccak256(abi.encodePacked(msg.sender, title, initialDate));
         require(contests[contestHash].award == 0, "Contest with this owner, title and initial date already exists");
         require(initialDate < candidatureLimitDate, "The initial date is not before the candidature limit date");
@@ -141,12 +142,11 @@ contract ContestController is owned {
 
         contestList.push(contestHash);
         emit NewContest(title, contestHash);
-        return contestHash;
     }
 
     /**
     *
-    * Return contest based in '_contestHash' param
+    * Return contest based in 'contestHash' param
     *
     * @param contestHash contest hash to return
     */
@@ -155,6 +155,7 @@ contract ContestController is owned {
             address owner,
             string title,
             bytes32[] tags,
+            uint256 createdDate,
             uint256 initialDate,
             uint256 candidatureLimitDate,
             uint256 endDate,
@@ -166,6 +167,7 @@ contract ContestController is owned {
         owner = contests[contestHash].owner;
         title = contests[contestHash].title;
         tags = contests[contestHash].tags;
+        createdDate = contests[contestHash].createdDate;
         initialDate = contests[contestHash].initialDate;
         candidatureLimitDate = contests[contestHash].candidatureLimitDate;
         endDate = contests[contestHash].endDate;

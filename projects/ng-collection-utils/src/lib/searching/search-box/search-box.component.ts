@@ -20,11 +20,11 @@ import { transition, trigger, animate, style } from '@angular/animations';
         style({
           width: '32px'
         }),
-        animate('200ms ease-in')
+        animate('100ms cubic-bezier(0.25, 0.8, 0.25, 1)')
       ]),
       transition(':leave', [
         animate(
-          '200ms ease-out',
+          '100ms cubic-bezier(0.25, 0.8, 0.25, 1)',
           style({
             width: '32px'
           })

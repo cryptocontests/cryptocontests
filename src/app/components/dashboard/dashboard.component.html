@@ -1,39 +1,43 @@
 <div fxLayout="column" fxFill>
-  <mat-toolbar color="primary" class="mat-elevation-z2 toolbar">
-    <mat-toolbar-row fxLayoutGap="16px">
-      <mat-label fxFlex>CryptoContests</mat-label>
-      <web3-transaction-button></web3-transaction-button>
-      <button mat-raised-button color="accent" routerLink="/contest/create">
-        CREATE NEW CONTEST
-      </button>
-    </mat-toolbar-row>
-
-    <mat-toolbar-row fxLayout="row" fxLayoutAlign="center center" class="height-auto">
-      <nav mat-tab-nav-bar backgroundColor="primary" fxFlex>
-        <a mat-tab-link *ngFor="let routeLink of routeLinks; let i = index" [routerLink]="[routeLink.link]" [active]="activeLinkIndex === i"
-          (click)="activeLinkIndex = i">
-          {{routeLink.label}}</a>
-      </nav>
-      <div fxLayout="row" fxLayoutAlign="center center">
-        <search-box placeholder="Search by title"></search-box>
-        <button mat-button [filterToggler]="filter">
-          <mat-icon>filter_list</mat-icon> FILTER
+  <div class="toolbar">
+    <mat-toolbar color="primary" class="mat-elevation-z2 title-toolbar">
+      <mat-toolbar-row fxLayoutGap="16px">
+        <mat-label fxFlex>CryptoContests</mat-label>
+        <web3-transaction-button></web3-transaction-button>
+        <button mat-raised-button color="accent" routerLink="/contest/create">
+          CREATE NEW CONTEST
         </button>
-        <button mat-button [sortByMenu]="sortOptions">
-          <mat-icon>sort</mat-icon> SORT BY
-        </button>
-      </div>
-    </mat-toolbar-row>
-  </mat-toolbar>
+      </mat-toolbar-row>
 
-  <filter-toolbar #filter [style.z-index]="10" (valueChanges)="filterChanged($event)">
-    <filter-string title="Title" name="title" (valueChanges)="filterChanged($event)"></filter-string>
-    <filter-number title="Prize" name="prize"></filter-number>
-    <filter-date title="Initial Date" name="initialDate"></filter-date>
-    <filter-autocomplete title="Filter by tags" name="tags" [autocompleteValues]="tags$ | async"></filter-autocomplete>
-  </filter-toolbar>
+      <mat-toolbar-row fxLayout="row" fxLayoutAlign="center stretch" class="height-auto">
+        <nav mat-tab-nav-bar backgroundColor="primary" fxFlex>
+          <a mat-tab-link *ngFor="let routeLink of routeLinks; let i = index" [routerLink]="[routeLink.link]" [active]="activeLinkIndex === i"
+            (click)="activeLinkIndex = i">
+            {{routeLink.label}}</a>
+        </nav>
+        <div fxLayout="row" fxLayoutAlign="center center">
+          <search-box placeholder="Search by title"></search-box>
+          <button mat-button [filterToggler]="filter">
+            <mat-icon>filter_list</mat-icon> FILTER
+          </button>
+          <button mat-button [sortByMenu]="sortOptions">
+            <mat-icon>sort</mat-icon> SORT BY
+          </button>
+        </div>
+      </mat-toolbar-row>
+    </mat-toolbar>
 
-  <div>
+    <filter-toolbar #filter [style.z-index]="10" (valueChanges)="filterChanged($event)">
+      <filter-number title="Prize" name="prize"></filter-number>
+      <filter-date title="Initial Date" name="initialDate"></filter-date>
+      <filter-autocomplete title="Filter by tags" name="tags" [autocompleteValues]="tags$ | async"></filter-autocomplete>
+      <filter-advanced>
+        <filter-date title="End Date" name="endDate"></filter-date>
+      </filter-advanced>
+    </filter-toolbar>
+  </div>
+
+  <div class="auto-overflow">
     <router-outlet></router-outlet>
   </div>
   <!--

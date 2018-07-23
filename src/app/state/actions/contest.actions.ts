@@ -1,7 +1,7 @@
 import { TransactionReceipt } from 'web3/types';
 import { Action } from '@ngrx/store';
 import { Contest, Candidature } from '../contest.model';
-import { TransactionState } from '../../web3/transaction.model';
+import { TransactionState, CryptoValue } from '../../web3/transaction.model';
 import { LoadingAction } from '../../loading/ngrx-loading.action';
 
 export enum ContestActionTypes {
@@ -80,7 +80,11 @@ export class CreateCandidature implements Action {
   readonly type = ContestActionTypes.CreateCandidature;
 
   constructor(
-    public payload: { contestHash: string; candidature: Candidature }
+    public payload: {
+      contestHash: string;
+      stake: CryptoValue;
+      candidature: Candidature;
+    }
   ) {}
 }
 

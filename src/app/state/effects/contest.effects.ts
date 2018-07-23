@@ -120,7 +120,7 @@ export class ContestEffects {
     );
 
   @Effect()
-  createcandidature$: Observable<any> = this.actions$
+  createCandidature$: Observable<any> = this.actions$
     .ofType<CreateContest>(ContestActionTypes.CreateCandidature)
     .pipe(
       tap(() => this.globalLoading.show()),
@@ -128,6 +128,7 @@ export class ContestEffects {
         this.contestContract
           .createCandidature(
             createAction.payload.contestHash,
+            createAction.payload.stake,
             createAction.payload.candidature
           )
           .pipe(

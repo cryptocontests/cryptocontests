@@ -13,7 +13,7 @@ import { Contest, Candidature, ContestPhase } from '../state/contest.model';
 import * as _ from 'lodash';
 import { Web3Service } from '../web3/services/web3.service';
 import { TransactionStateService } from '../web3/services/transaction-state.service';
-import { CryptoCurrency } from '../web3/transaction.model';
+import { CryptoCurrency, CryptoValue } from '../web3/transaction.model';
 import { CurrencyService } from '../web3/services/currency.service';
 import {
   IpfsService,
@@ -56,7 +56,7 @@ export class ContestContractService {
       from: address
     });
   getContestHashByIndex = (address: string, index: number) =>
-    this.contract.methods.contestHashes(index).call({
+    this.contract.methods.contestList(index).call({
       from: address
     });
   getContestByHash = (address: string, contestHash: string) =>
@@ -75,18 +75,25 @@ export class ContestContractService {
     this.contract.methods.getCandidature(contestHash, candidatureHash).call({
       from: address
     });
-  responseToContest = (response: any) =>
+  responseToContest = (contestHash: string, response: any) =>
     <Contest>{
-      id: response.contestHash,
+      id: contestHash,
+      additionalContent: response.ipfsHash,
       title: response.title,
-      initialDate: response.startContest * 1000,
-      candidatureLimitDate: response.timeToCandidatures * 1000,
-      endDate: response.endContest * 1000,
+      createdDate: response.createdDate,
+      initialDate: response.initialDate * 1000,
+      candidatureLimitDate: response.candidatureLimitDate * 1000,
+      endDate: response.endDate * 1000,
       prize: {
         value: response.award,
         currency: CryptoCurrency.WEIS
       },
-      tags: response.tags.map(tag => this.web3Service.bytesToString(tag))
+      taxForCandidature: {
+        value: response.taxForCandidatures,
+        currency: CryptoCurrency.WEIS
+      },
+      tags: response.tags.map(tag => this.web3Service.bytesToString(tag)),
+      options: {}
     };
   responseToCandidature = (response: any, ipfsFile: IpfsFile) =>
     <Candidature>{
@@ -119,7 +126,7 @@ export class ContestContractService {
   ): Observable<Contest> {
     return (address ? observableOf(address) : this.getDefaultAccount).pipe(
       switchMap(add => this.getContestByHash(add, contestHash)),
-      map((response: any) => this.responseToContest(response))
+      map((response: any) => this.responseToContest(contestHash, response))
     );
   }
 
@@ -178,7 +185,7 @@ export class ContestContractService {
         this.contract.methods
           .setNewContest(
             contest.title,
-            contest.tags.map(this.web3Service.stringToBytes),
+            contest.tags.map(tag => this.web3Service.stringToBytes(tag)),
             contest.initialDate / 1000,
             contest.candidatureLimitDate / 1000,
             contest.endDate / 1000,
@@ -235,6 +242,7 @@ export class ContestContractService {
    */
   public createCandidature(
     contestHash: string,
+    stake: CryptoValue,
     candidature: Candidature
   ): Observable<TransactionReceipt> {
     // Store candidature content on ipfs and retrieve hash
@@ -253,11 +261,13 @@ export class ContestContractService {
             this.ipfs.getBytes32FromIpfsHash(receipt[0].hash)
           )
           .send({
+            value: this.currencyService.ethToWeis(stake.value),
             from: address,
             gas: 4712388,
             gasPrice: 20
           })
       ),
+      tap(console.log),
       tap(txPromise =>
         this.transactionStates.registerTransaction(txPromise, candidature.title)
       ),

@@ -30,7 +30,7 @@ export interface Contest {
   candidatureLimitDate: number;
   endDate: number;
   tags: string[];
-  judges: Judge[];
+  judges?: Judge[];
   options: {};
 }
 
