@@ -1,0 +1,15 @@
+<mat-card fxLayout="column" fxFlex fxLayoutAlign="center stretch" *ngIf="show" [@filter] class="filter-card filter-toolbar animate-topdown">
+  <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
+    <div fxFlex fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
+      <ng-content></ng-content>
+    </div>
+    <button *ngIf="expandable" mat-button (click)="toggleExpanded()">
+      {{ expanded ? 'BASIC' : 'ADVANCED'}}
+      <mat-icon>{{expanded ? 'expand_less' : 'expand_more'}}</mat-icon>
+    </button>
+  </div>
+
+  <div *ngIf="expanded" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center" [@filter] class="animate-topdown">
+    <ng-template [cdkPortalOutlet]="advancedPortal"></ng-template>
+  </div>
+</mat-card>

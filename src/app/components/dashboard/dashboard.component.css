@@ -2,3 +2,26 @@ cc-dashboard {
   width: 100%;
   height: 100%;
 }
+
+.mat-tab-lists,
+.mat-tab-list {
+  height: 100%;
+}
+
+.filter-card {
+  padding: 0px 18px 0px 18px;
+  font-size: 14px;
+}
+
+.height-auto {
+  height: auto;
+}
+
+.auto-overflow {
+  overflow-y: auto;
+}
+
+.title-toolbar {
+  z-index: 1000;
+  position: relative;
+}

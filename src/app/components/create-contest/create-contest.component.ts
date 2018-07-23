@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, OnInit, ElementRef } from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -9,7 +9,7 @@ import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
 import { default as _rollupMoment } from 'moment';
 import { Store } from '@ngrx/store';
-import { State } from '../../state/reducers/contest.reducer';
+import { State, selectTags } from '../../state/reducers/contest.reducer';
 import { Contest } from '../../state/contest.model';
 import { CreateContest } from '../../state/actions/contest.actions';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -22,6 +22,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { Router } from '@angular/router';
 import { CryptoCurrency } from '../../web3/transaction.model';
 import { FilePickerComponent } from '../file-picker/file-picker.component';
+import { of, Observable } from 'rxjs';
 
 const moment = _rollupMoment || _moment;
 
@@ -30,9 +31,9 @@ const moment = _rollupMoment || _moment;
   templateUrl: './create-contest.component.html',
   styleUrls: ['./create-contest.component.css']
 })
-export class CreateContestComponent {
-
+export class CreateContestComponent implements OnInit {
   contestForm: FormGroup;
+  allTags$: Observable<string[]>;
   tags: string[] = [];
   separatorKeysCodes = [ENTER, COMMA];
 
@@ -48,13 +49,20 @@ export class CreateContestComponent {
     this.buildForm();
   }
 
+  ngOnInit() {
+    this.allTags$ = this.store.select(selectTags);
+  }
+
   private buildForm() {
     this.contestForm = this.formBuilder.group({
       title: ['', Validators.required],
+      judgeName: ['', Validators.required],
+      judgeAddress: ['', Validators.required],
       description: '',
       prize: ['', Validators.required],
+      candidatureTax: ['', Validators.required],
       initialDate: ['', Validators.required],
-      participationLimitDate: ['', Validators.required],
+      candidatureLimitDate: ['', Validators.required],
       endDate: ['', Validators.required],
       tags: ''
     });
@@ -68,7 +76,7 @@ export class CreateContestComponent {
     const input = event.input;
     const value = event.value;
 
-    // Add our fruit
+    // Add our tag
     if ((value || '').trim()) {
       this.tags.push(value.trim());
     }
@@ -78,7 +86,6 @@ export class CreateContestComponent {
       input.value = '';
     }
 
-    console.log(this.contestForm.value.tags);
     this.contestForm.value.tags = null;
   }
 
@@ -110,6 +117,12 @@ export class CreateContestComponent {
   createContest() {
     const contest: Contest = {
       id: null,
+      judges: [
+        {
+          name: this.contestForm.value.judgeName,
+          address: this.contestForm.value.judgeAddress
+        }
+      ],
       title: this.contestForm.value.title,
       additionalContent: {
         hash: null,
@@ -122,14 +135,16 @@ export class CreateContestComponent {
         value: this.contestForm.value.prize,
         currency: CryptoCurrency.ETH
       },
+      taxForCandidature: {
+        value: this.contestForm.value.candidatureTax,
+        currency: CryptoCurrency.ETH
+      },
       createdDate: null,
       initialDate: this.contestForm.value.initialDate.valueOf(),
-      participationLimitDate: this.contestForm.value.participationLimitDate.valueOf(),
+      candidatureLimitDate: this.contestForm.value.candidatureLimitDate.valueOf(),
       endDate: this.contestForm.value.endDate.valueOf(),
       tags: this.tags,
-      options: {
-        limitParticipations: 0
-      }
+      options: {}
     };
     this.store.dispatch(new CreateContest(contest));
   }

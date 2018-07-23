@@ -6,12 +6,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
-import {
-  StoreRouterConnectingModule,
-  routerReducer
-} from '@ngrx/router-store';
+import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 
 import { FileHelpersModule } from 'ngx-file-helpers';
+
+import { CollectionUtilsModule } from 'ng-collection-utils';
 
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -28,10 +27,10 @@ import { LoadingUtilsModule } from './loading/loading-utils.module';
 import { ContestContractService } from './services/contest-contract.service';
 import { ContestDetailComponent } from './components/contest-detail/contest-detail.component';
 import { TagsComponent } from './components/tags/tags.component';
-import { ParticipationsGridComponent } from './components/participations-grid/participations-grid.component';
+import { CandidaturesGridComponent } from './components/candidatures-grid/candidatures-grid.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { FilePickerComponent } from './components/file-picker/file-picker.component';
-import { MatTabsToolbarModule } from './mat-tabs-toolbar/mat-tabs-toolbar.module';
+import { CreateCandidatureComponent } from './components/create-candidature/create-candidature.component';
 
 @NgModule({
   declarations: [
@@ -41,13 +40,12 @@ import { MatTabsToolbarModule } from './mat-tabs-toolbar/mat-tabs-toolbar.module
     ContestGridComponent,
     ContestDetailComponent,
     TagsComponent,
-    ParticipationsGridComponent,
+    CandidaturesGridComponent,
     ConfirmDialogComponent,
-    FilePickerComponent
+    FilePickerComponent,
+    CreateCandidatureComponent
   ],
-  entryComponents: [
-    ConfirmDialogComponent
-  ],
+  entryComponents: [ConfirmDialogComponent, CreateCandidatureComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -63,12 +61,10 @@ import { MatTabsToolbarModule } from './mat-tabs-toolbar/mat-tabs-toolbar.module
       stateKey: 'router'
     }),
     EffectsModule.forRoot([ContestEffects]),
-    !environment.production
-      ? StoreDevtoolsModule.instrument()
-      : [],
+    !environment.production ? StoreDevtoolsModule.instrument() : [],
     Web3Module,
     LoadingUtilsModule,
-    MatTabsToolbarModule
+    CollectionUtilsModule
   ],
   providers: [ContestContractService],
   bootstrap: [AppComponent]

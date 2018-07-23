@@ -3,17 +3,17 @@
     <button mat-icon-button (click)="goBack($event)">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <span fxFlex>{{contest?.title}}</span>
-    <span>{{contest?.prize | cryptoConvert: 'ETH'}} ETH</span>
-    <mat-chip>{{contest ? getContestPhase(contest) : ''}}</mat-chip>
-    <button mat-raised-button color="accent" routerLink="/contest/create">
+    <mat-label fxFlex>{{(contest$ | async)?.title}}</mat-label>
+    <mat-label>{{(contest$ | async) ? ((contest$ | async).prize | cryptoConvert: 'ETH') : ''}} ETH</mat-label>
+    <mat-chip>{{(contest$ | async) ? getContestPhase(contest$ | async) : ''}}</mat-chip>
+    <button mat-raised-button color="accent" (click)="openCreateCandidatureDialog()">
       PARTICIPATE
     </button>
   </mat-toolbar>
 
-  <div fxLayout="row" fxFlex fxLayoutAlign="center stretch">
+  <div fxLayout="row" fxFlex fxLayoutAlign="center stretch" *ngIf="contest$ | async; let contest">
     <div fxLayout="column" fxFlex="90%" fxLayoutAlign="start stretch">
-      <mat-card fxFlex="60%" class="mat-elevation-z2" fxLayout="column">
+      <mat-card [@cardState] fxFlex="60%" class="mat-elevation-z2" fxLayout="column">
         <img mat-card-image class="crop-image" fxFlex src="https://material.angular.io/assets/img/examples/shiba1.jpg" />
         <mat-card-header>
           <mat-card-title>
@@ -23,20 +23,26 @@
         <mat-card-content>
           <div fxLayout="row" fxLayoutGap="8px">
             <div fxFlex fxLayout="column" fxLayoutGap="8px">
-              <span fxFlex>{{contest?.description}}</span>
+              <p fxFlex>{{contest?.additionalContent?.content?.description}}</p>
               <cc-tags [tags]="contest?.tags" [clickable]="false"></cc-tags>
             </div>
             <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="center stretch">
-              <span fxFlex>Created date: {{contest?.createdDate | date}}</span>
-              <span fxFlex>Participation limit date: {{contest?.participationLimitDate | date}}</span>
-              <span fxFlex>Initial date: {{contest?.initialDate | date}}</span>
-              <span fxFlex>End date: {{contest?.endDate | date}}</span>
+              <mat-label fxFlex>Stake to participate: {{contest?.taxForCandidature | cryptoConvert: 'ETH'}} ETH</mat-label>
             </div>
           </div>
+          <mat-horizontal-stepper linear="false" #stepper [selectedIndex]="getPhaseIndex(contest)" disabled>
+            <mat-step label="Created on {{contest?.createdDate | date}}" [completed]="getPhaseIndex(contest) === 0"></mat-step>
+            <mat-step label="New candidatures from {{contest?.initialDate | date}}" [completed]="getPhaseIndex(contest) > 0"></mat-step>
+            <mat-step label="Revision begins on {{contest?.candidatureLimitDate | date}}" [completed]="getPhaseIndex(contest) > 1"></mat-step>
+            <mat-step label="Contest ends on {{contest?.endDate | date}}" [completed]="getPhaseIndex(contest) > 2"></mat-step>
+          </mat-horizontal-stepper>
         </mat-card-content>
       </mat-card>
+      <div *ngIf="shouldShowCandidatures(contest)">
+        <cc-candidature-grid fxFlex [candidatures]="candidatures$ | async" *ngrxLoading="candidatures$;action:participationsAction;empty:'This contest has no candidatures yet'">
+        </cc-candidature-grid>
+      </div>
     </div>
   </div>
-  <cc-participations-grid [participations]="participations$ | async"></cc-participations-grid>
 
 </div>

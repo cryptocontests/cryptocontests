@@ -1,0 +1,11 @@
+<form [formGroup]="formGroup" fxLayout="row" fxLayoutGap="12px" fxLayoutAlign="center center">
+  <mat-label>{{title}}</mat-label>
+  <mat-form-field appearance="legacy" class="center-field" fxLayout="row">
+    <mat-select [formControlName]="name">
+      <mat-option></mat-option>
+      <mat-option *ngFor="let option of options" [value]="option">
+        {{option}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</form>

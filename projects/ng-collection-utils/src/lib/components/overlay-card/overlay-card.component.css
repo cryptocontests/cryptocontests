@@ -1,0 +1,7 @@
+.mat-card {
+  padding: 20px !important;
+}
+
+.overlay {
+  transform-origin: right top;
+}

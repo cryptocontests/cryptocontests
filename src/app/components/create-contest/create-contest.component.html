@@ -1,5 +1,5 @@
 <div fxLayout="column" fxFill>
-  <mat-toolbar color="primary" class="mat-elevation-z4" fxLayoutGap="8px">
+  <mat-toolbar color="primary" class="mat-elevation-z4" fxLayoutGap="16px">
     <button mat-icon-button (click)="cancel($event)">
       <mat-icon>close</mat-icon>
     </button>
@@ -14,7 +14,7 @@
     <div fxLayout="column" fxFlex="70%" fxLayoutAlign="start stretch">
 
       <mat-card class="mat-elevation-z2" fxFlex fxLayout="column" fxLayoutGap="16px">
-        <cc-file-picker fxFlex="55vh" #filePicker></cc-file-picker>
+        <cc-file-picker fxFlex="35vh" #filePicker></cc-file-picker>
 
         <form [formGroup]="contestForm" class="card-padding">
           <div fxLayout="row" fxLayoutGap="32px">
@@ -23,40 +23,47 @@
               <mat-form-field fxFlexAlign="start" style="min-width: 30em;">
                 <input matInput formControlName="title" placeholder="Title" required>
               </mat-form-field>
+              <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center">
+                <mat-form-field fxFlex>
+                  <input matInput formControlName="judgeName" placeholder="Judge name" required>
+                </mat-form-field>
+                <mat-form-field [style.min-width]="'25em'">
+                  <input matInput formControlName="judgeAddress" placeholder="Judge address" required>
+                </mat-form-field>
+              </div>
               <mat-form-field>
                 <textarea matInput #autosize="cdkTextareaAutosize" cdkTextareaAutosize cdkAutosizeMinRows="5" cdkAutosizeMaxRows="5" formControlName="description"
                   placeholder="Description"></textarea>
               </mat-form-field>
 
-              <mat-form-field [hideRequiredMarker]="false">
+              <mat-form-field>
                 <mat-chip-list #tagsList>
-                  <mat-chip *ngFor="let tag of tags" [selectable]="false" [removable]="true" (removed)="remove(tag)">
-                    {{tag}}
+                  <mat-chip *ngFor="let tag of tags" selectable="false" removable="true" (removed)="remove(tag)">
+                    {{ tag }}
                     <mat-icon matChipRemove>cancel</mat-icon>
                   </mat-chip>
-                  <input placeholder="Tags" #tagInput formControlName="tags" matAutocomplete="auto" [matChipInputFor]="tagsList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="add($event)" />
+                  <input placeholder="Tags" #tagInput formControlName="tags" [matAutocomplete]="auto" [matChipInputFor]="tagsList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="add($event)">
                 </mat-chip-list>
-                <!--     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-                                     <mat-option *ngFor="let fruit of filteredFruits | async" [value]="fruit">
-                    {{ fruit }}
-                  </mat-option>
-
-                https://material.angular.io/components/chips/overview
-
-                </mat-autocomplete>
-             --></mat-form-field>
-
+              </mat-form-field>
+              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                <mat-option *ngFor="let tag of allTags$ | async" [value]="tag">
+                  {{ tag }}
+                </mat-option>
+              </mat-autocomplete>
             </div>
 
             <div fxLayout="column" fxLayoutGap="8px">
 
-              <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
-                <mat-form-field fxFlex>
-                  <input matInput type="number" min="0.000000000000001" formControlName="prize" placeholder="Prize" required>
-                </mat-form-field>
-                <span>ETH</span>
-              </div>
+              <mat-form-field fxFlex>
+                <input matInput type="number" min="0.000000000000001" formControlName="prize" placeholder="Prize" required>
+                <span matSuffix>ETH</span>
+              </mat-form-field>
+              <mat-form-field fxFlex>
+                <input matInput type="number" min="0.000000000000001" formControlName="candidatureTax" placeholder="Tax for candidature"
+                  required>
+                <span matSuffix>ETH</span>
+              </mat-form-field>
 
               <mat-form-field>
                 <input matInput [matDatepicker]="picker1" formControlName="initialDate" placeholder="Initial date" required>
@@ -64,8 +71,7 @@
                 <mat-datepicker #picker1></mat-datepicker>
               </mat-form-field>
               <mat-form-field>
-                <input matInput [matDatepicker]="picker2" formControlName="participationLimitDate" placeholder="Participation date limit"
-                  required>
+                <input matInput [matDatepicker]="picker2" formControlName="candidatureLimitDate" placeholder="Candidature date limit" required>
                 <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                 <mat-datepicker #picker2></mat-datepicker>
               </mat-form-field>

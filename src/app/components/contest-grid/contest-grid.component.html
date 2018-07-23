@@ -1,6 +1,6 @@
-<mat-grid-list cols="3" *ngLoading="contests;empty:'The search returned no contests';error:errorRef">
-  <mat-grid-tile *ngFor="let contest of contests | async" fxLayout="column" fxLayoutAlign="start center">
-    <mat-card mat-ripple fxFlex class="mat-elevation-z2 contest-tile" fxLayout="column" (click)="selectContest(contest)">
+<mat-grid-list cols="3" *ngrxLoading="contests$;action:action;empty:'The search returned no contests'">
+  <mat-grid-tile *ngFor="let contest of contests$ | async" fxLayout="column" fxLayoutAlign="start center">
+    <mat-card mat-ripple [@cardState] fxFlex class="mat-elevation-z2 contest-tile" fxLayout="column" (click)="selectContest(contest)">
       <img mat-card-image class="crop-image" fxFlex src="https://material.angular.io/assets/img/examples/shiba1.jpg" />
       <mat-card-content class="no-margin">
         <div fxLayout="column" fxLayoutAlign="center stretch" fxLayoutGap="6%">
@@ -19,5 +19,3 @@
     </mat-card>
   </mat-grid-tile>
 </mat-grid-list>
-
-<ng-template #errorRef>There was an error getting the contests</ng-template>
