@@ -31,6 +31,7 @@ import { CandidaturesGridComponent } from './components/candidatures-grid/candid
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { FilePickerComponent } from './components/file-picker/file-picker.component';
 import { CreateCandidatureComponent } from './components/create-candidature/create-candidature.component';
+import { JudgesListComponent } from './components/judges-list/judges-list.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { CreateCandidatureComponent } from './components/create-candidature/crea
     CandidaturesGridComponent,
     ConfirmDialogComponent,
     FilePickerComponent,
-    CreateCandidatureComponent
+    CreateCandidatureComponent,
+    JudgesListComponent
   ],
   entryComponents: [ConfirmDialogComponent, CreateCandidatureComponent],
   imports: [

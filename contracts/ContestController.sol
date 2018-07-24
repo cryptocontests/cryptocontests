@@ -118,7 +118,7 @@ contract ContestController is owned {
 
         require(msg.value > 0, "The contest must have a prize");
         require(taxForCandidatures > 0, "Making a candidature must cost a stake");
-        bytes32 contestHash = keccak256(abi.encodePacked(msg.sender, title, initialDate));
+        contestHash = keccak256(abi.encodePacked(msg.sender, title, initialDate));
         require(contests[contestHash].award == 0, "Contest with this owner, title and initial date already exists");
         require(initialDate < candidatureLimitDate, "The initial date is not before the candidature limit date");
         require(candidatureLimitDate < endDate, "The candidature limit date is not before the end date");

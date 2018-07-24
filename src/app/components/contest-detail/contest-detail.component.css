@@ -1,3 +1,17 @@
 .mat-horizontal-stepper-header {
   pointer-events: none !important;
 }
+
+.no-padding {
+  padding: 0 !important;
+}
+
+.mat-tab-body {
+  padding: 24px;
+}
+
+.mat-tab-label-container {
+  position: sticky;
+  top: 64px;
+  z-index: 100 !important;
+}
