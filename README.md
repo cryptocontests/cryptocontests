@@ -32,7 +32,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 The smartcontract tests will be executed with truffle in the ganache network and we will verify that the smartcontract methods work and give the expected results. The tests are in /test/CryptoContest.test.js where we can modify the parameters used.
 
-To start the tests we will execute the following script that raises the ganache network with personalized accounts to use them in the tests:
+To start the tests we will execute the following script that starts the ganache network with personalized accounts to use them in the tests:
 
 ```
 ./scripts/run_ganache.sh

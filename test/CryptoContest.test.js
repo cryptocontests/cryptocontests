@@ -18,9 +18,13 @@ contract('ContestController', function(accounts) {
   const TaxForCandidatures = 5;
   const IpfsHash = "QmT4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA"
   const JudgeName = "Jordi";
+  //Candidatures constants
+  const TitleCandidature = "Foto Torre Agbar"
+  const Reason = "Publicidad";
+  const CandidatureHash = "dasdsad" //TODO
   //Contest Hash generated
   const ContestHash = "0xcd16f2c50828278523dfbf709e89b1ead583acba9e6673d6243aace421b55545";
-  const CandidatureHash = "dasdsad" //TODO
+  
   let instance;
   console.log('**************************');
   console.log('Owner address: "'+ContestOwner+'"');
@@ -85,62 +89,56 @@ contract('ContestController', function(accounts) {
   });
 
 
-  //FIXME
+  //FIXME: No se puede crear candidatura por el tiempo
   describe("Candidatures functions: ", async function() {
     //setNewCandidature()
     it("Should add a new candidature", async function() { 
-      let tx, err = await instance.setNewCandidature( 
+      let tx = await instance.setNewCandidature( 
         ContestHash, 
         TitleCandidature,                                               
         IpfsHash,
         {from: CandidatureAddress,value:5});
-      console.log(err);
       assert.equal(tx,undefined);
     });
     //getCandidature()
     it("Should get a candidature by hash contest and hash candidature", async function() { 
-      let tx, err = await instance.getCandidature( 
+      let tx = await instance.getCandidature( 
         ContestHash, 
         CandidatureHash);                                               
-      console.log(err);
-      assert.equal(tx,undefined);
+      assert.notEqual(tx,undefined);
     });
     //getCandidaturesByContest()
     it("Should get candidatures by contest", async function() { 
-      let tx, err = await instance.getCandidaturesByContest( 
+      let tx = await instance.getCandidaturesByContest( 
         ContestHash);
-      console.log(err);
-      assert.equal(tx,undefined);
+      assert.notEqual(tx,undefined);
     });
     //getTotalCandidaturesByContest()
     it("Should get total candidatures by contest", async function() { 
-      let tx, err = await instance.getTotalCandidaturesByContest( 
+      let tx = await instance.getTotalCandidaturesByContest( 
         ContestHash);
-      console.log(err);
-      assert.equal(tx,undefined);
+      assert.notEqual(tx,undefined);
     });
     //cancelCandidature()
     it("Should cancel a candidature", async function() { 
-      let tx, err = await instance.cancelCandidature( 
+      let tx = await instance.cancelCandidature( 
         ContestHash, 
         CandidatureHash,                                               
         Reason);
-      console.log(err);
       assert.equal(tx,undefined);
     });
   });
-
+  // FIXME
   describe("Votation functions: ", async function() {
     //setNewVote()
     it("Should add a new vote", async function() { 
-      let tx, err = await instance.setNewVote( 
+      let tx = await instance.setNewVote( 
         ContestHash, 
         CandidatureHash,                                               
-        {from: JudgeAccount,value:5});
-      console.log(err);
+        {from: JudgeAccount});
       assert.equal(tx,undefined);
     });
   });
 
-
+  //FIXME: Problemas con las fechas de candidaturas
 });
