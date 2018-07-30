@@ -51,7 +51,7 @@ contract('ContestController', function(accounts) {
         JudgeAccount,                                     
         JudgeName,                                         
         {from: ContestOwner,value:5000000});
-      assert.notEqual(tx,undefined,"The result must be different from undefined");
+      assert.equal(tx.logs[0].args.member,JudgeAccount,"The result must be the JugeAccount");
     });
     //getContest()
     it("Should get a contest by hash", async function(){
