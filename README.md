@@ -25,3 +25,21 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+## Test ⚙️
+
+### Smart Contracts
+
+The smartcontract tests will be executed with truffle in the ganache network and we will verify that the smartcontract methods work and give the expected results. The tests are in /test/CryptoContest.test.js where we can modify the parameters used.
+
+To start the tests we will execute the following script that raises the ganache network with personalized accounts to use them in the tests:
+
+```
+./scripts/run_ganache.sh
+```
+Once the network is up we will execute the tests with the following command:
+
+```
+./scripts/truffle_test.sh
+```
+
