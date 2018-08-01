@@ -22,7 +22,7 @@ contract('ContestController', function(accounts) {
   //If you change these parameters: TitleCandidature; the CandidatureHash will change
   const TitleCandidature = "Foto Torre Agbar"
   const Reason = "Publicidad";
-  const CandidatureHash = "0xf00406f81d437b8fbc4cb66d328e1eec9b14572bcb00f629122be50f511c2b07" //TODO
+  const CandidatureHash = "0xf00406f81d437b8fbc4cb66d328e1eec9b14572bcb00f629122be50f511c2b07";
   //Contest Hash generated
   const ContestHash = "0x9ecb1aea907659d8c4af62093cacbb0a2e02a6f9f1e7b279c38220ef1cf9ffc7";
   //Created date
@@ -105,7 +105,7 @@ contract('ContestController', function(accounts) {
         TitleCandidature,                                               
         IpfsHash,
         {from: CandidatureAddress,value:5});
-      assert.notEqual(tx,undefined);
+      assert.equal(tx.logs[0].args.candidatureHash,CandidatureHash,"The result must be:'"+CandidatureHash+"'");
     });
     //getCandidature()
     it("Should get a candidature by hash contest and hash candidature", async function() { 
