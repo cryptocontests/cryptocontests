@@ -51,7 +51,7 @@ contract('ContestController', function(accounts) {
         JudgeAccount,                                     
         JudgeName,                                         
         {from: ContestOwner,value:5000000});
-      assert.equal(tx.logs[0].args.member,JudgeAccount,"The result must be the JugeAccount");
+      assert.equal(tx.logs[0].args.member,JudgeAccount,"The result must be the JudgeAccount");
     });
     //getContest()
     it("Should get a contest by hash", async function(){
@@ -64,8 +64,10 @@ contract('ContestController', function(accounts) {
       assert.equal(tx.s, 1,"The result must be: 1 ");
     });
     //getAllTags()
+    //FIXME: Ahora mismo no le paso tags asi que devuelve undefined
     it("Should get all tags", async function(){
       let tx = await instance.getAllTags()
+      console.log(tx.log[0].args)
       assert.notEqual(tx,undefined,"The result must be different from undefined");
     });
   });
