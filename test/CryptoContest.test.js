@@ -1,6 +1,4 @@
-const ContestController = artifacts.require("ContestController")
-const truffleAssert = require('truffle-assertions');
-const BigNumber = web3.BigNumber;
+const ContestController = artifacts.require("ContestController");
 
 contract('ContestController', function(accounts) {
   //Accounts of the ganache
@@ -12,9 +10,9 @@ contract('ContestController', function(accounts) {
   //If you change these parameters: Title, InitialDate or ContestOwner; the ContestHash will change
   const Title = "Concurso Fotográfico Cartel Fiestas Barcelona";
   const Tags = [];
-  const InitialDate = 1530784800;
-  const CandidatureLimitDate = 1535759999;
-  const EndDate = 1999959999;
+  const InitialDate = 1530784800;  // Thu, 05 Jul 2018 10:00:00 GMT
+  const CandidatureLimitDate = 1535759999; //Fri, 31 Aug 2018 23:59:59 GMT
+  const EndDate = 1538438399; // Mon, 01 Oct 2018 23:59:59 GMT
   const TaxForCandidatures = 5;
   const IpfsHash = "QmT4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA"
   const JudgeName = "Jordi";
@@ -26,7 +24,7 @@ contract('ContestController', function(accounts) {
   //Contest Hash generated
   const ContestHash = "0x9ecb1aea907659d8c4af62093cacbb0a2e02a6f9f1e7b279c38220ef1cf9ffc7";
   //Created date
-  const CreatedDate = 1525514400;
+  const CreatedDate = 1530403200;  // Sun, 01 Jul 2018 00:00:00 GMT
   //Vote time
   const VoteTime = 1535999999;
 
@@ -79,7 +77,7 @@ contract('ContestController', function(accounts) {
   });
 
   describe("Judge functions: ", async function() {
-    //addJudge()
+    //addJudge() 
     it("Should add a new judge member", async function() { 
       let tx = await instance.addJudge( 
         ContestHash, 
@@ -94,12 +92,40 @@ contract('ContestController', function(accounts) {
         NewJudgeMember);
       assert.isFalse(tx.logs[0].args.isMember);
     });
+    
+    it("Should not add a new judge member Out of Time", async function() { 
+      let txTime = await instance.setTime(1530784801);
+      let tx = await instance.addJudge( 
+        ContestHash, 
+        NewJudgeMember,                                               
+        JudgeName);
+      assert.isTrue(tx.logs[0].args.isMember);
+    });
+    //removeJudge()
+    it("Should not remove a judge member from contest Out of Time", async function() { 
+      let txTime = await instance.setTime(1530784801);
+      let tx = await instance.removeJudge( 
+        ContestHash, 
+        NewJudgeMember);
+      assert.isFalse(tx.logs[0].args.isMember);
+    });
   });
 
   describe("Candidatures functions: ", async function() {
     //setNewCandidature()
     it("Should add a new candidature", async function() { 
-      let txTime = await instance.setTime(0);
+      let txTime = await instance.setTime(1535759998);
+      let tx = await instance.setNewCandidature( 
+        ContestHash, 
+        TitleCandidature,                                               
+        IpfsHash,
+        {from: CandidatureAddress,value:5});
+      assert.equal(tx.logs[0].args.candidatureHash,CandidatureHash,"The result must be:'"+CandidatureHash+"'");
+    });
+
+    //setNewCandidature()
+    it("Should not add a new candidature Out of Time", async function() { 
+      let txTime = await instance.setTime(1535760000);
       let tx = await instance.setNewCandidature( 
         ContestHash, 
         TitleCandidature,                                               
@@ -128,11 +154,13 @@ contract('ContestController', function(accounts) {
     });
     //cancelCandidature()
     it("Should cancel a candidature", async function() { 
+      let txTime = await instance.setTime(1535759999);
       let tx = await instance.cancelCandidature( 
         ContestHash, 
         CandidatureHash,                                               
         Reason,
-        {from: JudgeAccount});
+        {from: JudgeAccount},
+        true);
       assert.equal(tx.logs[0].args.candidatureTitle,TitleCandidature,"The result must be:'"+TitleCandidature+"'");
     });
   });
