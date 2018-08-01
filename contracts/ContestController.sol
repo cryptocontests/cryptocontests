@@ -20,7 +20,7 @@ contract ContestController is owned {
 
     event NewContest(string title, bytes32 contestHash);
     event MembershipChanged(string memberName, address member, bool isMember);
-    event NewCandidature(string contestTitle, string candidatureTitle);
+    event NewCandidature(string contestTitle, string candidatureTitle, bytes32 candidatureHash);
     event NewVote(string member, bytes32 contestHash, bytes32 candidatureHash);
     event CandidatureCancellation(string member, string contestTitle, string candidatureTitle, string reason);
 
@@ -84,8 +84,9 @@ contract ContestController is owned {
     bytes32[] public tagsList;
 
     // ONLY FOR DEBUG PURPOSES
+    // FIXME: SECURITY ERROR
     uint date = 0;
-    function setTime (uint256 newDate) internal onlyOwner {
+    function setTime (uint256 newDate) public onlyOwner {
         date = newDate;
     }
 
@@ -295,7 +296,7 @@ contract ContestController is owned {
         contests[contestHash].candidatures[candidatureHash].ipfsHash = ipfsHash;
         contests[contestHash].candidatures[candidatureHash].cancelled = false;
 
-        emit NewCandidature(contests[contestHash].title, title);
+        emit NewCandidature(contests[contestHash].title, title, candidatureHash);
     }
 
     function getCandidature(bytes32 contestHash, bytes32 candidatureHash) public view returns(string title, uint256 votes) {

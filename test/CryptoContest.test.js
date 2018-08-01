@@ -12,25 +12,31 @@ contract('ContestController', function(accounts) {
   //If you change these parameters: Title, InitialDate or ContestOwner; the ContestHash will change
   const Title = "Concurso Fotográfico Cartel Fiestas Barcelona";
   const Tags = [];
-  const InitialDate = 1534291200;
+  const InitialDate = 1530784800;
   const CandidatureLimitDate = 1535759999;
   const EndDate = 1999959999;
   const TaxForCandidatures = 5;
   const IpfsHash = "QmT4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA"
   const JudgeName = "Jordi";
   //Candidatures constants
+  //If you change these parameters: TitleCandidature; the CandidatureHash will change
   const TitleCandidature = "Foto Torre Agbar"
   const Reason = "Publicidad";
-  const CandidatureHash = "dasdsad" //TODO
+  const CandidatureHash = "0xf00406f81d437b8fbc4cb66d328e1eec9b14572bcb00f629122be50f511c2b07" //TODO
   //Contest Hash generated
-  const ContestHash = "0xcd16f2c50828278523dfbf709e89b1ead583acba9e6673d6243aace421b55545";
-  
+  const ContestHash = "0x9ecb1aea907659d8c4af62093cacbb0a2e02a6f9f1e7b279c38220ef1cf9ffc7";
+  //Created date
+  const CreatedDate = 1525514400;
+  //Vote time
+  const VoteTime = 1535999999;
+
+  //Check address
   let instance;
   console.log('**************************');
-  console.log('Owner address: "'+ContestOwner+'"');
+  console.log('Owner Contest address: "'+ContestOwner+'"');
   console.log('Judge address: "'+JudgeAccount+'"');
   console.log('Judge use to addJudge test: "'+NewJudgeMember+'"');
-  console.log('Initial data: Wednesday, 15 August 2018 0:00:00');
+  console.log('Participant address: "'+CandidatureAddress+'"');
   console.log('**************************');
  
   beforeEach(async function(){
@@ -40,6 +46,7 @@ contract('ContestController', function(accounts) {
   describe("Contest functions: ", async function() {
     //setNewContest()
     it("Should set a new contest", async function() { 
+      let txTime = await instance.setTime(CreatedDate);
       let tx = await instance.setNewContest( 
         Title, 
         Tags,                                               
@@ -66,8 +73,7 @@ contract('ContestController', function(accounts) {
     //getAllTags()
     //FIXME: Ahora mismo no le paso tags asi que devuelve undefined
     it("Should get all tags", async function(){
-      let tx = await instance.getAllTags()
-      console.log(tx.log[0].args)
+      let tx = await instance.getAllTags();
       assert.notEqual(tx,undefined,"The result must be different from undefined");
     });
   });
@@ -90,57 +96,57 @@ contract('ContestController', function(accounts) {
     });
   });
 
-
-  //FIXME: No se puede crear candidatura por el tiempo
   describe("Candidatures functions: ", async function() {
     //setNewCandidature()
     it("Should add a new candidature", async function() { 
+      let txTime = await instance.setTime(0);
       let tx = await instance.setNewCandidature( 
         ContestHash, 
         TitleCandidature,                                               
         IpfsHash,
         {from: CandidatureAddress,value:5});
-      assert.equal(tx,undefined);
+      assert.notEqual(tx,undefined);
     });
     //getCandidature()
     it("Should get a candidature by hash contest and hash candidature", async function() { 
       let tx = await instance.getCandidature( 
         ContestHash, 
-        CandidatureHash);                                               
-      assert.notEqual(tx,undefined);
+        CandidatureHash);                                              
+      assert.equal(tx[0],TitleCandidature,"The result must be:'"+TitleCandidature+"'");
     });
     //getCandidaturesByContest()
     it("Should get candidatures by contest", async function() { 
       let tx = await instance.getCandidaturesByContest( 
         ContestHash);
-      assert.notEqual(tx,undefined);
+      assert.equal(tx[0],CandidatureHash,"The result must be:'"+CandidatureHash+"'");
     });
     //getTotalCandidaturesByContest()
     it("Should get total candidatures by contest", async function() { 
       let tx = await instance.getTotalCandidaturesByContest( 
         ContestHash);
-      assert.notEqual(tx,undefined);
+      assert.equal(tx.s,1,"The result must be: 1 ");
     });
     //cancelCandidature()
     it("Should cancel a candidature", async function() { 
       let tx = await instance.cancelCandidature( 
         ContestHash, 
         CandidatureHash,                                               
-        Reason);
-      assert.equal(tx,undefined);
+        Reason,
+        {from: JudgeAccount});
+      assert.equal(tx.logs[0].args.candidatureTitle,TitleCandidature,"The result must be:'"+TitleCandidature+"'");
     });
   });
-  // FIXME
+
   describe("Votation functions: ", async function() {
     //setNewVote()
     it("Should add a new vote", async function() { 
+      let txTime = await instance.setTime(VoteTime);
       let tx = await instance.setNewVote( 
         ContestHash, 
         CandidatureHash,                                               
         {from: JudgeAccount});
-      assert.equal(tx,undefined);
+      assert.equal(tx.logs[0].args.candidatureHash,CandidatureHash,"The result must be:'"+CandidatureHash+"'");
     });
   });
 
-  //FIXME: Problemas con las fechas de candidaturas
 });
