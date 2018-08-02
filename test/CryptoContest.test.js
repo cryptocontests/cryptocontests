@@ -25,8 +25,13 @@ contract('ContestController', function(accounts) {
   const ContestHash = "0x9ecb1aea907659d8c4af62093cacbb0a2e02a6f9f1e7b279c38220ef1cf9ffc7";
   //Created date
   const CreatedDate = 1530403200;  // Sun, 01 Jul 2018 00:00:00 GMT
+  //Present candidatures time
+  const CandidaturesTime = 1535758999;
   //Vote time
-  const VoteTime = 1535999999;
+  const VoteTime = 1538437399;
+  //Out time
+  const OutTimeJudge = 1530784801;
+  const OutTimeCandidatures = 1535760000;
 
   //Check address
   let instance;
@@ -41,7 +46,7 @@ contract('ContestController', function(accounts) {
     instance = await ContestController.deployed();
   });
 
-  describe("Contest functions: ", async function() {
+  describe("Contest functions without errors: ", async function() {
     //setNewContest()
     it("Should set a new contest", async function() { 
       let txTime = await instance.setTime(CreatedDate);
@@ -75,8 +80,59 @@ contract('ContestController', function(accounts) {
       assert.notEqual(tx,undefined,"The result must be different from undefined");
     });
   });
+  describe("Contest functions catching errors: ", async function() {
+    //Not setNewContest() award is 0
+    it("Should not set a new contest because award is 0", async function() { 
+      let txTime = await instance.setTime(CreatedDate);
+      try{
+        let tx = await instance.setNewContest( 
+          Title, 
+          Tags,                                               
+          InitialDate, 
+          CandidatureLimitDate, 
+          EndDate, 
+          TaxForCandidatures,
+          IpfsHash,                                          
+          JudgeAccount,                                     
+          JudgeName,                                         
+          {from: ContestOwner,value:0});
+        assert.isFalse(false,"The result must be 'ERROR'");
+      }catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'")
+      }
+    });
+    //Not setNewContest() missing parameters
+    it("Should not set a new contest because missing parameters", async function() { 
+      let txTime = await instance.setTime(CreatedDate);
+      try{
+        let tx = await instance.setNewContest( 
+          Title,                                                
+          InitialDate, 
+          CandidatureLimitDate, 
+          EndDate, 
+          TaxForCandidatures,
+          IpfsHash,                                          
+          JudgeAccount,                                     
+          JudgeName,                                         
+          {from: ContestOwner,value:0});
+        assert.isFalse(false,"The result must be 'ERROR'");
+      }catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'")
+      }
+    });
+    //Not getContest() hashcontest is wrong
+    it("Should not get a contest by hash because contest hash is wrong", async function(){
+      try{
+      let tx = await instance.getContest(JudgeAccount);
+      assert.isFalse(false,"The result must be 'ERROR'");
+      }catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'")
+      }
+    });
+  });
 
-  describe("Judge functions: ", async function() {
+  
+  describe("Judge functions without errors: ", async function() {
     //addJudge() 
     it("Should add a new judge member", async function() { 
       let tx = await instance.addJudge( 
@@ -92,46 +148,126 @@ contract('ContestController', function(accounts) {
         NewJudgeMember);
       assert.isFalse(tx.logs[0].args.isMember);
     });
-    
-    it("Should not add a new judge member Out of Time", async function() { 
-      let txTime = await instance.setTime(1530784801);
-      let tx = await instance.addJudge( 
-        ContestHash, 
-        NewJudgeMember,                                               
-        JudgeName);
-      assert.isTrue(tx.logs[0].args.isMember);
+  });
+  describe("Judge functions catching errors: ", async function() {
+    //NOT addJudge() out of time
+    it("Should not add a new judge member because out of time", async function() { 
+      let txTime = await instance.setTime(OutTimeJudge);
+      try{
+        let tx = await instance.addJudge( 
+          ContestHash, 
+          NewJudgeMember,                                               
+          JudgeName);
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
     });
-    //removeJudge()
-    it("Should not remove a judge member from contest Out of Time", async function() { 
-      let txTime = await instance.setTime(1530784801);
-      let tx = await instance.removeJudge( 
-        ContestHash, 
-        NewJudgeMember);
-      assert.isFalse(tx.logs[0].args.isMember);
+    //NOT addJudge() missing parameters
+    it("Should not add a new judge member because missing parameters", async function() { 
+      let txTime = await instance.setTime(CreatedDate);
+      try{
+        let tx = await instance.addJudge( 
+          NewJudgeMember,                                               
+          JudgeName);
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
+    });
+    //NOT addJudge() wrong contest hash
+    it("Should not add a new judge member because contest hash is wrong", async function() { 
+      let txTime = await instance.setTime(CreatedDate);
+      try{
+        let tx = await instance.addJudge( 
+          NewJudgeMember,
+          NewJudgeMember,                                               
+          JudgeName);
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
+    });
+     //NOT addJudge() same Jugde Address
+     it("Should not add a new judge member because the JudgeAddress already exists in the contest", async function() { 
+      let txTime = await instance.setTime(CreatedDate);
+      try{
+        let tx = await instance.addJudge( 
+          ContestHash,
+          JudgeAccount,                                               
+          JudgeName);
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
+    });
+    //NOT removeJudge() missing parameters
+    it("Should not remove a judge member from contest because missing parameters", async function() { 
+      let txTime = await instance.setTime(OutTimeJudge);
+      try{
+        let tx = await instance.removeJudge( 
+          NewJudgeMember);
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
+    });
+    //NOT removeJudge() wrong contest hash
+    it("Should not remove a judge member from contest because the contest hash is wrong", async function() { 
+      let txTime = await instance.setTime(OutTimeJudge);
+      try{
+        let tx = await instance.removeJudge( 
+          NewJudgeMember,
+          NewJudgeMember);
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
+    });
+      //NOT removeJudge() the judge has already been eliminated
+    it("Should not remove a judge member from contest because the judge has already been eliminated", async function() { 
+      let txTime = await instance.setTime(OutTimeJudge);
+      try{
+        let tx = await instance.removeJudge( 
+          ContestHash,
+          NewJudgeMember);
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
+    });
+    //NOT removeJudge() out of time
+    it("Should not remove a judge member from contest because out of time", async function() { 
+      let txTime = await instance.setTime(OutTimeJudge);
+      try{
+        let tx = await instance.removeJudge( 
+          ContestHash, 
+          NewJudgeMember);
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
     });
   });
 
-  describe("Candidatures functions: ", async function() {
+  describe("Candidatures functions without errors: ", async function() {
     //setNewCandidature()
     it("Should add a new candidature", async function() { 
-      let txTime = await instance.setTime(1535759998);
+      let txTime = await instance.setTime(CandidaturesTime);
       let tx = await instance.setNewCandidature( 
         ContestHash, 
         TitleCandidature,                                               
         IpfsHash,
         {from: CandidatureAddress,value:5});
-      assert.equal(tx.logs[0].args.candidatureHash,CandidatureHash,"The result must be:'"+CandidatureHash+"'");
-    });
-
-    //setNewCandidature()
-    it("Should not add a new candidature Out of Time", async function() { 
-      let txTime = await instance.setTime(1535760000);
-      let tx = await instance.setNewCandidature( 
-        ContestHash, 
-        TitleCandidature,                                               
-        IpfsHash,
-        {from: CandidatureAddress,value:5});
-      assert.equal(tx.logs[0].args.candidatureHash,CandidatureHash,"The result must be:'"+CandidatureHash+"'");
+      assert.equal(tx.logs[0].args.candidatureTitle,TitleCandidature,"The result must be:'"+TitleCandidature+"'");
     });
     //getCandidature()
     it("Should get a candidature by hash contest and hash candidature", async function() { 
@@ -154,14 +290,121 @@ contract('ContestController', function(accounts) {
     });
     //cancelCandidature()
     it("Should cancel a candidature", async function() { 
-      let txTime = await instance.setTime(1535759999);
+      let txTime = await instance.setTime(CandidaturesTime);
       let tx = await instance.cancelCandidature( 
         ContestHash, 
         CandidatureHash,                                               
         Reason,
-        {from: JudgeAccount},
-        true);
+        true,
+        {from: JudgeAccount}
+        );
       assert.equal(tx.logs[0].args.candidatureTitle,TitleCandidature,"The result must be:'"+TitleCandidature+"'");
+    });
+  });
+  describe("Candidatures functions catching errors: ", async function() {
+    //NOT setNewCandidature() out of time
+    it("Should not add a new candidature because out of time", async function() { 
+      let txTime = await instance.setTime(OutTimeCandidatures);
+      try{
+        let tx = await instance.setNewCandidature( 
+          ContestHash, 
+          TitleCandidature,                                               
+          IpfsHash,
+          {from: CandidatureAddress,value:5});
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
+    });
+    //NOT setNewCandidature() missing parameters
+    it("Should not add a new candidature because missing parameters", async function() { 
+      let txTime = await instance.setTime(CandidaturesTime);
+      try{
+        let tx = await instance.setNewCandidature( 
+          ContestHash,                                               
+          IpfsHash,
+          {from: CandidatureAddress,value:5});
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
+    });
+    //NOT setNewCandidature() contest hash is wrong
+    it("Should not add a new candidature because contest hash is wrong", async function() { 
+      let txTime = await instance.setTime(CandidaturesTime);
+      try{
+        let tx = await instance.setNewCandidature( 
+          IpfsHash,
+          TitleCandidature,                                             
+          IpfsHash,
+          {from: CandidatureAddress,value:5});
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
+    });
+    //NOT setNewCandidature() ipfs hash is wrong
+    it("Should not add a new candidature because ipfs hash is wrong", async function() { 
+      let txTime = await instance.setTime(CandidaturesTime);
+      try{
+        let tx = await instance.setNewCandidature( 
+          ContestHash,
+          TitleCandidature,                                             
+          ContestHash,
+          {from: CandidatureAddress,value:5});
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
+    });
+    //NOT setNewCandidature() tax it is less than required
+    it("Should not add a new candidature because tax it is less than required", async function() { 
+      let txTime = await instance.setTime(CandidaturesTime);
+      try{
+        let tx = await instance.setNewCandidature( 
+          ContestHash,
+          TitleCandidature,                                             
+          ContestHash,
+          {from: CandidatureAddress,value:3});
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
+    });
+    //NOT setNewCandidature() tax it is more than required
+    it("Should not add a new candidature because tax it is more than required", async function() { 
+      let txTime = await instance.setTime(CandidaturesTime);
+      try{
+        let tx = await instance.setNewCandidature( 
+          ContestHash,
+          TitleCandidature,                                             
+          ContestHash,
+          {from: CandidatureAddress,value:8});
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
+    });
+    //NOT setNewCandidature() tax it is more than required
+    it("Should not add a new candidature because tax it is more than required", async function() { 
+      let txTime = await instance.setTime(CandidaturesTime);
+      try{
+        let tx = await instance.setNewCandidature( 
+          ContestHash,
+          TitleCandidature,                                             
+          ContestHash,
+          {from: JudgeAccount,value:5});
+        assert.isTrue(false,"The result must be 'ERROR'");
+      }
+      catch(e){
+        assert.isTrue(true,"The result must be 'ERROR'");
+      }
     });
   });
 
@@ -176,5 +419,4 @@ contract('ContestController', function(accounts) {
       assert.equal(tx.logs[0].args.candidatureHash,CandidatureHash,"The result must be:'"+CandidatureHash+"'");
     });
   });
-
 });
