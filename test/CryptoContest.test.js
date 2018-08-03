@@ -97,10 +97,12 @@ contract('ContestController', function(accounts) {
           JudgeAccount,                                     
           JudgeName,                                         
           {from: ContestOwner,value:0});
-        assert.isFalse(false,"The result must be 'ERROR'");
-      }catch(e){
-        assert.isTrue(true,"The result must be 'ERROR'")
-      }
+          test = false;
+        }catch(e){
+          test = true;
+        }finally{
+          assert.isTrue(test,"The result must be 'ERROR'");
+        }
     });
     //Not setNewContest() missing parameters
     it("Should not set a new contest because missing parameters", async function() { 
@@ -116,19 +118,17 @@ contract('ContestController', function(accounts) {
           JudgeAccount,                                     
           JudgeName,                                         
           {from: ContestOwner,value:0});
-        assert.isFalse(false,"The result must be 'ERROR'");
-      }catch(e){
-        assert.isTrue(true,"The result must be 'ERROR'")
-      }
+          test = false;
+        }catch(e){
+          test = true;
+        }finally{
+          assert.isTrue(test,"The result must be 'ERROR'");
+        }
     });
     //Not getContest() hashcontest is wrong
     it("Should not get a contest by hash because contest hash is wrong", async function(){
-      try{
       let tx = await instance.getContest(JudgeAccount);
-      assert.isFalse(false,"The result must be 'ERROR'");
-      }catch(e){
-        assert.isTrue(true,"The result must be 'ERROR'")
-      }
+      assert.notEqual(tx[1],Title,"The result must be different");
     });
   });
 
