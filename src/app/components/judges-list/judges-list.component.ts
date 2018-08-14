@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Judge } from '../../state/contest.model';
 
 @Component({
@@ -7,11 +7,16 @@ import { Judge } from '../../state/contest.model';
   styleUrls: ['./judges-list.component.css']
 })
 export class JudgesListComponent implements OnInit {
-  @Input() judges: Judge[];
+  @Input()
+  judges: Judge[];
+  @Output()
+  removeJudge = new EventEmitter<Judge>();
 
   constructor() {}
 
   ngOnInit() {}
 
-  removeJudge(judge: Judge) {}
+  initRemoveJudge(judge: Judge) {
+    this.removeJudge.emit(judge);
+  }
 }

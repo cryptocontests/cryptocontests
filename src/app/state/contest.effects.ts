@@ -2,7 +2,7 @@ import { TransactionReceipt } from 'web3/types';
 import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { Actions, Effect, ROOT_EFFECTS_INIT } from '@ngrx/effects';
-import { ContestContractService } from '../../services/contest-contract.service';
+import { ContestContractService } from '../services/contest-contract.service';
 import { Observable, of as observableOf } from 'rxjs';
 import { switchMap, map, catchError, tap, filter, take } from 'rxjs/operators';
 import {
@@ -16,11 +16,15 @@ import {
   LoadedCandidatures,
   LoadContest,
   LoadedContest,
-  LoadedTags
-} from '../actions/contest.actions';
-import { Contest, Candidature } from '../contest.model';
+  LoadedTags,
+  AddJudge,
+  AddJudgePending,
+  RemoveJudge,
+  RemoveJudgePending
+} from './contest.actions';
+import { Contest, Candidature } from './contest.model';
 import { Router } from '@angular/router';
-import { GlobalLoadingService } from '../../loading/services/global-loading.service';
+import { GlobalLoadingService } from '../loading/services/global-loading.service';
 import { MatSnackBar } from '@angular/material';
 
 @Injectable()
@@ -87,15 +91,7 @@ export class ContestEffects {
           })
         )
       ),
-      tap(() =>
-        this.snackBar.open(
-          'Contest creation requested: wait for the transaction to confirm',
-          null,
-          {
-            duration: 3000
-          }
-        )
-      ),
+      tap(() => this.showTransactionPending('Contest creation requested')),
       tap(() => this.router.navigate(['/contests']))
     );
 
@@ -140,16 +136,62 @@ export class ContestEffects {
             })
           )
       ),
-      tap(() =>
-        this.snackBar.open(
-          'Candidature creation requested: wait for the transaction to confirm',
-          null,
-          {
-            duration: 3000
-          }
-        )
-      )
+      tap(() => this.showTransactionPending('Candidature creation requested'))
     );
+
+  @Effect()
+  addJudge$: Observable<any> = this.actions$
+    .ofType<AddJudge>(ContestActionTypes.AddJudge)
+    .pipe(
+      switchMap((addJudgeAction: AddJudge) =>
+        this.contestContract
+          .addJudge(
+            addJudgeAction.payload.contestHash,
+            addJudgeAction.payload.judge
+          )
+          .pipe(
+            map((receipt: TransactionReceipt) => new AddJudgePending(receipt)),
+            catchError(err => {
+              this.handleError(err);
+              return observableOf();
+            })
+          )
+      ),
+      tap(() => this.showTransactionPending('Add judge requested'))
+    );
+
+  @Effect()
+  removeJudge$: Observable<any> = this.actions$
+    .ofType<RemoveJudge>(ContestActionTypes.RemoveJudge)
+    .pipe(
+      switchMap((removeJudgeAction: RemoveJudge) =>
+        this.contestContract
+          .removeJudge(
+            removeJudgeAction.payload.contestHash,
+            removeJudgeAction.payload.judge
+          )
+          .pipe(
+            map(
+              (receipt: TransactionReceipt) => new RemoveJudgePending(receipt)
+            ),
+            catchError(err => {
+              this.handleError(err);
+              return observableOf();
+            })
+          )
+      ),
+      tap(() => this.showTransactionPending('Remove judge requested'))
+    );
+
+  private showTransactionPending(customMessage: string) {
+    this.snackBar.open(
+      customMessage + ': wait for the transaction to confirm',
+      null,
+      {
+        duration: 3000
+      }
+    );
+  }
 
   private handleError(error: any) {
     this.globalLoading.hide();

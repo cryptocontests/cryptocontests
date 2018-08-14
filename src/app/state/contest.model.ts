@@ -1,4 +1,4 @@
-import { CryptoValue } from '../web3/transaction.model';
+import { CryptoValue } from 'ng-web3';
 
 export enum ContestPhase {
   UPCOMING = 'UPCOMING',

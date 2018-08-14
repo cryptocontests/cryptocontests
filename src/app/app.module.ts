@@ -16,12 +16,12 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { MaterialModule } from './material.module';
 import { AppComponent } from './app.component';
-import { ContestEffects } from './state/effects/contest.effects';
-import { contestReducer } from './state/reducers/contest.reducer';
+import { ContestEffects } from './state/contest.effects';
+import { contestReducer } from './state/contest.reducer';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CreateContestComponent } from './components/create-contest/create-contest.component';
 import { ContestGridComponent } from './components/contest-grid/contest-grid.component';
-import { Web3Module } from './web3/web3.module';
+import { Web3Module } from 'ng-web3';
 import { LoadingUtilsModule } from './loading/loading-utils.module';
 
 import { ContestContractService } from './services/contest-contract.service';
@@ -32,6 +32,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
 import { FilePickerComponent } from './components/file-picker/file-picker.component';
 import { CreateCandidatureComponent } from './components/create-candidature/create-candidature.component';
 import { JudgesListComponent } from './components/judges-list/judges-list.component';
+import { HashColorDirective } from './hash-color.directive';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { JudgesListComponent } from './components/judges-list/judges-list.compon
     ConfirmDialogComponent,
     FilePickerComponent,
     CreateCandidatureComponent,
-    JudgesListComponent
+    JudgesListComponent,
+    HashColorDirective
   ],
   entryComponents: [ConfirmDialogComponent, CreateCandidatureComponent],
   imports: [

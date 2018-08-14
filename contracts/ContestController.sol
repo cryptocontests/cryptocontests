@@ -57,10 +57,10 @@ contract ContestController is owned {
         mapping (bytes32 => Candidature) candidatures;
         bytes32[] candidatureList;
 
-        mapping(address => Judge) judges;
+        mapping (address => Judge) judges;
         address[] judgeList;
 
-        /** 
+        /**
         * Contest Stages
         * ==============
         *                         +-------+          +------------+   +-------+
@@ -106,7 +106,7 @@ contract ContestController is owned {
         if (date == 0)
           return now;
         else return date;
-    } 
+    }
 
     /*************************************************************
      *                         CONTESTS                          *
@@ -200,6 +200,15 @@ contract ContestController is owned {
         taxForCandidatures = contests[contestHash].taxForCandidatures;
         award = contests[contestHash].award;
         candidaturesCount = contests[contestHash].candidatureList.length;
+    }
+
+    function getContestJudges(bytes32 contestHash) public view returns (address[] judges) {
+        judges = contests[contestHash].judgeList;
+    }
+
+    function getJudgeDetails(bytes32 contestHash, address judge) public view returns (address judgeAddress, string judgeName) {
+        judgeAddress = judge;
+        judgeName = contests[contestHash].judges[judge].name;
     }
 
     function getTotalContestsCount() public view returns (uint256 contestsCount) {
@@ -339,7 +348,7 @@ contract ContestController is owned {
         // Only judges can cancel a candidature
         require(getTime() < contests[contestHash].endDate);
         require(!contests[contestHash].candidatures[candidatureHash].cancelled);
-        
+
 
         if (punishment){
             contests[contestHash].candidatures[candidatureHash].taxBalance = 0;
@@ -426,7 +435,7 @@ contract ContestController is owned {
             contests[contestHash].candidatures[contests[contestHash].actualWinnerAccount].owner,
             contests[contestHash].actualWinnerVotes);
     }
- 
+
     function refundToCandidates(bytes32 contestHash, bytes32 candidatureHash) public {
         require(getTime() >= contests[contestHash].endDate);
         //require(!contests[contestHash].candidatures[candidatureHash].cancelled);

@@ -1,8 +1,8 @@
 import { TransactionReceipt } from 'web3/types';
 import { Action } from '@ngrx/store';
-import { Contest, Candidature } from '../contest.model';
-import { TransactionState, CryptoValue } from '../../web3/transaction.model';
-import { LoadingAction } from '../../loading/ngrx-loading.action';
+import { Contest, Candidature, Judge } from './contest.model';
+import { CryptoValue } from 'ng-web3';
+import { LoadingAction } from '../loading/ngrx-loading.action';
 
 export enum ContestActionTypes {
   LoadTags = '[LoadTags] LoadTags',
@@ -16,7 +16,11 @@ export enum ContestActionTypes {
   LoadCandidatures = '[LoadCandidatures] LoadCandidatures',
   LoadedCandidatures = '[LoadedCandidatures] LoadedCandidatures',
   CreateCandidature = '[CreateCandidature] CreateCandidature',
-  CandidaturePending = '[CandidaturePending] CandidaturePending'
+  CandidaturePending = '[CandidaturePending] CandidaturePending',
+  AddJudge = '[AddJudge] AddJudge',
+  AddJudgePending = '[AddJudgePending] AddJudgePending',
+  RemoveJudge = '[RemoveJudge] RemoveJudge',
+  RemoveJudgePending = '[RemoveJudgePending] RemoveJudgePending'
 }
 
 export class LoadTags implements Action {
@@ -94,6 +98,42 @@ export class CandidaturePending implements Action {
   constructor(public transactionReceipt: TransactionReceipt) {}
 }
 
+/** JUDGES */
+
+export class AddJudge implements Action {
+  readonly type = ContestActionTypes.AddJudge;
+
+  constructor(
+    public payload: {
+      contestHash: string;
+      judge: Judge;
+    }
+  ) {}
+}
+
+export class AddJudgePending implements Action {
+  readonly type = ContestActionTypes.AddJudgePending;
+
+  constructor(public transactionReceipt: TransactionReceipt) {}
+}
+
+export class RemoveJudge implements Action {
+  readonly type = ContestActionTypes.RemoveJudge;
+
+  constructor(
+    public payload: {
+      contestHash: string;
+      judge: Judge;
+    }
+  ) {}
+}
+
+export class RemoveJudgePending implements Action {
+  readonly type = ContestActionTypes.RemoveJudgePending;
+
+  constructor(public transactionReceipt: TransactionReceipt) {}
+}
+
 export type ContestActions =
   | LoadTags
   | LoadedTags
@@ -106,4 +146,8 @@ export type ContestActions =
   | LoadCandidatures
   | LoadedCandidatures
   | CreateCandidature
-  | CandidaturePending;
+  | CandidaturePending
+  | AddJudge
+  | AddJudgePending
+  | RemoveJudge
+  | RemoveJudgePending;

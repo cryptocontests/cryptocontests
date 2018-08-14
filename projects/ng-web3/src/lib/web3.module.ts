@@ -40,7 +40,12 @@ import { IpfsService } from './services/ipfs.service';
     Web3TransactionButtonComponent
   ],
   entryComponents: [TransactionListComponent],
-  providers: [Web3Service, TransactionStateService, CurrencyService, IpfsService],
+  providers: [
+    Web3Service,
+    TransactionStateService,
+    CurrencyService,
+    IpfsService
+  ],
   exports: [
     TransactionListComponent,
     CryptoConverterPipe,

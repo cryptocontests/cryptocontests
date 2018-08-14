@@ -12,10 +12,10 @@ import {
   ContestActionTypes,
   LoadedContests,
   LoadContests
-} from '../../state/actions/contest.actions';
+} from '../../state/contest.actions';
 import { cardAnimations } from '../card.animations';
 import { Store } from '@ngrx/store';
-import * as fromReducer from '../../state/reducers/contest.reducer';
+import * as fromReducer from '../../state/contest.reducer';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 
 @Component({
@@ -62,7 +62,6 @@ export class ContestGridComponent implements OnDestroy {
   }
 
   selectContest(contest: Contest) {
-    console.log(contest);
     this.router.navigate(['/contest', contest.id]);
     // this.contestSelected.emit(contest.id);
   }

@@ -9,9 +9,9 @@ import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
 import { default as _rollupMoment } from 'moment';
 import { Store } from '@ngrx/store';
-import { State, selectTags } from '../../state/reducers/contest.reducer';
+import { State, selectTags } from '../../state/contest.reducer';
 import { Contest } from '../../state/contest.model';
-import { CreateContest } from '../../state/actions/contest.actions';
+import { CreateContest } from '../../state/contest.actions';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import {
   MatChipInputEvent,
@@ -20,7 +20,7 @@ import {
 } from '@angular/material';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { Router } from '@angular/router';
-import { CryptoCurrency } from '../../web3/transaction.model';
+import { CryptoCurrency } from 'ng-web3';
 import { FilePickerComponent } from '../file-picker/file-picker.component';
 import { of, Observable } from 'rxjs';
 
@@ -37,8 +37,10 @@ export class CreateContestComponent implements OnInit {
   tags: string[] = [];
   separatorKeysCodes = [ENTER, COMMA];
 
-  @ViewChild('tagInput') tagInput: ElementRef;
-  @ViewChild('filePicker') filePicker: FilePickerComponent;
+  @ViewChild('tagInput')
+  tagInput: ElementRef;
+  @ViewChild('filePicker')
+  filePicker: FilePickerComponent;
 
   constructor(
     private store: Store<State>,

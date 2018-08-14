@@ -10,7 +10,7 @@ export interface FileReceipt {
   size: number;
 }
 
-type IpfsContent = Buffer | ReadableStream;
+export type IpfsContent = Buffer | ReadableStream;
 
 export interface IpfsFile {
   path: string;
@@ -21,7 +21,6 @@ export interface IpfsFile {
   providedIn: 'root'
 })
 export class IpfsService {
-
   host = 'ipfs.infura.io';
   ipfs: any;
 
@@ -29,7 +28,10 @@ export class IpfsService {
     this.ipfs = ipfsAPI({ host: this.host, port: 5001, protocol: 'https' });
   }
 
-  public add(data: IpfsContent | IpfsFile[], options: any = {}): Promise<FileReceipt> {
+  public add(
+    data: IpfsContent | IpfsFile[],
+    options: any = {}
+  ): Promise<FileReceipt> {
     return this.ipfs.files.add(data, options);
   }
 
@@ -41,7 +43,13 @@ export class IpfsService {
   // stripping leading 2 bytes from 34 byte IPFS hash
   // Assume IPFS defaults: function:0x12=sha2, size:0x20=256 bits
   getBytes32FromIpfsHash(ipfsListing) {
-    return '0x' + bs58.decode(ipfsListing).slice(2).toString('hex');
+    return (
+      '0x' +
+      bs58
+        .decode(ipfsListing)
+        .slice(2)
+        .toString('hex')
+    );
   }
 
   // Return base58 encoded ipfs hash from bytes32 hex string,

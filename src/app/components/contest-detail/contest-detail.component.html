@@ -24,24 +24,26 @@
           <div fxLayout="row" fxLayoutGap="8px">
             <div fxFlex fxLayout="column" fxLayoutGap="8px">
               <p fxFlex>{{contest?.additionalContent?.content?.description}}</p>
-              <cc-tags [tags]="contest?.tags" [clickable]="false"></cc-tags>
+              <mat-label *ngIf="contest.tags.length > 0"><strong>Tags</strong></mat-label>
+              <cc-tags [tags]="contest.tags" [clickable]="false"></cc-tags>
             </div>
             <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="center stretch">
               <mat-label fxFlex>Stake to participate: {{contest?.taxForCandidature | cryptoConvert: 'ETH'}} ETH</mat-label>
             </div>
           </div>
+          <mat-label><strong>Timeline</strong></mat-label>
           <mat-horizontal-stepper linear="false" #stepper [selectedIndex]="getPhaseIndex(contest)" disabled>
-            <mat-step label="Created on {{contest?.createdDate | date}}" [completed]="getPhaseIndex(contest) === 0"></mat-step>
-            <mat-step label="New candidatures from {{contest?.initialDate | date}}" [completed]="getPhaseIndex(contest) > 0"></mat-step>
-            <mat-step label="Revision begins on {{contest?.candidatureLimitDate | date}}" [completed]="getPhaseIndex(contest) > 1"></mat-step>
-            <mat-step label="Contest ends on {{contest?.endDate | date}}" [completed]="getPhaseIndex(contest) > 2"></mat-step>
+            <mat-step label="Created on {{contest.createdDate | date}}" [completed]="getPhaseIndex(contest) === 0"></mat-step>
+            <mat-step label="New candidatures from {{contest.initialDate | date}}" [completed]="getPhaseIndex(contest) > 0"></mat-step>
+            <mat-step label="Revision begins on {{contest.candidatureLimitDate | date}}" [completed]="getPhaseIndex(contest) > 1"></mat-step>
+            <mat-step label="Contest ends on {{contest.endDate | date}}" [completed]="getPhaseIndex(contest) > 2"></mat-step>
           </mat-horizontal-stepper>
         </mat-card-content>
       </mat-card>
-      <mat-card class="no-padding">
+      <mat-card [@cardState] class="no-padding">
         <mat-tab-group>
           <mat-tab label="{{contest.judges.length}} Judges">
-            <cc-judges-list [judges]="contest.judges"></cc-judges-list>
+            <cc-judges-list [judges]="contest.judges" (removeJudge)="removeJudge($event)"></cc-judges-list>
           </mat-tab>
           <mat-tab label="Candidatures" [disabled]="!shouldShowCandidatures(contest)">
             <cc-candidature-grid fxFlex [candidatures]="candidatures$ | async" *ngrxLoading="candidatures$;action:participationsAction;empty:'This contest has no candidatures yet'">

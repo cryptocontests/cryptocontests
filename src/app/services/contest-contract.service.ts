@@ -8,18 +8,29 @@ import {
   forkJoin,
   combineLatest
 } from 'rxjs';
-import { switchMap, map, tap, defaultIfEmpty } from 'rxjs/operators';
-import { Contest, Candidature, ContestPhase } from '../state/contest.model';
+import {
+  switchMap,
+  map,
+  tap,
+  defaultIfEmpty,
+  withLatestFrom
+} from 'rxjs/operators';
+import {
+  Contest,
+  Candidature,
+  ContestPhase,
+  Judge
+} from '../state/contest.model';
 import * as _ from 'lodash';
-import { Web3Service } from '../web3/services/web3.service';
-import { TransactionStateService } from '../web3/services/transaction-state.service';
-import { CryptoCurrency, CryptoValue } from '../web3/transaction.model';
-import { CurrencyService } from '../web3/services/currency.service';
 import {
   IpfsService,
-  FileReceipt,
+  Web3Service,
+  TransactionStateService,
+  CryptoCurrency,
+  CryptoValue,
+  CurrencyService,
   IpfsFile
-} from '../web3/services/ipfs.service';
+} from 'ng-web3';
 
 declare function require(url: string);
 const ContestController = require('./../../../build/contracts/ContestController.json');
@@ -94,52 +105,7 @@ export class ContestContractService {
       },
       tags: response.tags.map(tag => this.web3Service.bytesToString(tag)),
       options: {},
-      judges: [
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        }
-      ]
+      judges: response.judges
     };
   responseToCandidature = (response: any, ipfsFile: IpfsFile) =>
     <Candidature>{
@@ -166,12 +132,38 @@ export class ContestContractService {
   /**
    * Get a contest from the contest hash
    */
-  public getContest(
-    contestHash: string,
-    address?: string
-  ): Observable<Contest> {
-    return (address ? observableOf(address) : this.getDefaultAccount).pipe(
-      switchMap(add => this.getContestByHash(add, contestHash)),
+  public getContest(contestHash: string): Observable<Contest> {
+    let address: string;
+    return this.getDefaultAccount.pipe(
+      tap(add => (address = add)),
+      switchMap(add =>
+        combineLatest(
+          this.getContestByHash(address, contestHash),
+          this.contract.methods
+            .getContestJudges(contestHash)
+            .call({ from: address })
+        )
+      ),
+      switchMap(([response, judgesAddresses]) =>
+        forkJoin(
+          judgesAddresses.map((judgeAddress: string) =>
+            this.contract.methods
+              .getJudgeDetails(contestHash, judgeAddress)
+              .call({ from: address })
+          )
+        ).pipe(
+          map(judges => ({
+            ...response,
+            judges: judges.map(
+              (judgeResponse: any) =>
+                <Judge>{
+                  address: judgeResponse.judgeAddress,
+                  name: judgeResponse.judgeName
+                }
+            )
+          }))
+        )
+      ),
       map((response: any) => this.responseToContest(contestHash, response))
     );
   }
@@ -186,15 +178,11 @@ export class ContestContractService {
       switchMap(() => this.getTotalContestCount(address)),
       switchMap((contestCount: number) =>
         forkJoin(
-          _
-            .range(0, contestCount)
-            .map((index: number) =>
-              from(this.getContestHashByIndex(address, index)).pipe(
-                switchMap((contestHash: string) =>
-                  this.getContest(contestHash, address)
-                )
-              )
+          _.range(0, contestCount).map((index: number) =>
+            from(this.getContestHashByIndex(address, index)).pipe(
+              switchMap((contestHash: string) => this.getContest(contestHash))
             )
+          )
         )
       ),
       defaultIfEmpty([])
@@ -249,6 +237,58 @@ export class ContestContractService {
       ),
       tap(txPromise =>
         this.transactionStates.registerTransaction(txPromise, contest.title)
+      ),
+      switchMap(promise => promise)
+    );
+  }
+
+  /**
+   * Add judge to the given contest
+   */
+  public addJudge(
+    contestHash: string,
+    judge: Judge
+  ): Observable<TransactionReceipt> {
+    return this.getDefaultAccount.pipe(
+      map(address =>
+        this.contract.methods
+          .addJudge(contestHash, judge.address, judge.name)
+          .send({
+            from: address,
+            gas: 4712388,
+            gasPrice: 20
+          })
+      ),
+      tap(txPromise =>
+        this.transactionStates.registerTransaction(
+          txPromise,
+          'Adding ' + judge.name
+        )
+      ),
+      switchMap(promise => promise)
+    );
+  }
+
+  /**
+   * Add judge to the given contest
+   */
+  public removeJudge(
+    contestHash: string,
+    judge: Judge
+  ): Observable<TransactionReceipt> {
+    return this.getDefaultAccount.pipe(
+      map(address =>
+        this.contract.methods.removeJudge(contestHash, judge.address).send({
+          from: address,
+          gas: 4712388,
+          gasPrice: 20
+        })
+      ),
+      tap(txPromise =>
+        this.transactionStates.registerTransaction(
+          txPromise,
+          'Removing ' + judge.name
+        )
       ),
       switchMap(promise => promise)
     );

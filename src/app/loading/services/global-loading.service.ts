@@ -29,6 +29,6 @@ export class GlobalLoadingService {
   }
 
   public hide() {
-    this.overlayRef.dispose();
+    if (this.overlayRef) this.overlayRef.dispose();
   }
 }

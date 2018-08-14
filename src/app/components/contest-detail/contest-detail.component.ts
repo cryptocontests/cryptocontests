@@ -3,19 +3,21 @@ import {
   getContestPhase,
   Candidature,
   ContestPhase,
-  PhasesList
+  PhasesList,
+  Judge
 } from './../../state/contest.model';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import * as fromReducer from '../../state/reducers/contest.reducer';
+import * as fromReducer from '../../state/contest.reducer';
 import { Observable, from } from 'rxjs';
 import {
   LoadCandidatures,
   CreateCandidature,
-  LoadContest
-} from '../../state/actions/contest.actions';
+  LoadContest,
+  RemoveJudge
+} from '../../state/contest.actions';
 import { MatDialog } from '@angular/material';
 import { CreateCandidatureComponent } from '../create-candidature/create-candidature.component';
 import { cardAnimations } from '../card.animations';
@@ -29,6 +31,7 @@ import { tap, withLatestFrom, map } from 'rxjs/operators';
   encapsulation: ViewEncapsulation.None
 })
 export class ContestDetailComponent implements OnInit {
+  contestHash: string;
   contest$: Observable<Contest>;
   getContestPhase = getContestPhase;
   candidatures$: Observable<Candidature[]>;
@@ -43,16 +46,16 @@ export class ContestDetailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const contestId = this.route.snapshot.paramMap.get('id');
+    this.contestHash = this.route.snapshot.paramMap.get('id');
 
-    this.contestAction = new LoadContest(contestId);
+    this.contestAction = new LoadContest(this.contestHash);
     this.store.dispatch(this.contestAction);
     this.contest$ = this.store.select(fromReducer.selectedContest);
 
-    this.participationsAction = new LoadCandidatures(contestId);
+    this.participationsAction = new LoadCandidatures(this.contestHash);
     this.store.dispatch(this.participationsAction);
     this.candidatures$ = this.store.select(
-      state => fromReducer.getContestState(state).candidatures[contestId]
+      state => fromReducer.getContestState(state).candidatures[this.contestHash]
     );
   }
 
@@ -94,4 +97,10 @@ export class ContestDetailComponent implements OnInit {
   }
 
   addJudge() {}
+
+  removeJudge(judgeToRemove: Judge) {
+    this.store.dispatch(
+      new RemoveJudge({ contestHash: this.contestHash, judge: judgeToRemove })
+    );
+  }
 }

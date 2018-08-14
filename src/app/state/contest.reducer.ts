@@ -1,7 +1,7 @@
-import { ContestPhase, getContestPhase, Candidature } from './../contest.model';
+import { ContestPhase, getContestPhase, Candidature } from './contest.model';
 import { EntityAdapter, createEntityAdapter, EntityState } from '@ngrx/entity';
-import { Contest } from '../contest.model';
-import { ContestActions, ContestActionTypes } from '../actions/contest.actions';
+import { Contest } from './contest.model';
+import { ContestActions, ContestActionTypes } from './contest.actions';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { Dictionary } from '@ngrx/entity/src/models';
 
@@ -10,6 +10,8 @@ export interface State extends EntityState<Contest> {
   candidatures: { [contestHash: string]: Candidature[] };
   selectedContest: string;
   tags: string[];
+  loadingContests: boolean;
+  loadingContestDetail: boolean;
 }
 
 export const adapter: EntityAdapter<Contest> = createEntityAdapter<Contest>();
@@ -18,7 +20,9 @@ export const initialState: State = adapter.getInitialState({
   // additional entity state properties
   candidatures: {},
   selectedContest: null,
-  tags: []
+  tags: [],
+  loadingContests: false,
+  loadingContestDetail: false
 });
 
 export function contestReducer(
@@ -29,12 +33,22 @@ export function contestReducer(
     case ContestActionTypes.LoadedTags: {
       return Object.assign(state, { tags: action.payload });
     }
+    case ContestActionTypes.LoadContests: {
+      return Object.assign(state, { loadingContests: true });
+    }
     case ContestActionTypes.LoadedContests: {
-      return adapter.addMany(action.payload, state);
+      return adapter.addMany(action.payload, {
+        ...state,
+        loadingContests: false
+      });
+    }
+    case ContestActionTypes.LoadContest: {
+      return Object.assign(state, { loadingContestDetail: true });
     }
     case ContestActionTypes.LoadedContest: {
       return adapter.addOne(action.payload, {
         ...state,
+        loadingContestDetail: false,
         selectedContest: action.payload.id
       });
     }

@@ -1,9 +1,6 @@
-import { selectContestById } from './../../state/reducers/contest.reducer';
 import { TransactionState } from '../transaction.model';
 import { Injectable } from '@angular/core';
 import { PromiEvent, TransactionReceipt } from 'web3/types';
-import { Observable } from 'rxjs';
-import { withLatestFrom } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
