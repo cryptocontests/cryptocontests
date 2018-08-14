@@ -11,7 +11,8 @@ import { Candidature } from '../../state/contest.model';
 })
 export class CreateCandidatureComponent {
   candidatureForm: FormGroup;
-  @ViewChild('filePicker') filePicker: FilePickerComponent;
+  @ViewChild('filePicker')
+  filePicker: FilePickerComponent;
 
   constructor(
     public dialogRef: MatDialogRef<CreateCandidatureComponent>,

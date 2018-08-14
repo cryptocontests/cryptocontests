@@ -33,6 +33,7 @@ import { FilePickerComponent } from './components/file-picker/file-picker.compon
 import { CreateCandidatureComponent } from './components/create-candidature/create-candidature.component';
 import { JudgesListComponent } from './components/judges-list/judges-list.component';
 import { HashColorDirective } from './hash-color.directive';
+import { AddJudgeComponent } from './components/add-judge/add-judge.component';
 
 @NgModule({
   declarations: [
@@ -47,9 +48,14 @@ import { HashColorDirective } from './hash-color.directive';
     FilePickerComponent,
     CreateCandidatureComponent,
     JudgesListComponent,
-    HashColorDirective
+    HashColorDirective,
+    AddJudgeComponent
   ],
-  entryComponents: [ConfirmDialogComponent, CreateCandidatureComponent],
+  entryComponents: [
+    ConfirmDialogComponent,
+    CreateCandidatureComponent,
+    AddJudgeComponent
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

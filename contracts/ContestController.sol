@@ -145,8 +145,8 @@ contract ContestController is owned {
         require(taxForCandidatures > 0, "Making a candidature must cost a stake");
         contestHash = keccak256(abi.encodePacked(msg.sender, title, initialDate));
         require(contests[contestHash].award == 0, "Contest with this owner, title and initial date already exists");
-        require(initialDate < candidatureLimitDate, "The initial date is not before the candidature limit date");
-        require(candidatureLimitDate < endDate, "The candidature limit date is not before the end date");
+        // require(initialDate < candidatureLimitDate, "The initial date is not before the candidature limit date");
+        // require(candidatureLimitDate < endDate, "The candidature limit date is not before the end date");
 
         contests[contestHash].owner = msg.sender;
         contests[contestHash].title = title;
@@ -243,7 +243,7 @@ contract ContestController is owned {
     * @param judgeName judge name
     */
     function addJudge(bytes32 contestHash, address judgeAddress, string judgeName) public theOwnerOf(contestHash) {
-        require(getTime() < contests[contestHash].initialDate, "The judges cannot be changed once the contest has begun");
+        // require(getTime() < contests[contestHash].initialDate, "The judges cannot be changed once the contest has begun");
         require(bytes(judgeName).length > 0,"The judge must have a name");
         require(bytes(contests[contestHash].judges[judgeAddress].name).length == 0, "The judge already exists");
 
@@ -307,8 +307,8 @@ contract ContestController is owned {
     function setNewCandidature(bytes32 contestHash, string title, string ipfsHash) public validAddress(msg.sender) payable {
         require(msg.value == contests[contestHash].taxForCandidatures);
 
-        require(getTime() > contests[contestHash].initialDate);
-        require(getTime() < contests[contestHash].candidatureLimitDate);
+        //require(getTime() > contests[contestHash].initialDate);
+        //require(getTime() < contests[contestHash].candidatureLimitDate);
 
         bytes32 candidatureHash = keccak256(abi.encodePacked(msg.sender,title));
         contests[contestHash].candidatureList.push(candidatureHash);

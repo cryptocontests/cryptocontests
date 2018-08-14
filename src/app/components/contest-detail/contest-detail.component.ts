@@ -16,12 +16,14 @@ import {
   LoadCandidatures,
   CreateCandidature,
   LoadContest,
-  RemoveJudge
+  RemoveJudge,
+  AddJudge
 } from '../../state/contest.actions';
 import { MatDialog } from '@angular/material';
 import { CreateCandidatureComponent } from '../create-candidature/create-candidature.component';
 import { cardAnimations } from '../card.animations';
 import { tap, withLatestFrom, map } from 'rxjs/operators';
+import { AddJudgeComponent } from '../add-judge/add-judge.component';
 
 @Component({
   selector: 'cc-contest-detail',
@@ -37,6 +39,7 @@ export class ContestDetailComponent implements OnInit {
   candidatures$: Observable<Candidature[]>;
   contestAction: LoadContest;
   participationsAction: LoadCandidatures;
+  selectedTabIndex = 0;
 
   constructor(
     private store: Store<fromReducer.State>,
@@ -96,7 +99,21 @@ export class ContestDetailComponent implements OnInit {
     );
   }
 
-  addJudge() {}
+  selectedTabChange(index: number) {
+    this.selectedTabIndex = index;
+  }
+
+  addJudge() {
+    const dialogRef = this.dialog.open(AddJudgeComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.store.dispatch(
+          new AddJudge({ contestHash: this.contestHash, judge: result })
+        );
+      }
+    });
+  }
 
   removeJudge(judgeToRemove: Judge) {
     this.store.dispatch(

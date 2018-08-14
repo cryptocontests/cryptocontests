@@ -6,32 +6,27 @@
     <mat-label fxFlex>{{(contest$ | async)?.title}}</mat-label>
     <mat-label>{{(contest$ | async) ? ((contest$ | async).prize | cryptoConvert: 'ETH') : ''}} ETH</mat-label>
     <mat-chip>{{(contest$ | async) ? getContestPhase(contest$ | async) : ''}}</mat-chip>
-    <button mat-raised-button color="accent" (click)="openCreateCandidatureDialog()">
-      PARTICIPATE
-    </button>
   </mat-toolbar>
 
   <div fxLayout="row" fxLayoutAlign="center stretch" *ngIf="contest$ | async; let contest" class="auto-overflow">
-    <div fxLayout="column" fxFlex="90%" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+    <div fxLayout="column" fxFlex="90%" fxLayoutAlign="start stretch" fxLayoutGap="16px" style="margin-bottom: 8px;">
       <mat-card [@cardState] class="mat-elevation-z2" fxLayout="column">
         <img mat-card-image class="crop-image" fxFlex src="https://material.angular.io/assets/img/examples/shiba1.jpg" />
-        <mat-card-header>
-          <mat-card-title>
-            {{contest?.title}}
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
+        <mat-card-content fxLayout="column" fxLayoutGap="16px">
+          <mat-label><strong>{{contest.title}}</strong></mat-label>
           <div fxLayout="row" fxLayoutGap="8px">
             <div fxFlex fxLayout="column" fxLayoutGap="8px">
-              <p fxFlex>{{contest?.additionalContent?.content?.description}}</p>
-              <mat-label *ngIf="contest.tags.length > 0"><strong>Tags</strong></mat-label>
-              <cc-tags [tags]="contest.tags" [clickable]="false"></cc-tags>
+              <p fxFlex>{{contest.additionalContent?.content?.description}}</p>
+              <ng-container *ngIf="contest.tags.length > 0">
+                <mat-label><strong>Tags</strong></mat-label>
+                <cc-tags [tags]="contest.tags" [clickable]="false"></cc-tags>
+              </ng-container>
             </div>
             <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="center stretch">
               <mat-label fxFlex>Stake to participate: {{contest?.taxForCandidature | cryptoConvert: 'ETH'}} ETH</mat-label>
             </div>
           </div>
-          <mat-label><strong>Timeline</strong></mat-label>
+          <mat-label><strong>Phases</strong></mat-label>
           <mat-horizontal-stepper linear="false" #stepper [selectedIndex]="getPhaseIndex(contest)" disabled>
             <mat-step label="Created on {{contest.createdDate | date}}" [completed]="getPhaseIndex(contest) === 0"></mat-step>
             <mat-step label="New candidatures from {{contest.initialDate | date}}" [completed]="getPhaseIndex(contest) > 0"></mat-step>
@@ -40,8 +35,9 @@
           </mat-horizontal-stepper>
         </mat-card-content>
       </mat-card>
-      <mat-card [@cardState] class="no-padding">
-        <mat-tab-group>
+
+      <mat-card [@cardState] class="no-padding mat-elevation-z2">
+        <mat-tab-group mat-stretch-tabs [selectedIndex]="getPhaseIndex(contest) > 0 ? 1 : 0" (selectedIndexChange)="selectedTabChange($event)">
           <mat-tab label="{{contest.judges.length}} Judges">
             <cc-judges-list [judges]="contest.judges" (removeJudge)="removeJudge($event)"></cc-judges-list>
           </mat-tab>
@@ -56,9 +52,21 @@
           </mat-tab>
           <mat-tab disabled>
             <ng-template mat-tab-label>
-              <button mat-raised-button color="accent" (click)="addJudge()">
-                ADD JUDGE
-              </button>
+              <div fxFlex [style.flex]="'1'"></div>
+            </ng-template>
+          </mat-tab>
+          <mat-tab disabled>
+            <ng-template mat-tab-label>
+              <ng-container *ngIf="selectedTabIndex === 0">
+                <button mat-raised-button color="accent" (click)="addJudge()" class="align-end">
+                  ADD JUDGE
+                </button>
+              </ng-container>
+              <ng-container *ngIf="selectedTabIndex === 1">
+                <button mat-raised-button color="accent" (click)="openCreateCandidatureDialog()">
+                  PARTICIPATE
+                </button>
+              </ng-container>
             </ng-template>
           </mat-tab>
         </mat-tab-group>
