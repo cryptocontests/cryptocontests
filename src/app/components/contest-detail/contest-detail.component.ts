@@ -92,4 +92,6 @@ export class ContestDetailComponent implements OnInit {
       )
     );
   }
+
+  addJudge() {}
 }

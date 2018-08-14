@@ -17,10 +17,6 @@ cc-dashboard {
   height: auto;
 }
 
-.auto-overflow {
-  overflow-y: auto;
-}
-
 .title-toolbar {
   z-index: 1000;
   position: relative;

@@ -23,6 +23,7 @@ contract ContestController is owned {
     event NewCandidature(string contestTitle, string candidatureTitle);
     event NewVote(string member, bytes32 contestHash, bytes32 candidatureHash);
     event CandidatureCancellation(string member, string contestTitle, string candidatureTitle, string reason);
+    event ContestSolved(bytes32 contestHash, address winner, uint256 totalVotes);
 
     struct Candidature {
         uint index;
@@ -35,6 +36,7 @@ contract ContestController is owned {
         bool cancelled;
         address cancelledByMember;
         string reasonForCancellation;
+        uint256 taxBalance;
     }
 
     struct Judge {
@@ -57,10 +59,20 @@ contract ContestController is owned {
 
         mapping(address => Judge) judges;
         address[] judgeList;
-        /**
-         * Contest Stages
-         * | Edit Contest | New Candidatures | Voting time | End Contest |
-         */
+
+        /** 
+        * Contest Stages
+        * ==============
+        *                         +-------+          +------------+   +-------+
+        *                         |Initial|          |Candidatures|   |endDate|
+        *                         |Date   |          |Limit Date  |   |       |
+        *                         +-------+          +------------+   +-------+
+        *                             |                    |              |
+        *                             v                    v              v
+        * CREATE  -->  [EditContest] -+->  [Candidatures] -+->  [Voting] -+->  RESOLVE --> REFUND
+        * CONTEST                                                              CONTEST
+        */
+
         address owner;
         string title;
         uint256 createdDate;
@@ -73,8 +85,8 @@ contract ContestController is owned {
         uint256 award;
 
         // Actual winner status after each vote
-//        uint256 actualWinnerVotes;
-//        bytes32 actualWinnerAccount;
+        uint256 actualWinnerVotes;
+        bytes32 actualWinnerAccount;
     }
 
     mapping (bytes32  => Contest) private contests;
@@ -82,6 +94,19 @@ contract ContestController is owned {
 
     mapping (bytes32 => bytes32[]) public contestsInTags;
     bytes32[] public tagsList;
+
+    // ONLY FOR DEBUG PURPOSES
+    // FIXME: SECURITY ERROR
+    uint date = 0;
+    function setTime (uint256 newDate) public onlyOwner {
+        date = newDate;
+    }
+
+    function getTime() public view returns (uint256){
+        if (date == 0)
+          return now;
+        else return date;
+    } 
 
     /*************************************************************
      *                         CONTESTS                          *
@@ -118,7 +143,7 @@ contract ContestController is owned {
 
         require(msg.value > 0, "The contest must have a prize");
         require(taxForCandidatures > 0, "Making a candidature must cost a stake");
-        bytes32 contestHash = keccak256(abi.encodePacked(msg.sender, title, initialDate));
+        contestHash = keccak256(abi.encodePacked(msg.sender, title, initialDate));
         require(contests[contestHash].award == 0, "Contest with this owner, title and initial date already exists");
         require(initialDate < candidatureLimitDate, "The initial date is not before the candidature limit date");
         require(candidatureLimitDate < endDate, "The candidature limit date is not before the end date");
@@ -127,14 +152,14 @@ contract ContestController is owned {
         contests[contestHash].title = title;
         contests[contestHash].tags = tags;
         contests[contestHash].ipfsHash = ipfsHash;
-        contests[contestHash].createdDate = now;
+        contests[contestHash].createdDate = getTime();
         contests[contestHash].initialDate = initialDate;
         contests[contestHash].candidatureLimitDate = candidatureLimitDate;
         contests[contestHash].endDate = endDate;
         contests[contestHash].taxForCandidatures = taxForCandidatures;
         contests[contestHash].award = msg.value;
 
-        // contests[contestHash].actualWinnerVotes = 0;
+        contests[contestHash].actualWinnerVotes = 0;
         // it's necessary to add an empty first member
         //addMember(contestHash,0,"");
         // and let's add the founder, to save a step later
@@ -209,8 +234,8 @@ contract ContestController is owned {
     * @param judgeName judge name
     */
     function addJudge(bytes32 contestHash, address judgeAddress, string judgeName) public theOwnerOf(contestHash) {
-        require(now < contests[contestHash].initialDate, "The judges cannot be changed once the contest has begun");
-
+        require(getTime() < contests[contestHash].initialDate, "The judges cannot be changed once the contest has begun");
+        require(bytes(judgeName).length > 0,"The judge must have a name");
         require(bytes(contests[contestHash].judges[judgeAddress].name).length == 0, "The judge already exists");
 
         Judge memory judge;
@@ -232,7 +257,7 @@ contract ContestController is owned {
     * @param judgeAddress judge ethereum address to be removed
     */
     function removeJudge(bytes32 contestHash, address judgeAddress) public theOwnerOf(contestHash){
-        require(now < contests[contestHash].initialDate);
+        require(getTime() < contests[contestHash].initialDate);
 
         // Check judge exists
         Judge memory judgeToDelete = contests[contestHash].judges[judgeAddress];
@@ -268,20 +293,22 @@ contract ContestController is owned {
     *
     * @param contestHash contest hash for candidature
     * @param title title for candidature
+    * @param ipfsHash hash of image
     */
     function setNewCandidature(bytes32 contestHash, string title, string ipfsHash) public validAddress(msg.sender) payable {
         require(msg.value == contests[contestHash].taxForCandidatures);
 
-        require(now > contests[contestHash].initialDate);
-        require(now < contests[contestHash].candidatureLimitDate);
+        require(getTime() > contests[contestHash].initialDate);
+        require(getTime() < contests[contestHash].candidatureLimitDate);
 
         bytes32 candidatureHash = keccak256(abi.encodePacked(msg.sender,title));
         contests[contestHash].candidatureList.push(candidatureHash);
         contests[contestHash].candidatures[candidatureHash].owner = msg.sender;
         contests[contestHash].candidatures[candidatureHash].title = title;
-        contests[contestHash].candidatures[candidatureHash].createdDate = now;
+        contests[contestHash].candidatures[candidatureHash].createdDate = getTime();
         contests[contestHash].candidatures[candidatureHash].ipfsHash = ipfsHash;
         contests[contestHash].candidatures[candidatureHash].cancelled = false;
+        contests[contestHash].candidatures[candidatureHash].taxBalance = msg.value;
 
         emit NewCandidature(contests[contestHash].title, title);
     }
@@ -299,9 +326,24 @@ contract ContestController is owned {
         return contests[contestHash].candidatureList.length;
     }
 
-    function cancelCandidature(bytes32 contestHash, bytes32 candidatureHash, string reason) external isJudgeOf(contestHash) {
+    /**
+    *
+    * Cancel candidature by breach of rules
+    *
+    * @param contestHash contest hash
+    * @param candidatureHash candidature hash
+    * @param reason reason for cancellation
+    * @param punishment if true, the taxBalance of candidature is set to zero
+    */
+    function cancelCandidature(bytes32 contestHash, bytes32 candidatureHash, string reason, bool punishment) external isJudgeOf(contestHash) {
         // Only judges can cancel a candidature
+        require(getTime() < contests[contestHash].endDate);
         require(!contests[contestHash].candidatures[candidatureHash].cancelled);
+        
+
+        if (punishment){
+            contests[contestHash].candidatures[candidatureHash].taxBalance = 0;
+        }
 
         contests[contestHash].candidatures[candidatureHash].cancelled = true;
         contests[contestHash].candidatures[candidatureHash].cancelledByMember = msg.sender;
@@ -319,11 +361,19 @@ contract ContestController is owned {
      *************************************************************/
 
     function setNewVote(bytes32 contestHash, bytes32 candidatureHash) external isJudgeOf(contestHash) {
-        require(now > contests[contestHash].candidatureLimitDate);
-        require(now < contests[contestHash].endDate);
+        require(getTime() > contests[contestHash].candidatureLimitDate);
+        require(getTime() < contests[contestHash].endDate);
 
         require(contests[contestHash].judges[msg.sender].votedCandidature == 0);
         contests[contestHash].judges[msg.sender].votedCandidature = candidatureHash;
+        contests[contestHash].candidatures[candidatureHash].votes += 1;
+
+        // update actual winner status
+        if (contests[contestHash].candidatures[candidatureHash].votes >= contests[contestHash].actualWinnerVotes){
+            contests[contestHash].actualWinnerVotes = contests[contestHash].candidatures[candidatureHash].votes;
+            contests[contestHash].actualWinnerAccount = candidatureHash;
+        }
+
 
         emit NewVote(
             contests[contestHash].judges[msg.sender].name,
@@ -335,9 +385,15 @@ contract ContestController is owned {
      *                 SOLVE CONTEST & REFUND                    *
      *************************************************************/
 
-/*     function solveContest(bytes32 contestHash) public theOwnerOf(contestHash) returns (address _addressWinner, uint256 totalVotes){
+    /**
+    *
+    * Solve the contest
+    *
+    * @param contestHash contest hash
+    */
+    function solveContest(bytes32 contestHash) public theOwnerOf(contestHash) returns (address addressWinner, uint256 totalVotes){
         require(contests[contestHash].award > 0);
-        require(now > contests[contestHash].dateEndContest);
+        require(getTime() > contests[contestHash].endDate);
 
         uint256 maxVotes = 0;
         bytes32 winnerHash;
@@ -361,24 +417,28 @@ contract ContestController is owned {
         contests[contestHash].award = 0;
         contests[contestHash].candidatures[candidatureHash].taxBalance = prize;
 
+        emit ContestSolved(
+            contestHash,
+            contests[contestHash].candidatures[contests[contestHash].actualWinnerAccount].owner,
+            contests[contestHash].actualWinnerVotes);
+
         return (
             contests[contestHash].candidatures[contests[contestHash].actualWinnerAccount].owner,
             contests[contestHash].actualWinnerVotes);
     }
- */
+ 
     function refundToCandidates(bytes32 contestHash, bytes32 candidatureHash) public {
-        require(now >= contests[contestHash].endDate);
+        require(getTime() >= contests[contestHash].endDate);
+        //require(!contests[contestHash].candidatures[candidatureHash].cancelled);
         require(msg.sender == contests[contestHash].candidatures[candidatureHash].owner);
         require(contests[contestHash].award == 0);
         require(!contests[contestHash].candidatures[candidatureHash].refunded);
 
-        //uint256 amount = contests[contestHash].candidatures[candidatureHash].taxBalance;
-        //contests[contestHash].candidatures[candidatureHash].taxBalance = 0;
+        uint256 amount = contests[contestHash].candidatures[candidatureHash].taxBalance;
+        contests[contestHash].candidatures[candidatureHash].taxBalance = 0;
         contests[contestHash].candidatures[candidatureHash].refunded = true;
-
-        msg.sender.transfer(contests[contestHash].taxForCandidatures);
+        msg.sender.transfer(amount);
     }
-
 
      /************************************************************
      *                       PAGINATION                          *
@@ -431,10 +491,5 @@ contract ContestController is owned {
         }
 
         return (values);
-    }
-
-    // only for date testing purposes
-    function getTimeNow() public view returns(uint256){
-        return now;
     }
 }

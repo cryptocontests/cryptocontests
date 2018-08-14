@@ -93,7 +93,53 @@ export class ContestContractService {
         currency: CryptoCurrency.WEIS
       },
       tags: response.tags.map(tag => this.web3Service.bytesToString(tag)),
-      options: {}
+      options: {},
+      judges: [
+        {
+          name: 'hi',
+          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
+        },
+        {
+          name: 'hi',
+          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
+        },
+        {
+          name: 'hi',
+          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
+        },
+        {
+          name: 'hi',
+          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
+        },
+        {
+          name: 'hi',
+          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
+        },
+        {
+          name: 'hi',
+          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
+        },
+        {
+          name: 'hi',
+          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
+        },
+        {
+          name: 'hi',
+          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
+        },
+        {
+          name: 'hi',
+          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
+        },
+        {
+          name: 'hi',
+          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
+        },
+        {
+          name: 'hi',
+          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
+        }
+      ]
     };
   responseToCandidature = (response: any, ipfsFile: IpfsFile) =>
     <Candidature>{

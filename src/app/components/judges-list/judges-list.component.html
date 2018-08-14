@@ -1,0 +1,10 @@
+<mat-list>
+  <mat-list-item *ngFor="let judge of judges" fxLayout="row" fxLayoutGap="32px" fxLayoutAlign="center center">
+    <mat-icon mat-list-icon>school</mat-icon>
+    <mat-label fxFlex>{{judge.name}}</mat-label>
+    <mat-label fxFlex="40em">{{judge.address}}</mat-label>
+    <button mat-icon-button (click)="removeJudge(judge)">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-list-item>
+</mat-list>
