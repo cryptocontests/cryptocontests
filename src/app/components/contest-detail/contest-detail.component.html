@@ -6,7 +6,11 @@
     <mat-label fxFlex>{{(contest$ | async)?.title}}</mat-label>
     <mat-label>{{(contest$ | async) ? ((contest$ | async).prize | cryptoConvert: 'ETH') : ''}} ETH</mat-label>
     <mat-chip>{{(contest$ | async) ? getContestPhase(contest$ | async) : ''}}</mat-chip>
-  </mat-toolbar>
+    <button mat-raised-button color="accent" (click)="openCreateCandidatureDialog()"
+        [disabled]="!(contest$ | async) || getPhaseIndex(contest$ | async) !== 1">
+      PARTICIPATE
+    </button>
+</mat-toolbar>
 
   <div fxLayout="row" fxLayoutAlign="center stretch" *ngIf="contest$ | async; let contest" class="auto-overflow">
     <div fxLayout="column" fxFlex="90%" fxLayoutAlign="start stretch" fxLayoutGap="16px" style="margin-bottom: 16px;">
@@ -37,7 +41,7 @@
       </mat-card>
 
       <mat-card [@cardState] class="no-padding mat-elevation-z2">
-        <mat-tab-group mat-stretch-tabs [selectedIndex]="getPhaseIndex(contest) > 0 ? 1 : 0" (selectedIndexChange)="selectedTabChange($event)">
+        <mat-tab-group mat-stretch-tabs [selectedIndex]="getPhaseIndex(contest) > 1 ? 1 : 0" (selectedIndexChange)="selectedTabChange($event)">
           <mat-tab label="{{contest.judges.length}} Judges">
             <cc-judges-list [judges]="contest.judges" (removeJudge)="removeJudge($event)"></cc-judges-list>
           </mat-tab>
@@ -60,11 +64,6 @@
               <ng-container *ngIf="selectedTabIndex === 0">
                 <button mat-raised-button color="accent" (click)="addJudge()" class="align-end">
                   ADD JUDGE
-                </button>
-              </ng-container>
-              <ng-container *ngIf="selectedTabIndex === 1">
-                <button mat-raised-button color="accent" (click)="openCreateCandidatureDialog()">
-                  PARTICIPATE
                 </button>
               </ng-container>
             </ng-template>
