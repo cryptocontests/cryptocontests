@@ -1,5 +1,5 @@
 import { Directive, ElementRef, Input, OnInit } from '@angular/core';
-import { Md5 } from 'ts-md5/dist/md5';
+import { Md5 } from 'ts-md5';
 
 @Directive({
   selector: '[hashColor]'

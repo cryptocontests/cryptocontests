@@ -1,5 +1,6 @@
-<mat-grid-list cols="5">
+<mat-grid-list cols="5" *ngIf="candidatures.length !== 0">
   <mat-grid-tile *ngFor="let candidature of candidatures" fxLayout="column" fxLayoutAlign="start center">
     <img [src]="candidature.content.content" class="crop-image candidature-tile">
   </mat-grid-tile>
 </mat-grid-list>
+<loading-empty *ngIf="candidatures.length === 0"></loading-empty>

@@ -3,8 +3,11 @@
     <mat-icon mat-list-icon [hashColor]="judge.address">school</mat-icon>
     <mat-label mat-line>{{judge.name}}</mat-label>
     <mat-label mat-line class="address">{{judge.address}}</mat-label>
-    <button mat-icon-button (click)="initRemoveJudge(judge)">
-      <mat-icon>delete</mat-icon>
-    </button>
+    <mat-label>{{judge.weight}} votes</mat-label>
+    <div *ngIf="removables" matTooltip="Contests must have at least one judge at all times" [matTooltipDisabled]="judges.length !== 1">
+      <button mat-icon-button (click)="initRemoveJudge(judge)" [disabled]="judges.length === 1">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
   </mat-list-item>
 </mat-list>

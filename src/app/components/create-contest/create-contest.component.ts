@@ -60,6 +60,7 @@ export class CreateContestComponent implements OnInit {
       title: ['', Validators.required],
       judgeName: ['', Validators.required],
       judgeAddress: ['', Validators.required],
+      judgeWeight: [1, Validators.required],
       description: '',
       prize: ['', Validators.required],
       candidatureTax: ['', Validators.required],
@@ -117,11 +118,11 @@ export class CreateContestComponent implements OnInit {
   }
 
   createContest() {
-    const contest: Contest = {
-      id: null,
+    const contest: Partial<Contest> = {
       judges: [
         {
           name: this.contestForm.value.judgeName,
+          weight: this.contestForm.value.judgeWeight,
           address: this.contestForm.value.judgeAddress
         }
       ],
@@ -137,16 +138,14 @@ export class CreateContestComponent implements OnInit {
         value: this.contestForm.value.prize,
         currency: CryptoCurrency.ETH
       },
-      taxForCandidature: {
+      candidaturesStake: {
         value: this.contestForm.value.candidatureTax,
         currency: CryptoCurrency.ETH
       },
-      createdDate: null,
       initialDate: this.contestForm.value.initialDate.valueOf(),
       candidatureLimitDate: this.contestForm.value.candidatureLimitDate.valueOf(),
       endDate: this.contestForm.value.endDate.valueOf(),
       tags: this.tags,
-      options: {}
     };
     this.store.dispatch(new CreateContest(contest));
   }

@@ -3,7 +3,8 @@ import {
   OnInit,
   Input,
   ViewChild,
-  Output
+  Output,
+  EventEmitter
 } from '@angular/core';
 import {
   ReadMode,
@@ -20,6 +21,7 @@ export class FilePickerComponent implements OnInit {
   public readMode = ReadMode.dataURL;
 
   @Input() multiple = false;
+  @Output() fileRead = new EventEmitter<ReadFile>();
 
   file: ReadFile;
   dragging = false;
@@ -34,9 +36,10 @@ export class FilePickerComponent implements OnInit {
     return this.file;
   }
 
-  fileRead(file: ReadFile) {
+  finishedFileRead(file: ReadFile) {
     // if (!this.multiple && this.files.length > 0) this.files.splice(0, 1);
     this.file = file;
+    this.fileRead.emit(file);
   }
 
   removeFile() {

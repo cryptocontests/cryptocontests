@@ -22,9 +22,10 @@ export interface Hashable<T> {
 export interface Contest {
   id: string;
   title: string;
+  owner: string;
   additionalContent: Hashable<{ description: string; image: Buffer }>;
   prize: CryptoValue;
-  taxForCandidature: CryptoValue;
+  candidaturesStake: CryptoValue;
   createdDate: number;
   initialDate: number;
   candidatureLimitDate: number;
@@ -37,6 +38,7 @@ export interface Contest {
 export interface Judge {
   address: string;
   name: string;
+  weight: number;
 }
 
 export interface Candidature {

@@ -6,36 +6,55 @@
     <mat-label fxFlex>{{(contest$ | async)?.title}}</mat-label>
     <mat-label>{{(contest$ | async) ? ((contest$ | async).prize | cryptoConvert: 'ETH') : ''}} ETH</mat-label>
     <mat-chip>{{(contest$ | async) ? getContestPhase(contest$ | async) : ''}}</mat-chip>
-    <button mat-raised-button color="accent" (click)="openCreateCandidatureDialog()"
-        [disabled]="!(contest$ | async) || getPhaseIndex(contest$ | async) !== 1">
-      PARTICIPATE
+    <div matTooltip="New candidatures can only be submitted during the new candidatures phase" [matTooltipDisabled]="contestPhase !== 0">
+      <button mat-raised-button color="accent" (click)="openCreateCandidatureDialog()" *ngIf="contestPhase < 3" [disabled]="!contestPhase || (contestPhase !== 1 && contestPhase !== 2)">
+        {{ contestPhase > 1 ? 'UPLOAD CANDIDATURE' : 'SUBMIT CANDIDATURE' }}
+      </button>
+    </div>
+    <button mat-raised-button color="accent" *ngIf="contestPhase && contestPhase === 3" (click)="retrieveFunds()" [disabled]="!(hasCandidatures() | async)"
+      matTooltip="Only people who have submitted at least one candidature to this contest can retrieve the funds" [matTooltipDisabled]="!(hasCandidatures() | async)">
+      RETRIEVE STAKE
     </button>
-</mat-toolbar>
+  </mat-toolbar>
 
-  <div fxLayout="row" fxLayoutAlign="center stretch" *ngIf="contest$ | async; let contest" class="auto-overflow">
+  <div fxLayout="row" fxLayoutAlign="center stretch" *ngIf="contest$ | async; else loading; let contest" class="auto-overflow">
     <div fxLayout="column" fxFlex="90%" fxLayoutAlign="start stretch" fxLayoutGap="16px" style="margin-bottom: 16px;">
       <mat-card [@cardState] class="mat-elevation-z2" fxLayout="column">
         <img mat-card-image class="crop-image" fxFlex src="https://material.angular.io/assets/img/examples/shiba1.jpg" />
         <mat-card-content fxLayout="column" fxLayoutGap="16px">
-          <mat-label><strong>{{contest.title}}</strong></mat-label>
+          <mat-label>
+            <strong>{{contest.title}}</strong>
+          </mat-label>
           <div fxLayout="row" fxLayoutGap="8px">
             <div fxFlex fxLayout="column" fxLayoutGap="8px">
               <p fxFlex>{{contest.additionalContent?.content?.description}}</p>
               <ng-container *ngIf="contest.tags.length > 0">
-                <mat-label><strong>Tags</strong></mat-label>
+                <mat-label>
+                  <strong>Tags</strong>
+                </mat-label>
                 <cc-tags [tags]="contest.tags" [clickable]="false"></cc-tags>
               </ng-container>
             </div>
             <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="center stretch">
-              <mat-label fxFlex>Stake to participate: {{contest?.taxForCandidature | cryptoConvert: 'ETH'}} ETH</mat-label>
+              <mat-label fxFlex>Stake to participate: {{contest.candidaturesStake | cryptoConvert: 'ETH'}} ETH</mat-label>
             </div>
           </div>
-          <mat-label><strong>Phases</strong></mat-label>
+          <mat-label>
+            <strong>Phases</strong>
+          </mat-label>
           <mat-horizontal-stepper linear="false" #stepper [selectedIndex]="getPhaseIndex(contest)" disabled>
-            <mat-step label="Created on {{contest.createdDate | date}}" [completed]="getPhaseIndex(contest) === 0"></mat-step>
-            <mat-step label="New candidatures from {{contest.initialDate | date}}" [completed]="getPhaseIndex(contest) > 0"></mat-step>
-            <mat-step label="Revision begins on {{contest.candidatureLimitDate | date}}" [completed]="getPhaseIndex(contest) > 1"></mat-step>
-            <mat-step label="Contest ends on {{contest.endDate | date}}" [completed]="getPhaseIndex(contest) > 2"></mat-step>
+            <mat-step label="Created on {{contest.createdDate | date}}">
+              Currently the contest owner can <strong>add or remove judges</strong> from the contest.
+            </mat-step>
+            <mat-step label="New candidatures from {{contest.initialDate | date}}">
+              Now is the time to <strong>submit new candidatures</strong> for the contest.
+            </mat-step>
+            <mat-step label="Revision begins on {{contest.candidatureLimitDate | date}}">
+              The judges are reviewing the candidatures. <strong>Upload your candidature now</strong> for it to be reviewed!
+            </mat-step>
+            <mat-step label="Contest ends on {{contest.endDate | date}}">
+              The contest has ended. <strong>Retrieve your stake</strong> from the contest.
+            </mat-step>
           </mat-horizontal-stepper>
         </mat-card-content>
       </mat-card>
@@ -43,15 +62,18 @@
       <mat-card [@cardState] class="no-padding mat-elevation-z2">
         <mat-tab-group mat-stretch-tabs [selectedIndex]="getPhaseIndex(contest) > 1 ? 1 : 0" (selectedIndexChange)="selectedTabChange($event)">
           <mat-tab label="{{contest.judges.length}} Judges">
-            <cc-judges-list [judges]="contest.judges" (removeJudge)="removeJudge($event)"></cc-judges-list>
+            <cc-judges-list [judges]="contest.judges" [removables]="contestPhase === 0" (removeJudge)="removeJudge($event)"></cc-judges-list>
           </mat-tab>
-          <mat-tab label="Candidatures" [disabled]="!shouldShowCandidatures(contest)">
-            <cc-candidature-grid fxFlex [candidatures]="candidatures$ | async" *ngrxLoading="candidatures$;action:participationsAction;empty:'This contest has no candidatures yet'">
+          <mat-tab [disabled]="!shouldShowCandidatures(contest)">
+            <ng-template mat-tab-label>
+              <div matTooltip="Candidatures will be shown when the contest is on revision phase" [matTooltipDisabled]="contestPhase > 1">
+                <mat-label>{{ contestPhase > 0 ? (candidatures$ | async).length : ''}} Candidatures</mat-label>
+              </div>
+            </ng-template>
+            <cc-candidature-grid fxFlex [candidatures]="candidatures$ | async" *ngIf="!(loadingCandidatures$ | async); else loading">
             </cc-candidature-grid>
-          </mat-tab>
-          <mat-tab disabled>
-            <ng-template mat-tab-label>
-              <div fxFlex [style.flex]="'1'"></div>
+            <ng-template #loading>
+              <loading></loading>
             </ng-template>
           </mat-tab>
           <mat-tab disabled>
@@ -61,10 +83,18 @@
           </mat-tab>
           <mat-tab disabled>
             <ng-template mat-tab-label>
-              <ng-container *ngIf="selectedTabIndex === 0">
-                <button mat-raised-button color="accent" (click)="addJudge()" class="align-end">
-                  ADD JUDGE
-                </button>
+              <div fxFlex [style.flex]="'1'"></div>
+            </ng-template>
+          </mat-tab>
+          <mat-tab disabled>
+            <ng-template mat-tab-label>
+              <ng-container *ngIf="selectedTabIndex === 0 && contestPhase === 0">
+                <div matTooltip="Only the owner of the contest can add or remove judges"
+                  [matTooltipDisabled]="isUserOwner(contest)">
+                  <button mat-raised-button color="accent" (click)="addJudge()" class="align-end" [disabled]="!isUserOwner(contest)">
+                    ADD JUDGE
+                  </button>
+                </div>
               </ng-container>
             </ng-template>
           </mat-tab>
@@ -74,3 +104,6 @@
   </div>
 
 </div>
+<ng-template #loading>
+  <loading></loading>
+</ng-template>

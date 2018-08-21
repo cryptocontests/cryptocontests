@@ -22,7 +22,6 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CreateContestComponent } from './components/create-contest/create-contest.component';
 import { ContestGridComponent } from './components/contest-grid/contest-grid.component';
 import { Web3Module } from 'ng-web3';
-import { LoadingUtilsModule } from './loading/loading-utils.module';
 
 import { ContestContractService } from './services/contest-contract.service';
 import { ContestDetailComponent } from './components/contest-detail/contest-detail.component';
@@ -73,7 +72,6 @@ import { AddJudgeComponent } from './components/add-judge/add-judge.component';
     EffectsModule.forRoot([ContestEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     Web3Module,
-    LoadingUtilsModule,
     CollectionUtilsModule
   ],
   providers: [ContestContractService],

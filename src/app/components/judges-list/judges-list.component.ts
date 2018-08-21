@@ -9,6 +9,8 @@ import { Judge } from '../../state/contest.model';
 export class JudgesListComponent implements OnInit {
   @Input()
   judges: Judge[];
+  @Input()
+  removables: boolean;
   @Output()
   removeJudge = new EventEmitter<Judge>();
 

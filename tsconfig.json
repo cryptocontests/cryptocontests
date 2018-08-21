@@ -10,13 +10,32 @@
     "experimentalDecorators": true,
     "target": "es5",
     "allowSyntheticDefaultImports": true,
-    "typeRoots": ["node_modules/@types"],
-    "lib": ["es2017", "dom"],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2017",
+      "dom"
+    ],
     "paths": {
-      "ng-collection-utils": ["dist/ng-collection-utils"],
-      "ng-collection-utils/*": ["dist/ng-collection-utils/*"],
-      "ng-web3": ["dist/ng-web3"],
-      "ng-web3/*": ["dist/ng-web3/*"]
+      "ng-collection-utils": [
+        "dist/ng-collection-utils"
+      ],
+      "ng-collection-utils/*": [
+        "dist/ng-collection-utils/*"
+      ],
+      "ng-web3": [
+        "dist/ng-web3"
+      ],
+      "ng-web3/*": [
+        "dist/ng-web3/*"
+      ],
+      "ng-generic-gallery": [
+        "dist/ng-generic-gallery"
+      ],
+      "ng-generic-gallery/*": [
+        "dist/ng-generic-gallery/*"
+      ]
     }
   }
 }

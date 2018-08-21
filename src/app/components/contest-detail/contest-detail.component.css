@@ -24,10 +24,6 @@
   justify-content: flex-end !important;
 }
 
-.mat-horizontal-content-container {
-  display: none;
-}
-
 .mat-list {
   padding-top: 0 !important;
 }

@@ -2,7 +2,6 @@ import { TransactionReceipt } from 'web3/types';
 import { Action } from '@ngrx/store';
 import { Contest, Candidature, Judge } from './contest.model';
 import { CryptoValue } from 'ng-web3';
-import { LoadingAction } from '../loading/ngrx-loading.action';
 
 export enum ContestActionTypes {
   LoadTags = '[LoadTags] LoadTags',
@@ -17,11 +16,19 @@ export enum ContestActionTypes {
   LoadedCandidatures = '[LoadedCandidatures] LoadedCandidatures',
   CreateCandidature = '[CreateCandidature] CreateCandidature',
   CandidaturePending = '[CandidaturePending] CandidaturePending',
+  UploadCandidature = '[UploadCandidature] UploadCandidature',
+  UploadCandidatureSuccess = '[UploadCandidatureSuccess] UploadCandidatureSuccess',
   AddJudge = '[AddJudge] AddJudge',
   AddJudgePending = '[AddJudgePending] AddJudgePending',
   RemoveJudge = '[RemoveJudge] RemoveJudge',
-  RemoveJudgePending = '[RemoveJudgePending] RemoveJudgePending'
+  RemoveJudgePending = '[RemoveJudgePending] RemoveJudgePending',
+  RetrieveFunds = '[RetrieveFunds] RetrieveFunds',
+  RetrieveFundsPending = '[RetrieveFundsPending] RetrieveFundsPending'
 }
+
+/**
+ * Tags
+ */
 
 export class LoadTags implements Action {
   readonly type = ContestActionTypes.LoadTags;
@@ -32,14 +39,18 @@ export class LoadedTags implements Action {
   constructor(public payload: string[]) {}
 }
 
+/**
+ * Contests
+ */
+
 export class LoadContests implements Action {
   readonly type = ContestActionTypes.LoadContests;
   constructor(public payload: Partial<Contest> = {}) {}
 }
 
-export class LoadedContests implements Action, LoadingAction {
+export class LoadedContests implements Action {
   readonly type = ContestActionTypes.LoadedContests;
-  constructor(public payload: Contest[], public originAction: LoadContests) {}
+  constructor(public payload: Contest[]) {}
 }
 
 export class LoadContest implements Action {
@@ -47,15 +58,15 @@ export class LoadContest implements Action {
   constructor(public payload: string) {}
 }
 
-export class LoadedContest implements Action, LoadingAction {
+export class LoadedContest implements Action {
   readonly type = ContestActionTypes.LoadedContest;
-  constructor(public payload: Contest, public originAction: LoadContest) {}
+  constructor(public payload: Contest) {}
 }
 
 export class CreateContest implements Action {
   readonly type = ContestActionTypes.CreateContest;
 
-  constructor(public payload: Contest) {}
+  constructor(public payload: Partial<Contest>) {}
 }
 
 export class ContestPending implements Action {
@@ -64,6 +75,10 @@ export class ContestPending implements Action {
   constructor(public transactionReceipt: TransactionReceipt) {}
 }
 
+/**
+ * Candidatures
+ */
+
 export class LoadCandidatures implements Action {
   readonly type = ContestActionTypes.LoadCandidatures;
 
@@ -71,13 +86,10 @@ export class LoadCandidatures implements Action {
   constructor(public payload: string) {}
 }
 
-export class LoadedCandidatures implements Action, LoadingAction {
+export class LoadedCandidatures implements Action {
   readonly type = ContestActionTypes.LoadedCandidatures;
 
-  constructor(
-    public payload: { contestHash: string; candidatures: Candidature[] },
-    public originAction: LoadCandidatures
-  ) {}
+  constructor(public payload: { contestHash: string; candidatures: Candidature[] }) {}
 }
 
 export class CreateCandidature implements Action {
@@ -98,7 +110,26 @@ export class CandidaturePending implements Action {
   constructor(public transactionReceipt: TransactionReceipt) {}
 }
 
-/** JUDGES */
+export class UploadCandidature implements Action {
+  readonly type = ContestActionTypes.UploadCandidature;
+
+  constructor(
+    public payload: {
+      contestHash: string;
+      candidature: Candidature;
+    }
+  ) {}
+}
+
+export class UploadCandidatureSuccess implements Action {
+  readonly type = ContestActionTypes.UploadCandidatureSuccess;
+
+  constructor() {}
+}
+
+/**
+ * Judges
+ */
 
 export class AddJudge implements Action {
   readonly type = ContestActionTypes.AddJudge;
@@ -134,6 +165,22 @@ export class RemoveJudgePending implements Action {
   constructor(public transactionReceipt: TransactionReceipt) {}
 }
 
+/**
+ * Funds
+ */
+
+export class RetrieveFunds implements Action {
+  readonly type = ContestActionTypes.RetrieveFunds;
+
+  constructor(public payload: string) {}
+}
+
+export class RetrieveFundsPending implements Action {
+  readonly type = ContestActionTypes.RetrieveFundsPending;
+
+  constructor(public transactionReceipt: TransactionReceipt) {}
+}
+
 export type ContestActions =
   | LoadTags
   | LoadedTags
@@ -150,4 +197,6 @@ export type ContestActions =
   | AddJudge
   | AddJudgePending
   | RemoveJudge
-  | RemoveJudgePending;
+  | RemoveJudgePending
+  | RetrieveFunds
+  | RetrieveFundsPending;

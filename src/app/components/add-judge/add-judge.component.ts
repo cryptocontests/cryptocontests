@@ -20,6 +20,7 @@ export class AddJudgeComponent implements OnInit {
   private buildForm() {
     this.judgeForm = this.formBuilder.group({
       name: ['', Validators.required],
+      weight: ['1', Validators.required],
       address: ['', Validators.required]
     });
   }
@@ -34,6 +35,7 @@ export class AddJudgeComponent implements OnInit {
     if (this.judgeForm.valid) {
       const judge: Judge = {
         address: this.judgeForm.value.address,
+        weight: this.judgeForm.value.weight,
         name: this.judgeForm.value.name
       };
       this.dialogRef.close(judge);

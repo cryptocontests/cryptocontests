@@ -1,0 +1,7 @@
+<ng-template cdkPortal>
+	<div [@translatePage]="_position" 
+       (@translatePage.start)="_onTranslateTabStarted($event)"
+fxFlex fxFill fxLayout="column" fxLayoutAlign="center center" style="position:absolute;">
+		<ng-content></ng-content>
+	</div>
+</ng-template>

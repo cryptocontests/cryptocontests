@@ -1,16 +1,10 @@
 import {
   Component,
-  OnInit,
-  Output,
-  EventEmitter,
-  Input,
   OnDestroy
 } from '@angular/core';
 import { Contest, ContestPhase } from '../../state/contest.model';
 import { Observable, Subscription } from 'rxjs';
 import {
-  ContestActionTypes,
-  LoadedContests,
   LoadContests
 } from '../../state/contest.actions';
 import { cardAnimations } from '../card.animations';
@@ -27,7 +21,7 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 export class ContestGridComponent implements OnDestroy {
   phase: string;
   contests$: Observable<Contest[]>;
-  action: LoadContests;
+  loading$: Observable<boolean>;
   navigationSubscription: Subscription;
 
   constructor(
@@ -45,11 +39,12 @@ export class ContestGridComponent implements OnDestroy {
 
   initContest() {
     this.phase = this.route.snapshot.paramMap.get('phase');
-    this.action = new LoadContests();
-    this.store.dispatch(this.action);
+
+    this.store.dispatch(new LoadContests());
     this.contests$ = this.store.select(
       fromReducer.selectContestsByPhase(ContestPhase[this.phase.toUpperCase()])
     );
+    this.loading$ = this.store.select(fromReducer.contestsLoading);
   }
 
   ngOnDestroy() {

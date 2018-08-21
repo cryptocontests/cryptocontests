@@ -1,4 +1,4 @@
-<mat-grid-list cols="4" *ngrxLoading="contests$;action:action;empty:'The search returned no contests'">
+<mat-grid-list cols="4" *ngIf="!(loading$ | async); else loading">
   <mat-grid-tile *ngFor="let contest of contests$ | async" fxLayout="column" fxLayoutAlign="start center">
     <mat-card mat-ripple [@cardState] fxFlex class="mat-elevation-z2 contest-tile" fxLayout="column" (click)="selectContest(contest)">
       <img mat-card-image class="crop-image" fxFlex src="https://material.angular.io/assets/img/examples/shiba1.jpg" />
@@ -18,4 +18,8 @@
       </mat-card-content>
     </mat-card>
   </mat-grid-tile>
+  <loading-empty *ngIf="(contests$ | async).length === 0"></loading-empty>
 </mat-grid-list>
+<ng-template #loading>
+  <loading></loading>
+</ng-template>

@@ -2,7 +2,9 @@ import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { FilePickerComponent } from '../file-picker/file-picker.component';
-import { Candidature } from '../../state/contest.model';
+import { Candidature, Contest } from '../../state/contest.model';
+import { sha256, sha224 } from 'js-sha256';
+import { ReadFile } from 'ngx-file-helpers';
 
 @Component({
   selector: 'cc-create-candidature',
@@ -13,17 +15,21 @@ export class CreateCandidatureComponent {
   candidatureForm: FormGroup;
   @ViewChild('filePicker')
   filePicker: FilePickerComponent;
+  upload = false;
 
   constructor(
     public dialogRef: MatDialogRef<CreateCandidatureComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: boolean,
     private formBuilder: FormBuilder
   ) {
-    this.buildForm();
+    if (!data) this.buildForm();
+    this.upload = data;
   }
 
   private buildForm() {
     this.candidatureForm = this.formBuilder.group({
-      title: ['', Validators.required]
+      title: ['', Validators.required],
+      contentHash: ['', Validators.required]
     });
   }
 
@@ -37,12 +43,20 @@ export class CreateCandidatureComponent {
       creator: null,
       date: null,
       content: {
-        hash: null,
-        content: new Buffer(this.filePicker.file.content)
+        hash: '0x' + this.candidatureForm.value.contentHash
       },
       votes: 0,
       cancelled: false
     };
     this.dialogRef.close(candidature);
+  }
+
+  hashEnabled(): boolean {
+    return this.filePicker.file && this.filePicker.file.content;
+  }
+
+  fileRead(file: ReadFile) {
+    const hash = sha256(file.content);
+    this.candidatureForm.patchValue({ contentHash: hash });
   }
 }

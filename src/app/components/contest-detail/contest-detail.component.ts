@@ -6,7 +6,11 @@ import {
   PhasesList,
   Judge
 } from './../../state/contest.model';
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation
+} from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -17,13 +21,17 @@ import {
   CreateCandidature,
   LoadContest,
   RemoveJudge,
-  AddJudge
+  AddJudge,
+  RetrieveFunds,
+  UploadCandidature
 } from '../../state/contest.actions';
 import { MatDialog } from '@angular/material';
 import { CreateCandidatureComponent } from '../create-candidature/create-candidature.component';
 import { cardAnimations } from '../card.animations';
-import { tap, withLatestFrom, map } from 'rxjs/operators';
+import { tap, withLatestFrom, map, switchMap } from 'rxjs/operators';
 import { AddJudgeComponent } from '../add-judge/add-judge.component';
+import { CryptoValue } from 'ng-web3/ng-web3';
+import { ContestContractService } from '../../services/contest-contract.service';
 
 @Component({
   selector: 'cc-contest-detail',
@@ -33,33 +41,59 @@ import { AddJudgeComponent } from '../add-judge/add-judge.component';
   encapsulation: ViewEncapsulation.None
 })
 export class ContestDetailComponent implements OnInit {
+  userAddress: string;
   contestHash: string;
   contest$: Observable<Contest>;
+  loading$: Observable<boolean>;
+  loadingCandidatures$: Observable<boolean>;
+  contestPhase: number;
+  candidatureStake: CryptoValue;
   getContestPhase = getContestPhase;
   candidatures$: Observable<Candidature[]>;
-  contestAction: LoadContest;
-  participationsAction: LoadCandidatures;
   selectedTabIndex = 0;
 
   constructor(
     private store: Store<fromReducer.State>,
     private route: ActivatedRoute,
     private location: Location,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private contestService: ContestContractService
   ) {}
 
   ngOnInit() {
-    this.contestHash = this.route.snapshot.paramMap.get('id');
-
-    this.contestAction = new LoadContest(this.contestHash);
-    this.store.dispatch(this.contestAction);
-    this.contest$ = this.store.select(fromReducer.selectedContest);
-
-    this.participationsAction = new LoadCandidatures(this.contestHash);
-    this.store.dispatch(this.participationsAction);
-    this.candidatures$ = this.store.select(
-      state => fromReducer.getContestState(state).candidatures[this.contestHash]
+    this.contestHash = this.route.snapshot.paramMap.get(
+      'id'
     );
+
+    this.store.dispatch(new LoadContest(this.contestHash));
+
+    this.contest$ = this.store.select(
+      fromReducer.selectContest
+    );
+    this.contest$.subscribe((contest: Contest) => {
+      if (contest) {
+        this.contestPhase = this.getPhaseIndex(contest);
+        this.candidatureStake = contest.candidaturesStake;
+      }
+    });
+    this.loading$ = this.store.select(
+      fromReducer.contestDetailLoading
+    );
+    this.loadingCandidatures$ = this.store.select(
+      fromReducer.candidaturesLoading
+    );
+
+    this.store.dispatch(
+      new LoadCandidatures(this.contestHash)
+    );
+    this.candidatures$ = this.store.select(
+      state =>
+        fromReducer.getContestState(state).candidatures[
+          this.contestHash
+        ]
+    );
+
+    this.contestService.getDefaultAccount.subscribe(address => this.userAddress = address);
   }
 
   getPhaseIndex(contest: Contest) {
@@ -69,33 +103,53 @@ export class ContestDetailComponent implements OnInit {
 
   shouldShowCandidatures(contest: Contest): boolean {
     const phase = getContestPhase(contest);
-    return phase === ContestPhase.REVISION || phase === ContestPhase.ENDED;
+    return (
+      phase === ContestPhase.REVISION ||
+      phase === ContestPhase.ENDED
+    );
   }
 
   goBack($event) {
     this.location.back();
   }
 
+  isUserOwner(contest: Contest): boolean {
+    return contest.owner === this.userAddress;
+  }
+
   openCreateCandidatureDialog(): void {
-    const dialogRef = this.dialog.open(CreateCandidatureComponent);
+    const dialogRef = this.dialog.open(
+      CreateCandidatureComponent,
+      { data: this.contestPhase === 2 }
+    );
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) this.submitCandidature(result);
+      if (result) {
+        if (this.contestPhase === 1) {
+          this.submitCandidature(result);
+        } else if (this.contestPhase === 2) {
+          this.uploadCandidature(result);
+        }
+      }
     });
   }
 
   submitCandidature(candidature: Candidature) {
-    from('anything').pipe(
-      withLatestFrom(this.contest$),
-      tap(([first, contest]) =>
-        this.store.dispatch(
-          new CreateCandidature({
-            contestHash: contest.id,
-            stake: contest.taxForCandidature,
-            candidature
-          })
-        )
-      )
+    this.store.dispatch(
+      new CreateCandidature({
+        contestHash: this.contestHash,
+        stake: this.candidatureStake,
+        candidature
+      })
+    );
+  }
+
+  uploadCandidature(candidature: Candidature) {
+    this.store.dispatch(
+      new UploadCandidature({
+        contestHash: this.contestHash,
+        candidature
+      })
     );
   }
 
@@ -109,7 +163,10 @@ export class ContestDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.store.dispatch(
-          new AddJudge({ contestHash: this.contestHash, judge: result })
+          new AddJudge({
+            contestHash: this.contestHash,
+            judge: result
+          })
         );
       }
     });
@@ -117,7 +174,23 @@ export class ContestDetailComponent implements OnInit {
 
   removeJudge(judgeToRemove: Judge) {
     this.store.dispatch(
-      new RemoveJudge({ contestHash: this.contestHash, judge: judgeToRemove })
+      new RemoveJudge({
+        contestHash: this.contestHash,
+        judge: judgeToRemove
+      })
+    );
+  }
+
+  hasCandidatures(): Observable<boolean> {
+    return this.contestService.getDefaultAccount.pipe(
+      switchMap(address => this.contestService.getOwnCandidatures(address, this.contestHash)),
+      map(candidatures => candidatures.length > 0)
+    );
+  }
+
+  retrieveFunds() {
+    this.store.dispatch(
+      new RetrieveFunds(this.contestHash)
     );
   }
 }

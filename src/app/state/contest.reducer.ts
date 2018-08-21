@@ -12,6 +12,7 @@ export interface State extends EntityState<Contest> {
   tags: string[];
   loadingContests: boolean;
   loadingContestDetail: boolean;
+  loadingCandidatures: boolean;
 }
 
 export const adapter: EntityAdapter<Contest> = createEntityAdapter<Contest>();
@@ -22,7 +23,8 @@ export const initialState: State = adapter.getInitialState({
   selectedContest: null,
   tags: [],
   loadingContests: false,
-  loadingContestDetail: false
+  loadingContestDetail: false,
+  loadingCandidatures: false
 });
 
 export function contestReducer(
@@ -52,8 +54,11 @@ export function contestReducer(
         selectedContest: action.payload.id
       });
     }
+    case ContestActionTypes.LoadCandidatures: {
+      return Object.assign(state, { loadingCandidatures: true });
+    }
     case ContestActionTypes.LoadedCandidatures: {
-      const addCandidature = { candidatures: {} };
+      const addCandidature = { candidatures: {}, loadingCandidatures: false };
       addCandidature.candidatures[action.payload.contestHash] =
         action.payload.candidatures;
       return Object.assign(state, addCandidature);
@@ -86,7 +91,7 @@ export const selectContestById = (id: string) =>
     (entities: Dictionary<Contest>) => entities[id]
   );
 
-export const selectedContest = createSelector(
+export const selectContest = createSelector(
   getContestState,
   (state: State) => state.entities[state.selectedContest]
 );
@@ -94,4 +99,19 @@ export const selectedContest = createSelector(
 export const selectTags = createSelector(
   getContestState,
   (state: State) => state.tags
+);
+
+export const contestsLoading = createSelector(
+  getContestState,
+  (state: State) => state.loadingContests
+);
+
+export const contestDetailLoading = createSelector(
+  getContestState,
+  (state: State) => state.loadingContestDetail
+);
+
+export const candidaturesLoading = createSelector(
+  getContestState,
+  (state: State) => state.loadingCandidatures
 );

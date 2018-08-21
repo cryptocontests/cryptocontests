@@ -4,7 +4,7 @@ import { Action } from '@ngrx/store';
 import { Actions, Effect, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { ContestContractService } from '../services/contest-contract.service';
 import { Observable, of as observableOf } from 'rxjs';
-import { switchMap, map, catchError, tap, filter, take } from 'rxjs/operators';
+import { switchMap, map, catchError, tap } from 'rxjs/operators';
 import {
   LoadContests,
   LoadedContests,
@@ -20,12 +20,17 @@ import {
   AddJudge,
   AddJudgePending,
   RemoveJudge,
-  RemoveJudgePending
+  RemoveJudgePending,
+  RetrieveFunds,
+  RetrieveFundsPending,
+  UploadCandidature,
+  UploadCandidatureSuccess
 } from './contest.actions';
 import { Contest, Candidature } from './contest.model';
 import { Router } from '@angular/router';
-import { GlobalLoadingService } from '../loading/services/global-loading.service';
+import { GlobalLoadingService } from 'ng-collection-utils';
 import { MatSnackBar } from '@angular/material';
+import { FileReceipt } from 'ng-web3';
 
 @Injectable()
 export class ContestEffects {
@@ -46,7 +51,7 @@ export class ContestEffects {
           .getContests(loadAction.payload)
           .pipe(
             map(
-              (contests: Contest[]) => new LoadedContests(contests, loadAction)
+              (contests: Contest[]) => new LoadedContests(contests)
             )
           )
       )
@@ -71,7 +76,7 @@ export class ContestEffects {
         this.contestContract
           .getContest(loadAction.payload)
           .pipe(
-            map((contest: Contest) => new LoadedContest(contest, loadAction))
+            map((contest: Contest) => new LoadedContest(contest))
           )
       )
     );
@@ -107,37 +112,56 @@ export class ContestEffects {
                 {
                   contestHash: loadAction.payload,
                   candidatures
-                },
-                loadAction
+                }
               )
           )
         )
       )
     );
 
-  @Effect()
-  createCandidature$: Observable<any> = this.actions$
-    .ofType<CreateContest>(ContestActionTypes.CreateCandidature)
-    .pipe(
-      tap(() => this.globalLoading.show()),
-      switchMap((createAction: CreateCandidature) =>
-        this.contestContract
-          .createCandidature(
-            createAction.payload.contestHash,
-            createAction.payload.stake,
-            createAction.payload.candidature
-          )
-          .pipe(
-            map((receipt: TransactionReceipt) => new ContestPending(receipt)),
-            tap(() => this.globalLoading.hide()),
-            catchError(err => {
-              this.handleError(err);
-              return observableOf();
-            })
-          )
-      ),
-      tap(() => this.showTransactionPending('Candidature creation requested'))
-    );
+    @Effect()
+    createCandidature$: Observable<any> = this.actions$
+      .ofType<CreateCandidature>(ContestActionTypes.CreateCandidature)
+      .pipe(
+        tap(() => this.globalLoading.show()),
+        switchMap((createAction: CreateCandidature) =>
+          this.contestContract
+            .createCandidature(
+              createAction.payload.contestHash,
+              createAction.payload.stake,
+              createAction.payload.candidature
+            )
+            .pipe(
+              map((receipt: TransactionReceipt) => new ContestPending(receipt)),
+              tap(() => this.globalLoading.hide()),
+              catchError(err => {
+                this.handleError(err);
+                return observableOf();
+              })
+            )
+        ),
+        tap(() => this.showTransactionPending('Candidature creation requested'))
+      );
+
+    @Effect()
+    uploadCandidature$: Observable<any> = this.actions$
+      .ofType<UploadCandidature>(ContestActionTypes.UploadCandidature)
+      .pipe(
+        switchMap((uploadAction: UploadCandidature) =>
+          this.contestContract
+            .uploadCandidature(
+              uploadAction.payload.contestHash,
+              uploadAction.payload.candidature
+            )
+            .pipe(
+              map((receipt: FileReceipt) => new UploadCandidatureSuccess()),
+              catchError(err => {
+                this.handleError(err);
+                return observableOf();
+              })
+            )
+        )
+      );
 
   @Effect()
   addJudge$: Observable<any> = this.actions$
@@ -183,6 +207,24 @@ export class ContestEffects {
       tap(() => this.showTransactionPending('Remove judge requested'))
     );
 
+    @Effect()
+    retrieveFunds$: Observable<any> = this.actions$
+      .ofType<AddJudge>(ContestActionTypes.RetrieveFunds)
+      .pipe(
+        switchMap((addJudgeAction: RetrieveFunds) =>
+          this.contestContract
+            .retrieveFunds(addJudgeAction.payload)
+            .pipe(
+              map((receipt: TransactionReceipt) => new RetrieveFundsPending(receipt)),
+              catchError(err => {
+                this.handleError(err);
+                return observableOf();
+              })
+            )
+        ),
+        tap(() => this.showTransactionPending('Retrieve funds requested'))
+      );
+
   private showTransactionPending(customMessage: string) {
     this.snackBar.open(
       customMessage + ': wait for the transaction to confirm',
@@ -195,6 +237,7 @@ export class ContestEffects {
 
   private handleError(error: any) {
     this.globalLoading.hide();
+    console.log(error);
     const snackRef = this.snackBar.open(
       error.message ? error.message : error,
       'CLOSE'
