@@ -14,7 +14,8 @@ import {
   tap,
   defaultIfEmpty,
   withLatestFrom,
-  catchError
+  catchError,
+  timeout
 } from 'rxjs/operators';
 import {
   Contest,
@@ -89,13 +90,10 @@ export class ContestContractService {
     this.contract.methods.getCandidature(contestHash, candidatureHash).call({
       from: address
     });
-  getOwnCandidatures = (
-    address: string,
-    contestHash: string
-  ) =>
+  getOwnCandidatures = (address: string, contestHash: string) =>
     this.contract.methods.getOwnCandidatures(contestHash).call({
       from: address
-    })
+    });
   responseToContest = (contestHash: string, response: any) =>
     <Contest>{
       id: contestHash,
@@ -204,7 +202,9 @@ export class ContestContractService {
   /**
    * Creates a contest
    */
-  public createContest(contest: Partial<Contest>): Observable<TransactionReceipt> {
+  public createContest(
+    contest: Partial<Contest>
+  ): Observable<TransactionReceipt> {
     // TODO: uncomment when the contest includes an image
     // const pinFile: Observable<FileReceipt> = from(this.ipfs.addFile(<Buffer>contest.imageHash));
     const ipfsFiles: IpfsFile[] = [
@@ -323,14 +323,18 @@ export class ContestContractService {
           hashes.map((candidatureHash: string) =>
             combineLatest(
               this.getCandidature(address, contestHash, candidatureHash),
-              from(this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(candidatureHash))).pipe(
-                tap(console.log),
-                catchError(err => observableOf(null)),
-                tap(console.log)
+              from(
+                this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(candidatureHash))
+              ).pipe(
+                timeout(2000),
+                catchError(err => observableOf(null))
               )
             ).pipe(
               map(([response, ipfsFile]) =>
-                this.responseToCandidature(response, ipfsFile[0])
+                this.responseToCandidature(
+                  response,
+                  ipfsFile ? ipfsFile[0] : null
+                )
               )
             )
           )
@@ -373,21 +377,30 @@ export class ContestContractService {
   /**
    * Uploads a candidature to ipfs if its hash exists on the given contest
    */
-  public uploadCandidature(contestHash: string, candidature: Candidature): Observable<FileReceipt> {
+  public uploadCandidature(
+    contestHash: string,
+    candidature: Candidature
+  ): Observable<FileReceipt> {
     const hash = sha256(candidature.content.content);
 
     return this.getDefaultAccount.pipe(
-      map(address => this.contract.methods.getOwnCandidatures(contestHash).call({
-        from: address
-      })),
+      map(address =>
+        this.contract.methods.getOwnCandidatures(contestHash).call({
+          from: address
+        })
+      ),
       tap((candidatureHashes: string[]) => {
         if (candidatureHashes.includes(hash)) {
-          throw new Error('The given content does not match any of the candidatures of the sender in the current contest');
+          throw new Error(
+            'The given content does not match any of the candidatures of the sender in the current contest'
+          );
         }
       }),
-      map((candidatureHashes: string[]) => this.ipfs.add(candidature.content.content, {
-        pin: false
-      }))
+      map((candidatureHashes: string[]) =>
+        this.ipfs.add(candidature.content.content, {
+          pin: false
+        })
+      )
     );
   }
 
@@ -396,11 +409,13 @@ export class ContestContractService {
    */
   public retrieveFunds(contestHash: string): Observable<TransactionReceipt> {
     return this.getDefaultAccount.pipe(
-      map(address => this.contract.methods.refundToCandidates(contestHash).send({
-        from: address,
-        gas: 4712388,
-        gasPrice: 20
-      })),
+      map(address =>
+        this.contract.methods.refundToCandidates(contestHash).send({
+          from: address,
+          gas: 4712388,
+          gasPrice: 20
+        })
+      ),
       tap(txPromise =>
         this.transactionStates.registerTransaction(txPromise, contestHash)
       ),

@@ -67,7 +67,7 @@
           <mat-tab [disabled]="!shouldShowCandidatures(contest)">
             <ng-template mat-tab-label>
               <div matTooltip="Candidatures will be shown when the contest is on revision phase" [matTooltipDisabled]="contestPhase > 1">
-                <mat-label>{{ contestPhase > 0 && (candidatures$ | async) ? (candidatures$ | async).length : ''}} Candidatures</mat-label>
+                <mat-label>{{ contestPhase > 0 ? (getNumCandidatures() | async) : '' }} Candidatures</mat-label>
               </div>
             </ng-template>
             <cc-candidature-grid fxFlex [candidatures]="candidatures$ | async" *ngIf="!(loadingCandidatures$ | async); else loading">
@@ -89,8 +89,7 @@
           <mat-tab disabled>
             <ng-template mat-tab-label>
               <ng-container *ngIf="selectedTabIndex === 0 && contestPhase === 0">
-                <div matTooltip="Only the owner of the contest can add or remove judges"
-                  [matTooltipDisabled]="isUserOwner(contest)">
+                <div matTooltip="Only the owner of the contest can add or remove judges" [matTooltipDisabled]="isUserOwner(contest)">
                   <button mat-raised-button color="accent" (click)="addJudge()" class="align-end" [disabled]="!isUserOwner(contest)">
                     ADD JUDGE
                   </button>

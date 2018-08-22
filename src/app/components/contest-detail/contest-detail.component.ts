@@ -6,16 +6,12 @@ import {
   PhasesList,
   Judge
 } from './../../state/contest.model';
-import {
-  Component,
-  OnInit,
-  ViewEncapsulation
-} from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import * as fromReducer from '../../state/contest.reducer';
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import {
   LoadCandidatures,
   CreateCandidature,
@@ -61,39 +57,30 @@ export class ContestDetailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.contestHash = this.route.snapshot.paramMap.get(
-      'id'
-    );
+    this.contestHash = this.route.snapshot.paramMap.get('id');
 
     this.store.dispatch(new LoadContest(this.contestHash));
 
-    this.contest$ = this.store.select(
-      fromReducer.selectContest
-    );
+    this.contest$ = this.store.select(fromReducer.selectContest);
     this.contest$.subscribe((contest: Contest) => {
       if (contest) {
         this.contestPhase = this.getPhaseIndex(contest);
         this.candidatureStake = contest.candidaturesStake;
       }
     });
-    this.loading$ = this.store.select(
-      fromReducer.contestDetailLoading
-    );
+    this.loading$ = this.store.select(fromReducer.contestDetailLoading);
     this.loadingCandidatures$ = this.store.select(
       fromReducer.candidaturesLoading
     );
 
-    this.store.dispatch(
-      new LoadCandidatures(this.contestHash)
-    );
+    this.store.dispatch(new LoadCandidatures(this.contestHash));
     this.candidatures$ = this.store.select(
-      state =>
-        fromReducer.getContestState(state).candidatures[
-          this.contestHash
-        ]
+      state => fromReducer.getContestState(state).candidatures[this.contestHash]
     );
 
-    this.contestService.getDefaultAccount.subscribe(address => this.userAddress = address);
+    this.contestService.getDefaultAccount.subscribe(
+      address => (this.userAddress = address)
+    );
   }
 
   getPhaseIndex(contest: Contest) {
@@ -103,10 +90,7 @@ export class ContestDetailComponent implements OnInit {
 
   shouldShowCandidatures(contest: Contest): boolean {
     const phase = getContestPhase(contest);
-    return (
-      phase === ContestPhase.REVISION ||
-      phase === ContestPhase.ENDED
-    );
+    return phase === ContestPhase.REVISION || phase === ContestPhase.ENDED;
   }
 
   goBack($event) {
@@ -118,10 +102,9 @@ export class ContestDetailComponent implements OnInit {
   }
 
   openCreateCandidatureDialog(): void {
-    const dialogRef = this.dialog.open(
-      CreateCandidatureComponent,
-      { data: this.contestPhase === 2 }
-    );
+    const dialogRef = this.dialog.open(CreateCandidatureComponent, {
+      data: this.contestPhase === 2
+    });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -183,14 +166,21 @@ export class ContestDetailComponent implements OnInit {
 
   hasCandidatures(): Observable<boolean> {
     return this.contestService.getDefaultAccount.pipe(
-      switchMap(address => this.contestService.getOwnCandidatures(address, this.contestHash)),
+      switchMap(address =>
+        this.contestService.getOwnCandidatures(address, this.contestHash)
+      ),
       map(candidatures => candidatures.length > 0)
     );
   }
 
+  getNumCandidatures(): Observable<number> {
+    this.contestService
+      .getCandidaturesByContestHash(this.userAddress, this.contestHash)
+      .then(console.log);
+    return of(5);
+  }
+
   retrieveFunds() {
-    this.store.dispatch(
-      new RetrieveFunds(this.contestHash)
-    );
+    this.store.dispatch(new RetrieveFunds(this.contestHash));
   }
 }

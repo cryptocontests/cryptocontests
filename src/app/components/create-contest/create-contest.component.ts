@@ -63,7 +63,7 @@ export class CreateContestComponent implements OnInit {
       judgeWeight: [1, Validators.required],
       description: '',
       prize: ['', Validators.required],
-      candidatureTax: ['', Validators.required],
+      candidaturesStake: ['', Validators.required],
       initialDate: ['', Validators.required],
       candidatureLimitDate: ['', Validators.required],
       endDate: ['', Validators.required],
@@ -139,13 +139,13 @@ export class CreateContestComponent implements OnInit {
         currency: CryptoCurrency.ETH
       },
       candidaturesStake: {
-        value: this.contestForm.value.candidatureTax,
+        value: this.contestForm.value.candidaturesStake,
         currency: CryptoCurrency.ETH
       },
       initialDate: this.contestForm.value.initialDate.valueOf(),
       candidatureLimitDate: this.contestForm.value.candidatureLimitDate.valueOf(),
       endDate: this.contestForm.value.endDate.valueOf(),
-      tags: this.tags,
+      tags: this.tags
     };
     this.store.dispatch(new CreateContest(contest));
   }
