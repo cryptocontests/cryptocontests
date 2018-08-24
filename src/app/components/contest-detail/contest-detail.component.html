@@ -67,7 +67,7 @@
           <mat-tab [disabled]="!shouldShowCandidatures(contest)">
             <ng-template mat-tab-label>
               <div matTooltip="Candidatures will be shown when the contest is on revision phase" [matTooltipDisabled]="contestPhase > 1">
-                <mat-label>{{ contestPhase > 0 ? (candidatures$ | async).length : ''}} Candidatures</mat-label>
+                <mat-label>{{ contestPhase > 0 && (candidatures$ | async) ? (candidatures$ | async).length : ''}} Candidatures</mat-label>
               </div>
             </ng-template>
             <cc-candidature-grid fxFlex [candidatures]="candidatures$ | async" *ngIf="!(loadingCandidatures$ | async); else loading">

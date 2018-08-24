@@ -13,7 +13,8 @@ import {
   map,
   tap,
   defaultIfEmpty,
-  withLatestFrom
+  withLatestFrom,
+  catchError
 } from 'rxjs/operators';
 import {
   Contest,
@@ -117,14 +118,14 @@ export class ContestContractService {
       options: {},
       judges: response.judges
     };
-  responseToCandidature = (response: any, ipfsFile: IpfsFile) =>
+  responseToCandidature = (response: any, ipfsFile?: IpfsFile) =>
     <Candidature>{
       title: response.title,
       creator: response.owner,
       date: response.creationDate,
       content: {
         hash: response.content,
-        content: ipfsFile.content
+        content: ipfsFile ? ipfsFile.content : null
       },
       votes: response.votes
     };
@@ -322,7 +323,11 @@ export class ContestContractService {
           hashes.map((candidatureHash: string) =>
             combineLatest(
               this.getCandidature(address, contestHash, candidatureHash),
-              this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(candidatureHash))
+              from(this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(candidatureHash))).pipe(
+                tap(console.log),
+                catchError(err => observableOf(null)),
+                tap(console.log)
+              )
             ).pipe(
               map(([response, ipfsFile]) =>
                 this.responseToCandidature(response, ipfsFile[0])
@@ -347,12 +352,12 @@ export class ContestContractService {
       map(address =>
         this.contract.methods
           .setNewCandidature(
-            candidature.content.hash,
+            contestHash,
             candidature.title,
-            contestHash
+            candidature.content.hash
           )
           .send({
-            value: this.currencyService.ethToWeis(stake.value),
+            value: stake.value,
             from: address,
             gas: 4712388,
             gasPrice: 20
