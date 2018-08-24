@@ -47,6 +47,7 @@ export class ContestDetailComponent implements OnInit {
   getContestPhase = getContestPhase;
   candidatures$: Observable<Candidature[]>;
   selectedTabIndex = 0;
+  hasOwnCandidatures = true;
 
   constructor(
     private store: Store<fromReducer.State>,
@@ -66,6 +67,7 @@ export class ContestDetailComponent implements OnInit {
       if (contest) {
         this.contestPhase = this.getPhaseIndex(contest);
         this.candidatureStake = contest.candidaturesStake;
+        if (this.contestPhase > 1) this.getOwnCandidatures();
       }
     });
     this.loading$ = this.store.select(fromReducer.contestDetailLoading);
@@ -164,12 +166,13 @@ export class ContestDetailComponent implements OnInit {
     );
   }
 
-  hasCandidatures(): Observable<boolean> {
-    return this.contestService.getDefaultAccount.pipe(
+  getOwnCandidatures() {
+    this.contestService.getDefaultAccount.pipe(
       switchMap(address =>
         this.contestService.getOwnCandidatures(address, this.contestHash)
       ),
-      map(candidatures => candidatures.length > 0)
+      map(candidatures => candidatures.length > 0),
+      tap(hasOwnCandidatures => this.hasOwnCandidatures)
     );
   }
 

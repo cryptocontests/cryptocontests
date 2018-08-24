@@ -11,8 +11,8 @@
         {{ contestPhase > 1 ? 'UPLOAD CANDIDATURE' : 'SUBMIT CANDIDATURE' }}
       </button>
     </div>
-    <button mat-raised-button color="accent" *ngIf="contestPhase && contestPhase === 3" (click)="retrieveFunds()" [disabled]="!(hasCandidatures() | async)"
-      matTooltip="Only people who have submitted at least one candidature to this contest can retrieve the funds" [matTooltipDisabled]="!(hasCandidatures() | async)">
+    <button mat-raised-button color="accent" *ngIf="contestPhase && contestPhase === 3" (click)="retrieveFunds()" [disabled]="!hasOwnCandidatures"
+      matTooltip="Only people who have submitted at least one candidature to this contest can retrieve the funds" [matTooltipDisabled]="!hasOwnCandidatures">
       RETRIEVE STAKE
     </button>
   </mat-toolbar>

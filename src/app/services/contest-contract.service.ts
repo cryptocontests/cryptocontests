@@ -318,8 +318,8 @@ export class ContestContractService {
     return this.getDefaultAccount.pipe(
       tap(add => (address = add)),
       switchMap(() => this.getCandidaturesByContestHash(address, contestHash)),
-      tap(hashes => console.log(hashes[0])),
-      tap(hashes => console.log(this.ipfs.getIpfsHashFromBytes32(hashes[0]))),
+      tap(hashes => console.log(hashes[1])),
+      tap(hashes => console.log(this.ipfs.getIpfsHashFromBytes32(hashes[1]))),
       switchMap(hashes =>
         forkJoin(
           hashes.map((candidatureHash: string) =>
@@ -328,12 +328,10 @@ export class ContestContractService {
               from(
                 this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(candidatureHash))
               ).pipe(
-                tap(console.log),
                 timeout(5000),
                 catchError(err => observableOf(null))
               )
             ).pipe(
-              tap(console.log),
               map(([response, ipfsFile]) =>
                 this.responseToCandidature(
                   response,
