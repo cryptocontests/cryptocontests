@@ -232,8 +232,7 @@ contract ContestController is owned {
      *                         JUDGE MEMBERS                     *
      *************************************************************/
     modifier theOwnerOf(bytes32 contestHash){
-        require(msg.sender == contests[contestHash].owner,
-            "This transaction can only be executed by the owner of the contest");
+        require(msg.sender == contests[contestHash].owner, "This transaction can only be executed by the owner of the contest");
         _;
     }
 
@@ -323,7 +322,7 @@ contract ContestController is owned {
     function setNewCandidature(bytes32 contestHash, string title, bytes32 candidatureHash)
       public validAddress(msg.sender) contestExists(contestHash) payable {
         Contest storage contest = contests[contestHash];
-        require(msg.value == contest.candidaturesStake, "The stake given does not match the //required candidature stake");
+        require(msg.value == contest.candidaturesStake, "The stake given does not match the required candidature stake");
 
         require(getTime() > contest.initialDate, "New candidatures can only be presented after the contest has begun");
         require(getTime() < contest.candidatureLimitDate, "New candidatures can only be presented before the candidature limit date");

@@ -318,6 +318,8 @@ export class ContestContractService {
     return this.getDefaultAccount.pipe(
       tap(add => (address = add)),
       switchMap(() => this.getCandidaturesByContestHash(address, contestHash)),
+      tap(hashes => console.log(hashes[0])),
+      tap(hashes => console.log(this.ipfs.getIpfsHashFromBytes32(hashes[0]))),
       switchMap(hashes =>
         forkJoin(
           hashes.map((candidatureHash: string) =>
@@ -326,10 +328,12 @@ export class ContestContractService {
               from(
                 this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(candidatureHash))
               ).pipe(
-                timeout(2000),
+                tap(console.log),
+                timeout(5000),
                 catchError(err => observableOf(null))
               )
             ).pipe(
+              tap(console.log),
               map(([response, ipfsFile]) =>
                 this.responseToCandidature(
                   response,
@@ -358,7 +362,7 @@ export class ContestContractService {
           .setNewCandidature(
             contestHash,
             candidature.title,
-            candidature.content.hash
+            this.ipfs.getBytes32FromIpfsHash(candidature.content.hash)
           )
           .send({
             value: stake.value,
@@ -381,25 +385,28 @@ export class ContestContractService {
     contestHash: string,
     candidature: Candidature
   ): Observable<FileReceipt> {
-    const hash = sha256(candidature.content.content);
-
     return this.getDefaultAccount.pipe(
-      map(address =>
+      switchMap(address =>
         this.contract.methods.getOwnCandidatures(contestHash).call({
           from: address
         })
       ),
+      tap(console.log),
       tap((candidatureHashes: string[]) => {
-        if (candidatureHashes.includes(hash)) {
+        if (!candidatureHashes.includes(candidature.content.hash)) {
           throw new Error(
             'The given content does not match any of the candidatures of the sender in the current contest'
           );
         }
       }),
-      map((candidatureHashes: string[]) =>
+      switchMap((candidatureHashes: string[]) =>
         this.ipfs.add(candidature.content.content, {
           pin: false
         })
+      ),
+      tap(console.log),
+      tap(receipt =>
+        console.log(this.ipfs.getBytes32FromIpfsHash(receipt[0].path))
       )
     );
   }

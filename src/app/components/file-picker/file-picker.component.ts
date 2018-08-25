@@ -6,11 +6,7 @@ import {
   Output,
   EventEmitter
 } from '@angular/core';
-import {
-  ReadMode,
-  ReadFile,
-  FilePickerDirective
-} from 'ngx-file-helpers';
+import { ReadMode, ReadFile, FilePickerDirective } from 'ngx-file-helpers';
 
 @Component({
   selector: 'cc-file-picker',
@@ -20,13 +16,16 @@ import {
 export class FilePickerComponent implements OnInit {
   public readMode = ReadMode.dataURL;
 
-  @Input() multiple = false;
-  @Output() fileRead = new EventEmitter<ReadFile>();
+  @Input()
+  multiple = false;
+  @Output()
+  fileRead = new EventEmitter<ReadFile>();
 
   file: ReadFile;
   dragging = false;
 
-  @ViewChild(FilePickerDirective) private filePicker;
+  @ViewChild(FilePickerDirective)
+  private filePicker;
 
   constructor() {}
 

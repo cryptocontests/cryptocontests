@@ -55,13 +55,13 @@ export function contestReducer(
       });
     }
     case ContestActionTypes.LoadCandidatures: {
-      return Object.assign(state, { loadingCandidatures: true });
+      return Object.assign({}, state, { loadingCandidatures: true });
     }
     case ContestActionTypes.LoadedCandidatures: {
       const addCandidature = { candidatures: {}, loadingCandidatures: false };
       addCandidature.candidatures[action.payload.contestHash] =
         action.payload.candidatures;
-      return Object.assign(state, addCandidature);
+      return Object.assign({}, state, addCandidature);
     }
 
     default: {

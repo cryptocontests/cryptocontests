@@ -173,13 +173,6 @@ export class ContestDetailComponent implements OnInit {
     );
   }
 
-  getNumCandidatures(): Observable<number> {
-    this.contestService
-      .getCandidaturesByContestHash(this.userAddress, this.contestHash)
-      .then(console.log);
-    return of(5);
-  }
-
   retrieveFunds() {
     this.store.dispatch(new RetrieveFunds(this.contestHash));
   }
