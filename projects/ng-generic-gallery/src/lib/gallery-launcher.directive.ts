@@ -35,36 +35,38 @@ export class GalleryLauncherDirective {
   ) {}
 
   createOverlay() {
-    // Set the gallery to fill all the width in the overlay
-    this.galleryTemplate.gallery.viewContainerRef.element.nativeElement.attributes.style.nodeValue +=
-      'width: 100%; height: 100%;';
+    setTimeout(() => {
+      // Set the gallery to fill all the width in the overlay
+      this.galleryTemplate.gallery.viewContainerRef.element.nativeElement.attributes.style.nodeValue +=
+        'width: 100%; height: 100%;';
 
-    let config = new OverlayConfig();
-    config.hasBackdrop = true;
-    config.positionStrategy = this.overlay
-      .position()
-      .global()
-      .centerHorizontally()
-      .centerVertically()
-      .width('100%')
-      .height('100%');
+      let config = new OverlayConfig();
+      config.hasBackdrop = true;
+      config.positionStrategy = this.overlay
+        .position()
+        .global()
+        .centerHorizontally()
+        .centerVertically()
+        .width('100%')
+        .height('100%');
 
-    this.overlayRef = this.overlay.create(config);
+      this.overlayRef = this.overlay.create(config);
 
-    const portal = new TemplatePortal(
-      this.galleryTemplate.template,
-      this.viewContainerRef
-    );
-    this.overlayRef.backdropClick().subscribe(() => {
-      this.overlayRef.dispose();
-    });
+      const portal = new TemplatePortal(
+        this.galleryTemplate.template,
+        this.viewContainerRef
+      );
+      this.overlayRef.backdropClick().subscribe(() => {
+        this.overlayRef.dispose();
+      });
 
-    this.overlayRef.attach(portal);
-    this.overlayDispatcher.add(this.overlayRef);
+      this.overlayRef.attach(portal);
+      this.overlayDispatcher.add(this.overlayRef);
 
-    this.galleryTemplate.close.subscribe(() => {
-      this.overlayRef.dispose();
-      this.overlayDispatcher.remove(this.overlayRef);
+      this.galleryTemplate.close.subscribe(() => {
+        this.overlayRef.dispose();
+        this.overlayDispatcher.remove(this.overlayRef);
+      });
     });
   }
 

@@ -1,7 +1,7 @@
 <mat-grid-list cols="4" *ngIf="!(loading$ | async); else loading">
   <mat-grid-tile *ngFor="let contest of contests$ | async" fxLayout="column" fxLayoutAlign="start center">
     <mat-card mat-ripple [@cardState] fxFlex class="mat-elevation-z2 contest-tile" fxLayout="column" (click)="selectContest(contest)">
-      <img mat-card-image class="crop-image" fxFlex src="https://material.angular.io/assets/img/examples/shiba1.jpg" />
+      <img mat-card-image class="crop-image" fxFlex [src]="contest.additionalContent.content.image" />
       <mat-card-content class="no-margin">
         <div fxLayout="column" fxLayoutAlign="center stretch" fxLayoutGap="6%">
           <div fxLayout="row">

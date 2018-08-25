@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -34,6 +34,7 @@ import { JudgesListComponent } from './components/judges-list/judges-list.compon
 import { HashColorDirective } from './hash-color.directive';
 import { AddJudgeComponent } from './components/add-judge/add-judge.component';
 import { GenericGalleryModule } from 'projects/ng-generic-gallery/src/public_api';
+import { CancelCandidatureComponent } from './components/cancel-candidature/cancel-candidature.component';
 
 @NgModule({
   declarations: [
@@ -49,17 +50,20 @@ import { GenericGalleryModule } from 'projects/ng-generic-gallery/src/public_api
     CreateCandidatureComponent,
     JudgesListComponent,
     HashColorDirective,
-    AddJudgeComponent
+    AddJudgeComponent,
+    CancelCandidatureComponent
   ],
   entryComponents: [
     ConfirmDialogComponent,
     CreateCandidatureComponent,
-    AddJudgeComponent
+    AddJudgeComponent,
+    CancelCandidatureComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    FormsModule,
     MaterialModule,
     FileHelpersModule,
     AppRoutingModule,

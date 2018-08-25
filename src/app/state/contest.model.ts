@@ -33,6 +33,8 @@ export interface Contest {
   tags: string[];
   judges?: Judge[];
   options: {};
+  winnerAddress: string;
+  winnerCandidature: string;
 }
 
 export interface Judge {

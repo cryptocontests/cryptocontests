@@ -85,7 +85,7 @@ contract ContestController is owned {
         uint256 candidatureLimitDate;
         uint256 endDate;
         bytes32[] tags;
-        string ipfsHash;
+        bytes32 ipfsHash;
         uint256 candidaturesStake;
 
         uint256 award;
@@ -141,7 +141,7 @@ contract ContestController is owned {
         uint256 candidatureLimitDate,
         uint256 endDate,
         uint256 candidaturesStake,
-        string ipfsHash,
+        bytes32 ipfsHash,
         address initialJudgeAddress,
         string initialJudgeName,
         uint initialJudgeWeight) public payable returns (bytes32 contestHash) {
@@ -187,7 +187,7 @@ contract ContestController is owned {
             uint256 initialDate,
             uint256 candidatureLimitDate,
             uint256 endDate,
-            string ipfsHash,
+            bytes32 ipfsHash,
             uint256 candidaturesStake,
             uint256 award,
             uint256 candidaturesCount) {
@@ -203,6 +203,12 @@ contract ContestController is owned {
         candidaturesStake = contests[contestHash].candidaturesStake;
         award = contests[contestHash].award;
         candidaturesCount = contests[contestHash].candidatureList.length;
+    }
+
+    function getContestWinner(bytes32 contestHash) public view contestExists(contestHash)
+        returns (address winnerAddress, bytes32 winnerCandidature) {
+        winnerAddress = contests[contestHash].winnerAddress;
+        winnerCandidature = contests[contestHash].winnerCandidature;
     }
 
     function getContestJudges(bytes32 contestHash) public view returns (address[] judges) {
@@ -242,8 +248,7 @@ contract ContestController is owned {
     }
 
     modifier isJudgeOf(bytes32 contestHash) {
-        require(bytes(contests[contestHash].judges[msg.sender].name).length != 0,
-            "This transaction can only be executed by a judge of the contest");
+        require(bytes(contests[contestHash].judges[msg.sender].name).length != 0, "This transaction can only be executed by a judge of the contest");
         _;
     }
 
@@ -465,10 +470,10 @@ contract ContestController is owned {
     function refundToCandidates(bytes32 contestHash) public contestExists(contestHash) {
         Contest storage contest = contests[contestHash];
         require(getTime() >= contest.endDate, "Candidates can only be refunded once the contest has ended");
+        require(contest.winnerAddress != 0, "The contest has not been solved yet");
 
         Creations storage creations = contest.creators[msg.sender];
-        require(creations.candidatureHashes.length == 0,
-          "The sender of the transaction did not participate in the given contest");
+        require(creations.candidatureHashes.length == 0, "The sender of the transaction did not participate in the given contest");
         require(!creations.refunded, "The candidate has already been refunded");
 
         uint256 amount = 0;

@@ -50,7 +50,7 @@ export class GalleryComponent implements OnChanges, AfterViewInit {
   // Whether the state of the selected page should be maintained
   // if the component visibility changes
   @Input('maintain-state')
-  maintainSelected: boolean = true;
+  maintainSelected: boolean = false;
 
   // Material icon to go to left page
   @Input('left-arrow-icon')
@@ -64,6 +64,7 @@ export class GalleryComponent implements OnChanges, AfterViewInit {
   @Output('select-page')
   selectPageEmitter = new EventEmitter<number>();
 
+  @Input()
   selectedPage: number = 0;
 
   // Transclude the elements inside the <gallery> component where appropriate
@@ -123,6 +124,7 @@ export class GalleryComponent implements OnChanges, AfterViewInit {
             }
           });
       }
+
       this.pagesPortal = this.pages.toArray()[selectedIndex].content;
 
       this.selectedPage = selectedIndex;

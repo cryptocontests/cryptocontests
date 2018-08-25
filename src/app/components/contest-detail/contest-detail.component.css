@@ -2,8 +2,8 @@
   pointer-events: none !important;
 }
 
-.no-padding {
-  padding: 0 !important;
+.winner-padding {
+  padding: 24px;
 }
 
 .mat-tab-body {

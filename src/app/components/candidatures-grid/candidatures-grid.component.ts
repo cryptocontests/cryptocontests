@@ -3,7 +3,12 @@ import { Candidature } from '../../state/contest.model';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { State } from '../../state/contest.reducer';
-import { VoteCandidature } from '../../state/contest.actions';
+import {
+  VoteCandidature,
+  CancelCandidature
+} from '../../state/contest.actions';
+import { CancelCandidatureComponent } from '../cancel-candidature/cancel-candidature.component';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'cc-candidature-grid',
@@ -17,8 +22,11 @@ export class CandidaturesGridComponent implements OnInit {
   contestHash: string;
   @Input('candidatures')
   candidatures: Candidature[];
+  @Input()
+  contestPhase: number;
+  selectedCandidature: number = undefined;
 
-  constructor(private store: Store<State>) {}
+  constructor(private store: Store<State>, private dialog: MatDialog) {}
 
   ngOnInit() {}
 
@@ -29,5 +37,25 @@ export class CandidaturesGridComponent implements OnInit {
         candidatureHash: candidatureHash
       })
     );
+  }
+
+  cancelCandidature(candidatureHash: string) {
+    const dialogRef = this.dialog.open(CancelCandidatureComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.store.dispatch(
+          new CancelCandidature({
+            contestHash: this.contestHash,
+            candidatureHash: candidatureHash,
+            reasonForCancellation: result
+          })
+        );
+      }
+    });
+  }
+
+  isVotingEnabled(): boolean {
+    return this.isUserJudge && this.contestPhase === 2;
   }
 }

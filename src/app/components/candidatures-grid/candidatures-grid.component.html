@@ -1,14 +1,16 @@
 <mat-grid-list cols="5" *ngIf="candidatures.length !== 0">
-  <mat-grid-tile *ngFor="let candidature of candidatures" fxLayout="column" fxLayoutAlign="start center">
-    <button mat-raised-button [galleryLauncher]="mygallery">
-      <img [src]="candidature.content.content" class="crop-image">
+  <mat-grid-tile *ngFor="let candidature of candidatures; let idx = index" fxLayout="column" fxLayoutAlign="start center">
+    <button mat-raised-button [galleryLauncher]="mygallery" (click)="selectedCandidature = idx" class="candidature-button" fxLayout="row"
+      fxLayoutAlign="center center">
+      <mat-icon *ngIf="candidature.cancelled" class="error-icon">error</mat-icon>
+      <img [src]="candidature.content.content" class="tile-image crop-image" [style.position]="'fixed'">
     </button>
   </mat-grid-tile>
 </mat-grid-list>
 <loading-empty *ngIf="candidatures.length === 0"></loading-empty>
 
 <gallery-template #mygallery [close-position]="'start'">
-  <gallery>
+  <gallery [selectedPage]="selectedCandidature" *ngIf="selectedCandidature !== undefined">
     <gallery-page *ngFor="let candidature of candidatures">
       <mat-card [style.width]="'100%'" class="no-padding">
         <img [src]="candidature.content.content" style="width: 100%; height: auto;">
@@ -18,13 +20,21 @@
               <mat-label><strong>{{candidature.title}}</strong></mat-label>
               <mat-label class="address">By {{candidature.creator}}</mat-label>
             </div>
-            <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
+            <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="center center" *ngIf="!candidature.cancelled">
               <mat-label><strong>{{candidature.votes}} votes</strong></mat-label>
-              <div matTooltip="Only judges of this contest can vote" [matTooltipDisabled]="isUserJudge">
-                <button mat-raised-button color="accent" (click)="voteCandidature(candidature.content.hash)" [disabled]="!isUserJudge">
+              <div [matTooltip]="contestPhase === 2 ? 'Only judges of this contest can vote or cancel candidatures' : 'Voting or cancelling is only allowed during the contest revision phase'"
+                [matTooltipDisabled]="isVotingEnabled()" fxLayout="row" fxLayoutGap="8px">
+                <button mat-raised-button color="accent" (click)="voteCandidature(candidature.content.hash)" [disabled]="!isVotingEnabled()">
                   VOTE
+                </button><button mat-raised-button color="accent" (click)="cancelCandidature(candidature.content.hash)" [disabled]="!isVotingEnabled()">
+                  CANCEL CANDIDATURE
                 </button>
               </div>
+            </div>
+            <div fxLayout="column" fxLayoutGap="8px" *ngIf="candidature.cancelled">
+              <mat-label>Candidature cancelled by</mat-label>
+              <mat-label class="address">{{candidature.cancelledByJudge}}</mat-label>
+              <mat-label><strong>Reason: {{candidature.reasonForCancellation}}</strong></mat-label>
             </div>
           </div>
         </mat-card-content>

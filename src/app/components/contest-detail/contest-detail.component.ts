@@ -11,7 +11,7 @@ import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import * as fromReducer from '../../state/contest.reducer';
-import { Observable, from, of } from 'rxjs';
+import { Observable, from, of, combineLatest } from 'rxjs';
 import {
   LoadCandidatures,
   CreateCandidature,
@@ -19,12 +19,20 @@ import {
   RemoveJudge,
   AddJudge,
   RetrieveFunds,
-  UploadCandidature
+  UploadCandidature,
+  SolveContest
 } from '../../state/contest.actions';
 import { MatDialog } from '@angular/material';
 import { CreateCandidatureComponent } from '../create-candidature/create-candidature.component';
 import { cardAnimations } from '../card.animations';
-import { tap, withLatestFrom, map, switchMap } from 'rxjs/operators';
+import {
+  tap,
+  withLatestFrom,
+  map,
+  switchMap,
+  skip,
+  filter
+} from 'rxjs/operators';
 import { AddJudgeComponent } from '../add-judge/add-judge.component';
 import { CryptoValue } from 'ng-web3/ng-web3';
 import { ContestContractService } from '../../services/contest-contract.service';
@@ -50,6 +58,7 @@ export class ContestDetailComponent implements OnInit {
   selectedTabIndex = 0;
   hasOwnCandidatures = true;
   isUserJudge = false;
+  winnerCandidature: Candidature = null;
 
   constructor(
     private store: Store<fromReducer.State>,
@@ -96,6 +105,13 @@ export class ContestDetailComponent implements OnInit {
 
     this.contestService.getDefaultAccount.subscribe(
       address => (this.userAddress = address)
+    );
+
+    combineLatest(this.contest$, this.candidatures$).subscribe(
+      ([contest, candidatures]) =>
+        contest &&
+        candidatures &&
+        this.getWinnerCandidature(contest, candidatures)
     );
   }
 
@@ -186,11 +202,21 @@ export class ContestDetailComponent implements OnInit {
         this.contestService.getOwnCandidatures(address, this.contestHash)
       ),
       map(candidatures => candidatures.length > 0),
-      tap(hasOwnCandidatures => this.hasOwnCandidatures)
+      tap(hasOwnCandidatures => (this.hasOwnCandidatures = hasOwnCandidatures))
     );
   }
 
   retrieveFunds() {
     this.store.dispatch(new RetrieveFunds(this.contestHash));
+  }
+
+  getWinnerCandidature(contest: Contest, candidatures: Candidature[]) {
+    this.winnerCandidature = candidatures.find(
+      candidature => candidature.content.hash === contest.winnerCandidature
+    );
+  }
+
+  solveContest() {
+    this.store.dispatch(new SolveContest(this.contestHash));
   }
 }

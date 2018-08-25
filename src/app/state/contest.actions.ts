@@ -24,6 +24,10 @@ export enum ContestActionTypes {
   UploadCandidatureSuccess = '[UploadCandidatureSuccess] UploadCandidatureSuccess',
   VoteCandidature = '[VoteCandidature] VoteCandidature',
   VoteCandidaturePending = '[VoteCandidaturePending] VoteCandidaturePending',
+  CancelCandidature = '[CancelCandidature] CancelCandidature',
+  CancelCandidaturePending = '[CancelCandidaturePending] CancelCandidaturePending',
+  SolveContest = '[SolveContest] SolveContest',
+  SolveContestPending = '[SolveContestPending] SolveContestPending',
   RetrieveFunds = '[RetrieveFunds] RetrieveFunds',
   RetrieveFundsPending = '[RetrieveFundsPending] RetrieveFundsPending'
 }
@@ -186,6 +190,36 @@ export class VoteCandidaturePending implements Action {
   constructor(public transactionReceipt: TransactionReceipt) {}
 }
 
+export class CancelCandidature implements Action {
+  readonly type = ContestActionTypes.CancelCandidature;
+
+  constructor(
+    public payload: {
+      contestHash: string;
+      candidatureHash: string;
+      reasonForCancellation: string;
+    }
+  ) {}
+}
+
+export class CancelCandidaturePending implements Action {
+  readonly type = ContestActionTypes.CancelCandidaturePending;
+
+  constructor(public transactionReceipt: TransactionReceipt) {}
+}
+
+export class SolveContest implements Action {
+  readonly type = ContestActionTypes.SolveContest;
+
+  constructor(public payload: string) {}
+}
+
+export class SolveContestPending implements Action {
+  readonly type = ContestActionTypes.SolveContestPending;
+
+  constructor(public transactionReceipt: TransactionReceipt) {}
+}
+
 /**
  * Funds
  */
@@ -221,5 +255,9 @@ export type ContestActions =
   | RemoveJudgePending
   | VoteCandidature
   | VoteCandidaturePending
+  | CancelCandidature
+  | CancelCandidaturePending
+  | SolveContest
+  | SolveContestPending
   | RetrieveFunds
   | RetrieveFundsPending;

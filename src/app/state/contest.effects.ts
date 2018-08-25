@@ -26,7 +26,11 @@ import {
   UploadCandidature,
   UploadCandidatureSuccess,
   VoteCandidaturePending,
-  VoteCandidature
+  VoteCandidature,
+  SolveContest,
+  SolveContestPending,
+  CancelCandidature,
+  CancelCandidaturePending
 } from './contest.actions';
 import { Contest, Candidature } from './contest.model';
 import { Router } from '@angular/router';
@@ -169,6 +173,7 @@ export class ContestEffects {
   addJudge$: Observable<any> = this.actions$
     .ofType<AddJudge>(ContestActionTypes.AddJudge)
     .pipe(
+      tap(_ => this.globalLoading.show()),
       switchMap((addJudgeAction: AddJudge) =>
         this.contestContract
           .addJudge(
@@ -183,6 +188,7 @@ export class ContestEffects {
             })
           )
       ),
+      tap(_ => this.globalLoading.hide()),
       tap(() => this.showTransactionPending('Add judge requested'))
     );
 
@@ -190,6 +196,7 @@ export class ContestEffects {
   removeJudge$: Observable<any> = this.actions$
     .ofType<RemoveJudge>(ContestActionTypes.RemoveJudge)
     .pipe(
+      tap(_ => this.globalLoading.show()),
       switchMap((removeJudgeAction: RemoveJudge) =>
         this.contestContract
           .removeJudge(
@@ -206,6 +213,7 @@ export class ContestEffects {
             })
           )
       ),
+      tap(_ => this.globalLoading.hide()),
       tap(() => this.showTransactionPending('Remove judge requested'))
     );
 
@@ -213,6 +221,7 @@ export class ContestEffects {
   voteCandidature$: Observable<any> = this.actions$
     .ofType<VoteCandidature>(ContestActionTypes.VoteCandidature)
     .pipe(
+      tap(_ => this.globalLoading.show()),
       switchMap((voteCandidature: VoteCandidature) =>
         this.contestContract
           .voteCandidature(
@@ -230,15 +239,44 @@ export class ContestEffects {
             })
           )
       ),
+      tap(_ => this.globalLoading.hide()),
       tap(() => this.showTransactionPending('Vote candidature requested'))
     );
 
   @Effect()
-  retrieveFunds$: Observable<any> = this.actions$
-    .ofType<AddJudge>(ContestActionTypes.RetrieveFunds)
+  cancelCandidature$: Observable<any> = this.actions$
+    .ofType<CancelCandidature>(ContestActionTypes.CancelCandidature)
     .pipe(
-      switchMap((addJudgeAction: RetrieveFunds) =>
-        this.contestContract.retrieveFunds(addJudgeAction.payload).pipe(
+      tap(_ => this.globalLoading.show()),
+      switchMap((cancelCandidature: CancelCandidature) =>
+        this.contestContract
+          .cancelCandidature(
+            cancelCandidature.payload.contestHash,
+            cancelCandidature.payload.candidatureHash,
+            cancelCandidature.payload.reasonForCancellation
+          )
+          .pipe(
+            map(
+              (receipt: TransactionReceipt) =>
+                new CancelCandidaturePending(receipt)
+            ),
+            catchError(err => {
+              this.handleError(err);
+              return observableOf();
+            })
+          )
+      ),
+      tap(_ => this.globalLoading.hide()),
+      tap(() => this.showTransactionPending('Cancel candidature requested'))
+    );
+
+  @Effect()
+  retrieveFunds$: Observable<any> = this.actions$
+    .ofType<RetrieveFunds>(ContestActionTypes.RetrieveFunds)
+    .pipe(
+      tap(_ => this.globalLoading.show()),
+      switchMap((retrieveFunds: RetrieveFunds) =>
+        this.contestContract.retrieveFunds(retrieveFunds.payload).pipe(
           map(
             (receipt: TransactionReceipt) => new RetrieveFundsPending(receipt)
           ),
@@ -248,7 +286,26 @@ export class ContestEffects {
           })
         )
       ),
-      tap(() => this.showTransactionPending('Retrieve funds requested'))
+      tap(() => this.showTransactionPending('Retrieve funds requested')),
+      tap(_ => this.globalLoading.hide())
+    );
+
+  @Effect()
+  solveContest$: Observable<any> = this.actions$
+    .ofType<SolveContest>(ContestActionTypes.SolveContest)
+    .pipe(
+      switchMap((solveContest: SolveContest) =>
+        this.contestContract.solveContest(solveContest.payload).pipe(
+          map(
+            (receipt: TransactionReceipt) => new SolveContestPending(receipt)
+          ),
+          catchError(err => {
+            this.handleError(err);
+            return observableOf();
+          })
+        )
+      ),
+      tap(() => this.showTransactionPending('Solve contest requested'))
     );
 
   private showTransactionPending(customMessage: string) {
