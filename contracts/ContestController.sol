@@ -33,7 +33,7 @@ contract ContestController is owned {
         uint256 createdDate;
         uint votes;
         bool cancelled;
-        address cancelledByMember;
+        address cancelledByJudge;
         string reasonForCancellation;
     }
 
@@ -228,6 +228,11 @@ contract ContestController is owned {
         _;
     }
 
+    modifier candidatureExists(bytes32 contestHash, bytes32 candidatureHash) {
+        require(contests[contestHash].candidatures[candidatureHash].creator != 0, "The given candidature does not exist in the given contest");
+        _;
+    }
+
     /*************************************************************
      *                         JUDGE MEMBERS                     *
      *************************************************************/
@@ -342,9 +347,14 @@ contract ContestController is owned {
     }
 
     function getCandidature(bytes32 contestHash, bytes32 candidatureHash)
-      public view contestExists(contestHash) returns (string title, uint256 votes) {
+      public view contestExists(contestHash) candidatureExists(contestHash, candidatureHash) returns (string title, uint256 votes,
+      address creator, uint256 createdDate, address cancelledByJudge, string reasonForCancellation) {
         Contest storage contest = contests[contestHash];
         title = contest.candidatures[candidatureHash].title;
+        createdDate = contest.candidatures[candidatureHash].createdDate;
+        creator = contest.candidatures[candidatureHash].creator;
+        cancelledByJudge = contest.candidatures[candidatureHash].cancelledByJudge;
+        reasonForCancellation = contest.candidatures[candidatureHash].reasonForCancellation;
 
         for (uint256 i = 0; i < contest.judgeList.length; i++) {
             Judge storage judge = contest.judges[contest.judgeList[i]];
@@ -377,13 +387,13 @@ contract ContestController is owned {
     * @param reason reason for cancellation
     */
     function cancelCandidature(bytes32 contestHash, bytes32 candidatureHash, string reason)
-      external contestExists(contestHash) isJudgeOf(contestHash) {
+      external contestExists(contestHash) candidatureExists(contestHash, candidatureHash) isJudgeOf(contestHash) {
         // Only judges can cancel a candidature
         require(getTime() < contests[contestHash].endDate, "Candidatures can only be cancelled before the contest ends");
         require(!contests[contestHash].candidatures[candidatureHash].cancelled, "The given candidature has already been cancelled");
 
         contests[contestHash].candidatures[candidatureHash].cancelled = true;
-        contests[contestHash].candidatures[candidatureHash].cancelledByMember = msg.sender;
+        contests[contestHash].candidatures[candidatureHash].cancelledByJudge = msg.sender;
         contests[contestHash].candidatures[candidatureHash].reasonForCancellation = reason;
 
         emit CandidatureCancellation(
@@ -398,11 +408,10 @@ contract ContestController is owned {
      *************************************************************/
 
     function setNewVote(bytes32 contestHash, bytes32 candidatureHash)
-      external contestExists(contestHash) isJudgeOf(contestHash) {
+      external contestExists(contestHash) candidatureExists(contestHash, candidatureHash) isJudgeOf(contestHash) {
         Contest storage contest = contests[contestHash];
         require(getTime() > contest.candidatureLimitDate, "Candidature voting is only allowed after the candidature limit date");
         require(getTime() < contest.endDate, "Candidature voting is only allowed before the contest has ended");
-        require(contest.candidatures[candidatureHash].creator != 0, "The candidature does not exist in this contest");
 
         Judge storage judge = contest.judges[msg.sender];
 
@@ -487,7 +496,7 @@ contract ContestController is owned {
      *                       PAGINATION                          *
      *************************************************************/
 
-    function fetchContestsPage(uint256 cursor, uint256 howMany) public view returns (bytes32[] values) {
+/*    function fetchContestsPage(uint256 cursor, uint256 howMany) public view returns (bytes32[] values) {
         require(contestList.length > 0);
         require(cursor < contestList.length - 1);
 
@@ -533,5 +542,5 @@ contract ContestController is owned {
         }
 
         return (values);
-    }
+    } */
 }

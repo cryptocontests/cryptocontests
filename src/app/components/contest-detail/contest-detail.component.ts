@@ -28,6 +28,7 @@ import { tap, withLatestFrom, map, switchMap } from 'rxjs/operators';
 import { AddJudgeComponent } from '../add-judge/add-judge.component';
 import { CryptoValue } from 'ng-web3/ng-web3';
 import { ContestContractService } from '../../services/contest-contract.service';
+import { Web3Service } from 'projects/ng-web3/src/public_api';
 
 @Component({
   selector: 'cc-contest-detail',
@@ -48,13 +49,15 @@ export class ContestDetailComponent implements OnInit {
   candidatures$: Observable<Candidature[]>;
   selectedTabIndex = 0;
   hasOwnCandidatures = true;
+  isUserJudge = false;
 
   constructor(
     private store: Store<fromReducer.State>,
     private route: ActivatedRoute,
     private location: Location,
     public dialog: MatDialog,
-    private contestService: ContestContractService
+    private contestService: ContestContractService,
+    private web3: Web3Service
   ) {}
 
   ngOnInit() {
@@ -66,8 +69,20 @@ export class ContestDetailComponent implements OnInit {
     this.contest$.subscribe((contest: Contest) => {
       if (contest) {
         this.contestPhase = this.getPhaseIndex(contest);
+        this.store.dispatch(
+          new LoadCandidatures(this.contestHash, this.contestPhase > 1)
+        );
         this.candidatureStake = contest.candidaturesStake;
         if (this.contestPhase > 1) this.getOwnCandidatures();
+
+        this.web3
+          .getDefaultAccount()
+          .then(
+            address =>
+              (this.isUserJudge =
+                contest.judges.findIndex(judge => judge.address === address) !==
+                -1)
+          );
       }
     });
     this.loading$ = this.store.select(fromReducer.contestDetailLoading);
@@ -75,7 +90,6 @@ export class ContestDetailComponent implements OnInit {
       fromReducer.candidaturesLoading
     );
 
-    this.store.dispatch(new LoadCandidatures(this.contestHash));
     this.candidatures$ = this.store.select(
       state => fromReducer.getContestState(state).candidatures[this.contestHash]
     );

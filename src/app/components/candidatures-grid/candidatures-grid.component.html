@@ -1,6 +1,34 @@
 <mat-grid-list cols="5" *ngIf="candidatures.length !== 0">
   <mat-grid-tile *ngFor="let candidature of candidatures" fxLayout="column" fxLayoutAlign="start center">
-    <img [src]="candidature.content.content" class="crop-image candidature-tile">
+    <button mat-raised-button [galleryLauncher]="mygallery">
+      <img [src]="candidature.content.content" class="crop-image">
+    </button>
   </mat-grid-tile>
 </mat-grid-list>
 <loading-empty *ngIf="candidatures.length === 0"></loading-empty>
+
+<gallery-template #mygallery [close-position]="'start'">
+  <gallery>
+    <gallery-page *ngFor="let candidature of candidatures">
+      <mat-card [style.width]="'100%'" class="no-padding">
+        <img [src]="candidature.content.content" style="width: 100%; height: auto;">
+        <mat-card-content [style.padding]="'24px'">
+          <div fxLayout="row" fxLayoutGap="8px" fxFlex>
+            <div fxLayout="column" fxLayoutGap="16px" fxFlex>
+              <mat-label><strong>{{candidature.title}}</strong></mat-label>
+              <mat-label class="address">By {{candidature.creator}}</mat-label>
+            </div>
+            <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
+              <mat-label><strong>{{candidature.votes}} votes</strong></mat-label>
+              <div matTooltip="Only judges of this contest can vote" [matTooltipDisabled]="isUserJudge">
+                <button mat-raised-button color="accent" (click)="voteCandidature(candidature.content.hash)" [disabled]="!isUserJudge">
+                  VOTE
+                </button>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </gallery-page>
+  </gallery>
+</gallery-template>

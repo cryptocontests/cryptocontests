@@ -48,7 +48,7 @@ export interface Candidature {
   content: Hashable<any>;
   votes: number;
   cancelled: boolean;
-  cancelledByMember?: string;
+  cancelledByJudge?: string;
   reasonForCancellation?: string;
 }
 

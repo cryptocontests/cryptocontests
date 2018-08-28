@@ -1,6 +1,19 @@
-import { Component, ContentChild, ContentChildren, QueryList,
-  ViewContainerRef, ViewChild, ViewEncapsulation, ChangeDetectionStrategy,
-  TemplateRef, AfterViewInit, ChangeDetectorRef, OnChanges, Input, Output, EventEmitter
+import {
+  Component,
+  ContentChild,
+  ContentChildren,
+  QueryList,
+  ViewContainerRef,
+  ViewChild,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+  TemplateRef,
+  AfterViewInit,
+  ChangeDetectorRef,
+  OnChanges,
+  Input,
+  Output,
+  EventEmitter
 } from '@angular/core';
 import { TemplatePortal, CdkPortal } from '@angular/cdk/portal';
 import { ListKeyManager } from '@angular/cdk/a11y';
@@ -16,7 +29,6 @@ import { GalleryPagePortalComponent } from '../gallery-page-portal/gallery-page-
   encapsulation: ViewEncapsulation.None
 })
 export class GalleryComponent implements OnChanges, AfterViewInit {
-
   // Whether the gallery will connect its start and end pages to
   // allow navigation between them
   @Input('wrap-pages')
@@ -71,7 +83,10 @@ export class GalleryComponent implements OnChanges, AfterViewInit {
 
   private keyManager: ListKeyManager<GalleryPageComponent>;
 
-  constructor(private changeDetectionRef: ChangeDetectorRef, private viewContainerRef: ViewContainerRef) { }
+  constructor(
+    private changeDetectionRef: ChangeDetectorRef,
+    public viewContainerRef: ViewContainerRef
+  ) {}
 
   /**
    * @return the index of the current selected page
@@ -82,25 +97,31 @@ export class GalleryComponent implements OnChanges, AfterViewInit {
 
   // Only here the pages property has been populated
   ngAfterViewInit() {
-    this.keyManager = new ListKeyManager<GalleryPageComponent>(this.pages.toArray())
+    if (this.pages.length === 0) {
+      return;
+    }
+
+    this.keyManager = new ListKeyManager<GalleryPageComponent>(
+      this.pages.toArray()
+    )
       .withHorizontalOrientation('ltr')
       .withVerticalOrientation(false);
 
     if (this.wrapPages) this.keyManager = this.keyManager.withWrap();
 
     this.keyManager.change.subscribe(selectedIndex => {
-
       if (selectedIndex !== this.selectedPage) {
-        this.pages.toArray().forEach((page: GalleryPageComponent, index: number) => {
-          page.position = index - selectedIndex;
+        this.pages
+          .toArray()
+          .forEach((page: GalleryPageComponent, index: number) => {
+            page.position = index - selectedIndex;
 
-          // If there is already a selected tab, then set up an origin for the next selected tab
-          // if it doesn't have one already.
-          if (selectedIndex != null && page.position == 0 && !page.origin) {
-            page.origin = selectedIndex - this.selectedPage;
-          }
-        })
-
+            // If there is already a selected tab, then set up an origin for the next selected tab
+            // if it doesn't have one already.
+            if (selectedIndex != null && page.position === 0 && !page.origin) {
+              page.origin = selectedIndex - this.selectedPage;
+            }
+          });
       }
       this.pagesPortal = this.pages.toArray()[selectedIndex].content;
 
@@ -139,7 +160,8 @@ export class GalleryComponent implements OnChanges, AfterViewInit {
   }
 
   selectRightPage() {
-    if (this.selectedPage < this.pages.length - 1) this.selectPage(this.selectedPage + 1);
+    if (this.selectedPage < this.pages.length - 1)
+      this.selectPage(this.selectedPage + 1);
     else if (this.wrapPages) this.selectPage(0);
   }
 
@@ -161,7 +183,11 @@ export class GalleryComponent implements OnChanges, AfterViewInit {
       selected: index === this.selectedPage
     };
 
-    return new TemplatePortal(this.customIndicator ? this.customIndicator : this.defaultIndicator, this.viewContainerRef, context);
+    return new TemplatePortal(
+      this.customIndicator ? this.customIndicator : this.defaultIndicator,
+      this.viewContainerRef,
+      context
+    );
   }
 
   // Indicator pages controls
@@ -185,5 +211,4 @@ export class GalleryComponent implements OnChanges, AfterViewInit {
   getTotalPages(): number {
     return Math.floor(this.pages.length / this.maxIndicators);
   }
-
 }

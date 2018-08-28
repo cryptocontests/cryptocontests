@@ -70,7 +70,8 @@
                 <mat-label>Candidatures</mat-label>
               </div>
             </ng-template>
-            <cc-candidature-grid fxFlex [candidatures]="candidatures$ | async" *ngIf="!(loadingCandidatures$ | async); else loading">
+            <cc-candidature-grid fxFlex [isUserJudge]="isUserJudge" [contestHash]="contestHash" [candidatures]="candidatures$ | async"
+              *ngIf="!(loadingCandidatures$ | async); else loading">
             </cc-candidature-grid>
             <ng-template #loading>
               <loading></loading>

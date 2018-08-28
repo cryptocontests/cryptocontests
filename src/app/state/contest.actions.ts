@@ -12,16 +12,18 @@ export enum ContestActionTypes {
   LoadedContest = '[LoadedContest] LoadedContest',
   CreateContest = '[CreateContest] CreateContest',
   ContestPending = '[ContestPending] ContestPending',
+  AddJudge = '[AddJudge] AddJudge',
+  AddJudgePending = '[AddJudgePending] AddJudgePending',
+  RemoveJudge = '[RemoveJudge] RemoveJudge',
+  RemoveJudgePending = '[RemoveJudgePending] RemoveJudgePending',
   LoadCandidatures = '[LoadCandidatures] LoadCandidatures',
   LoadedCandidatures = '[LoadedCandidatures] LoadedCandidatures',
   CreateCandidature = '[CreateCandidature] CreateCandidature',
   CandidaturePending = '[CandidaturePending] CandidaturePending',
   UploadCandidature = '[UploadCandidature] UploadCandidature',
   UploadCandidatureSuccess = '[UploadCandidatureSuccess] UploadCandidatureSuccess',
-  AddJudge = '[AddJudge] AddJudge',
-  AddJudgePending = '[AddJudgePending] AddJudgePending',
-  RemoveJudge = '[RemoveJudge] RemoveJudge',
-  RemoveJudgePending = '[RemoveJudgePending] RemoveJudgePending',
+  VoteCandidature = '[VoteCandidature] VoteCandidature',
+  VoteCandidaturePending = '[VoteCandidaturePending] VoteCandidaturePending',
   RetrieveFunds = '[RetrieveFunds] RetrieveFunds',
   RetrieveFundsPending = '[RetrieveFundsPending] RetrieveFundsPending'
 }
@@ -83,13 +85,15 @@ export class LoadCandidatures implements Action {
   readonly type = ContestActionTypes.LoadCandidatures;
 
   // The payload will contain the contest id
-  constructor(public payload: string) {}
+  constructor(public payload: string, public discardOnlyHash: boolean) {}
 }
 
 export class LoadedCandidatures implements Action {
   readonly type = ContestActionTypes.LoadedCandidatures;
 
-  constructor(public payload: { contestHash: string; candidatures: Candidature[] }) {}
+  constructor(
+    public payload: { contestHash: string; candidatures: Candidature[] }
+  ) {}
 }
 
 export class CreateCandidature implements Action {
@@ -165,6 +169,23 @@ export class RemoveJudgePending implements Action {
   constructor(public transactionReceipt: TransactionReceipt) {}
 }
 
+export class VoteCandidature implements Action {
+  readonly type = ContestActionTypes.VoteCandidature;
+
+  constructor(
+    public payload: {
+      contestHash: string;
+      candidatureHash: string;
+    }
+  ) {}
+}
+
+export class VoteCandidaturePending implements Action {
+  readonly type = ContestActionTypes.VoteCandidaturePending;
+
+  constructor(public transactionReceipt: TransactionReceipt) {}
+}
+
 /**
  * Funds
  */
@@ -198,5 +219,7 @@ export type ContestActions =
   | AddJudgePending
   | RemoveJudge
   | RemoveJudgePending
+  | VoteCandidature
+  | VoteCandidaturePending
   | RetrieveFunds
   | RetrieveFundsPending;

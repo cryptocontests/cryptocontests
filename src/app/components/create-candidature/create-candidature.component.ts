@@ -76,7 +76,6 @@ export class CreateCandidatureComponent {
       this.ipfsService
         .add(new Buffer(file.content), { onlyHash: true })
         .then((fileReceipt: any) => {
-          console.log(fileReceipt);
           this.candidatureForm.patchValue({
             contentHash: fileReceipt[0].hash
           });

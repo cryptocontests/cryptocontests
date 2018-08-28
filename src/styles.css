@@ -25,6 +25,10 @@ body {
   margin: 0 !important;
 }
 
+.no-padding {
+  padding: 0 !important;
+}
+
 .crop-image {
   object-fit: cover;
   overflow: hidden;
@@ -64,4 +68,8 @@ mat-dialog-container {
 
 .auto-overflow {
   overflow-y: auto;
+}
+
+.address {
+  opacity: 0.6;
 }

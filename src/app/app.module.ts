@@ -33,6 +33,7 @@ import { CreateCandidatureComponent } from './components/create-candidature/crea
 import { JudgesListComponent } from './components/judges-list/judges-list.component';
 import { HashColorDirective } from './hash-color.directive';
 import { AddJudgeComponent } from './components/add-judge/add-judge.component';
+import { GenericGalleryModule } from 'projects/ng-generic-gallery/src/public_api';
 
 @NgModule({
   declarations: [
@@ -72,7 +73,8 @@ import { AddJudgeComponent } from './components/add-judge/add-judge.component';
     EffectsModule.forRoot([ContestEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     Web3Module,
-    CollectionUtilsModule
+    CollectionUtilsModule,
+    GenericGalleryModule
   ],
   providers: [ContestContractService],
   bootstrap: [AppComponent]

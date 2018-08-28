@@ -1,4 +1,13 @@
-import { Component, ContentChild, ViewChild, TemplateRef, Output, EventEmitter, Input, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  ContentChild,
+  ViewChild,
+  TemplateRef,
+  Output,
+  EventEmitter,
+  Input,
+  AfterViewInit
+} from '@angular/core';
 import { CdkPortal } from '@angular/cdk/portal';
 import { GalleryComponent } from '../gallery/gallery.component';
 
@@ -8,17 +17,16 @@ import { GalleryComponent } from '../gallery/gallery.component';
   styleUrls: ['./gallery-template.component.css']
 })
 export class GalleryTemplate implements AfterViewInit {
-
   // Material icon to close the gallery overlay
-  @Input('close-icon')
-  closeIcon: string = 'close';
+  @Input()
+  closeIcon = 'close';
 
   // Possible values: 'start', 'end', 'none'
   @Input('close-position')
-  closePosition: string = 'start';
+  closePosition = 'start';
 
-  @Output('close')
-  public closeEvent = new EventEmitter<void>();
+  @Output()
+  public close = new EventEmitter<void>();
 
   @ViewChild('overlayTemplate')
   public template: TemplateRef<any>;
@@ -31,11 +39,12 @@ export class GalleryTemplate implements AfterViewInit {
   closeButton: TemplateRef<any>;
 
   ngAfterViewInit() {
-    if (this.customCloseButton) this.closeButton = this.customCloseButton;
+    if (this.customCloseButton) {
+      this.closeButton = this.customCloseButton;
+    }
   }
 
   closeOverlay() {
-    this.closeEvent.emit();
+    this.close.emit();
   }
-
 }
