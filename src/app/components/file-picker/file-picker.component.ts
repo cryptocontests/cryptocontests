@@ -17,6 +17,8 @@ export class FilePickerComponent implements OnInit {
   public readMode = ReadMode.dataURL;
 
   @Input()
+  title: string;
+  @Input()
   multiple = false;
   @Output()
   fileRead = new EventEmitter<ReadFile>();

@@ -110,7 +110,7 @@ export class ContestContractService {
       initialDate: response.initialDate * 1000,
       candidatureLimitDate: response.candidatureLimitDate * 1000,
       endDate: response.endDate * 1000,
-      prize: {
+      award: {
         value: response.award,
         currency: CryptoCurrency.WEIS
       },
@@ -284,7 +284,7 @@ export class ContestContractService {
           )
           .send({
             from: address,
-            value: this.currencyService.ethToWeis(contest.prize.value),
+            value: this.currencyService.ethToWeis(contest.award.value),
             gas: 4712388,
             gasPrice: 20
           })

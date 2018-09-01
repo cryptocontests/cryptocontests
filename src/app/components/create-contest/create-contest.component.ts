@@ -3,7 +3,9 @@ import {
   FormControl,
   FormBuilder,
   FormGroup,
-  Validators
+  Validators,
+  ValidatorFn,
+  AbstractControl
 } from '@angular/forms';
 import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
@@ -55,6 +57,35 @@ export class CreateContestComponent implements OnInit {
     this.allTags$ = this.store.select(selectTags);
   }
 
+  greaterThanDate(field: string): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } => {
+      if (!this.contestForm || !control) return null;
+      const fieldToCompare = this.contestForm.value[field];
+      if (!fieldToCompare) return null;
+      const isLessThan =
+        Number(fieldToCompare.valueOf()) > Number(control.value.valueOf());
+      return isLessThan ? { lessThan: { value: control.value } } : null;
+    };
+  }
+
+  lessThan(field: string): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } => {
+      if (!this.contestForm || !control) return null;
+      const fieldToCompare = this.contestForm.value[field];
+      if (!fieldToCompare) return null;
+      const isLessThan = Number(fieldToCompare) < Number(control.value);
+      return isLessThan ? { lessThan: { value: control.value } } : null;
+    };
+  }
+
+  futureDate(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } => {
+      return control.value.valueOf() <= Date.now()
+        ? { futureDate: { value: control.value } }
+        : null;
+    };
+  }
+
   private buildForm() {
     this.contestForm = this.formBuilder.group({
       title: ['', Validators.required],
@@ -62,11 +93,17 @@ export class CreateContestComponent implements OnInit {
       judgeAddress: ['', Validators.required],
       judgeWeight: [1, Validators.required],
       description: '',
-      prize: ['', Validators.required],
-      candidaturesStake: ['', Validators.required],
-      initialDate: ['', Validators.required],
-      candidatureLimitDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      award: ['', Validators.required],
+      candidaturesStake: ['', [Validators.required, this.lessThan('award')]],
+      initialDate: ['', [Validators.required, this.futureDate()]],
+      candidatureLimitDate: [
+        '',
+        [Validators.required, this.greaterThanDate('initialDate')]
+      ],
+      endDate: [
+        '',
+        [Validators.required, this.greaterThanDate('candidatureLimitDate')]
+      ],
       tags: ''
     });
   }
@@ -134,8 +171,8 @@ export class CreateContestComponent implements OnInit {
           image: new Buffer(this.filePicker.getFile().content)
         }
       },
-      prize: {
-        value: this.contestForm.value.prize,
+      award: {
+        value: this.contestForm.value.award,
         currency: CryptoCurrency.ETH
       },
       candidaturesStake: {

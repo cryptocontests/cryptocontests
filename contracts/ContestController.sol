@@ -147,7 +147,7 @@ contract ContestController is owned {
         uint initialJudgeWeight) public payable returns (bytes32 contestHash) {
 
         // Check contests requirements
-        require(msg.value > 0, "The contest must have a prize");
+        require(msg.value > 0, "The contest must have an award");
         require(candidaturesStake > 0, "Making a candidature must cost a stake");
         require(initialDate < candidatureLimitDate, "The initial date is not before the candidature limit date");
         require(candidatureLimitDate < endDate, "The candidature limit date is not before the end date");

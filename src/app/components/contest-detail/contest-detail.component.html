@@ -4,7 +4,7 @@
       <mat-icon>arrow_back</mat-icon>
     </button>
     <mat-label fxFlex>{{(contest$ | async)?.title}}</mat-label>
-    <mat-label>{{(contest$ | async) ? ((contest$ | async).prize | cryptoConvert: 'ETH') : ''}} ETH</mat-label>
+    <mat-label>{{(contest$ | async) ? ((contest$ | async).award | cryptoConvert: 'ETH') : ''}} ETH</mat-label>
     <mat-chip>{{(contest$ | async) ? getContestPhase(contest$ | async) : ''}}</mat-chip>
     <div matTooltip="New candidatures can only be submitted during the new candidatures phase" [matTooltipDisabled]="contestPhase !== 0">
       <button mat-raised-button color="accent" (click)="openCreateCandidatureDialog()" *ngIf="contestPhase < 3" [disabled]="!contestPhase || (contestPhase !== 1 && contestPhase !== 2)">
@@ -14,7 +14,7 @@
     <div [matTooltip]="!winnerCandidature ? 'The contest has not yet been resolved: the stake cannot be retrieved yet' : 'Only people who have submitted at least one candidature to this contest can retrieve the funds'"
       [matTooltipDisabled]="hasOwnCandidatures || !winnerCandidature">
       <button mat-raised-button color="accent" *ngIf="contestPhase && contestPhase === 3" (click)="retrieveFunds()" [disabled]="!hasOwnCandidatures && winnerCandidature ">
-        {{ winnerCandidature && winnerCandidature.creator === userAddress ? 'RETRIEVE PRIZE!' : 'RETRIEVE STAKE' }}
+        {{ winnerCandidature && winnerCandidature.creator === userAddress ? 'RETRIEVE AWARD!' : 'RETRIEVE STAKE' }}
       </button>
     </div>
   </mat-toolbar>
