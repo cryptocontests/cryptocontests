@@ -1,0 +1,250 @@
+{
+    "setNewContest":[
+        {
+            "title": "Concurso Fotográfico Cartel Fiestas Barcelona",
+            "tags": ["6e6174757265","70656f706c65"],
+            "createdDate": 1535760000,
+            "initialDate": 1537747200,
+            "candidatureLimitDate": 1538611200,
+            "endDate": 1539475200,
+            "taxForCandidatures": 5,
+            "ipfsHash": "QmT4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA",
+            "initialJudge": "0xbd8a88bdac32f123008db768fee34211130e9cbd",
+            "judgeName": "Jordi",
+            "contestOwner":"0x8a838b1722750ba185f189092833791adb98955f",
+            "award": 500000
+        },
+        {
+            "title": "Concurso Fotográfico de Paisajes Naturales",
+            "tags": ["6e6174757265"],
+            "createdDate": 1535846400,
+            "initialDate": 1537833600,
+            "candidatureLimitDate": 1538697600,
+            "endDate": 1539561600,
+            "taxForCandidatures": 5,
+            "ipfsHash": "QmT4AeWE9o9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA",
+            "initialJudge": "0x0e9d2c00cd736e27e39c394870c78e5dd430a771",
+            "judgeName":"Guillem",
+            "contestOwner":"0x5f61a7da478e982bbd147201380c089e34543ab4",
+            "award": 8966000
+        },
+        {
+            "title": "Concurso Portada CD",
+            "tags": ["6d75736963"],
+            "createdDate": 1535932800,
+            "initialDate":1537920000,
+            "candidatureLimitDate": 1538784000,
+            "endDate": 1539648000,
+            "taxForCandidatures": 5,
+            "ipfsHash": "QmT4AeWE9Q9EabcLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA",
+            "initialJudge": "0xd1d1bc94567bceb24cb4ba06d9a8c364a20881da",
+            "judgeName":"Mario",
+            "contestOwner":"0x790d74d4a69a526b6c30401eca367dad499455dd",
+            "award": 917000
+        },
+        {
+            "title": "Concurso de selfies",
+            "tags": ["73656c666965"],
+            "createdDate": 1536019200,
+            "initialDate": 1538006400,
+            "candidatureLimitDate": 1538870400,
+            "endDate": 1539734400,
+            "taxForCandidatures": 5,
+            "ipfsHash": "QmT4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBnaaaFH9dQ9uDVA",
+            "initialJudge": "0x128a906fbfd8497f0adc03d523d656ef16dfdff6",
+            "judgeName":"Jorge",
+            "contestOwner":"0x4522a965f4c12683a8ccaf2f43446a5e97c0364a",
+            "award": 100000
+        },
+        {
+            "title": "Concurso Cartel de Cine",
+            "tags": ["63696e656d61"],
+            "createdDate": 1536105600,
+            "initialDate": 1538092800,
+            "candidatureLimitDate": 1538956800,
+            "endDate": 1539820800,
+            "taxForCandidatures": 5,
+            "ipfsHash": "QmT4AeWE9Q9EeoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA",
+            "initialJudge": "0x6dcdd8dd7377e4dfcd03527c26adab74ada6613c",
+            "judgeName":"Ayuntamiento Barcelona",
+            "contestOwner":"0x60971b70bef61aab41af496ed35e2e23ec8ff9ba",
+            "award": 50990
+        },
+        {
+            "title": "Concurso cartel futurista",
+            "tags": ["667574757265"],
+            "createdDate": 1536192000,
+            "initialDate": 1538179200,
+            "candidatureLimitDate": 1539043200,
+            "endDate": 1539907200,
+            "taxForCandidatures": 5,
+            "ipfsHash": "wbT4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA",
+            "initialJudge": "0xaba60c4c7f47c4a765c27c218610a3e530d5d038",
+            "judgeName":"Jose",
+            "contestOwner":"0x6b67d256bb78de2b16f5d6d439bd017b76891007",
+            "award": 80000
+        },
+        {
+            "title": "Portada de libro",
+            "tags": ["626f6f6b"],
+            "createdDate": 1536278400,
+            "initialDate": 1538265600,
+            "candidatureLimitDate": 1539129600,
+            "endDate": 1539993600,
+            "taxForCandidatures": 5,
+            "ipfsHash": "QmTasdWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA",
+            "initialJudge": "0x2568599d312bbc200bfdaa76652b80da51161523",
+            "judgeName":"Panel de expertos",
+            "contestOwner":"0xd5ed214251281875914e3632d9982839be804fba",
+            "award": 200000
+        },
+        {
+            "title": "Fotografias de Festivales",
+            "tags": ["666573746976616c"],
+            "createdDate": 1536364800,
+            "initialDate": 1538352000,
+            "candidatureLimitDate": 1539216000,
+            "endDate": 1540080000,
+            "taxForCandidatures": 5,
+            "ipfsHash": "abc4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA",
+            "initialJudge": "0x10ff6d54239b2aea4c9941882e1e93bdf9fcca62",
+            "judgeName":"Pablo",
+            "contestOwner":"0xae5f8cb3d2ed1bfb0f1b99ef5516c4569ef6e4a0",
+            "award": 5230000
+        },
+        {
+            "title":"Marketing",
+            "tags": ["6d61726b6574696e67"],
+            "createdDate": 1536451200,
+            "initialDate": 1538438400,
+            "candidatureLimitDate": 1539302400,
+            "endDate": 1540166400,
+            "taxForCandidatures": 5,
+            "ipfsHash": "QmT4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9ueeA",
+            "initialJudge": "0x2f381dc91b5b2c1c0be4a6a2861144ce85f86ace",
+            "judgeName":"Cristina",
+            "contestOwner":"0x1586d0fe9f693f2182ab1963aa8f1268918a0330",
+            "award": 1500000
+        },
+        {
+            "title":"Fotografías de vehiculos antiguos",
+            "tags": ["76656869636c65"],
+            "createdDate": 1536537600,
+            "initialDate": 1538524800,
+            "candidatureLimitDate": 1539388800,
+            "endDate": 1540252800,
+            "taxForCandidatures": 5,
+            "ipfsHash": "zxcvbWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA",
+            "initialJudge": "0x2f381dc91b5b2c1c0be4a6a2861144ce85f86ace",
+            "judgeName":"Ivette",
+            "contestOwner":"0x8634bf5a0cb6de34f0c12e28d7f61f586c7cdb64",
+            "award": 5000
+        }
+    ],
+    "contestHash": [
+        "0xa6f2b3c77e5284352b1d738c118333fd54058be8c96cf144787aa026c8f5114d",
+        "0x2f0f77228d819c5fd8303e42c590cef293f0cf216d4393e2e65095d2632316a0",
+        "0x1eff81a972f4b619dfe3b66e75562d4dc494a5fe52cef9b2ba59b017aa776b70",
+        "0xf39ff456cc3fa2a8ac1c009ebb6f0cdc8509458c227c55c6f3328dee14a0c322",
+        "0x1a7d3dc0c3d2cc438f5efdcb1c1a3e995ff9dd5297b1f843fca3ca7870747e45",
+        "0x1dc136df6364a9c5c6abef3686eca7d1f9e11a59e9a1614cd936ebf94d00b097",
+        "0x2cacb5276b286dcb016e2c81dd5c33901723baaf4e0b9a22955a569c7cf2fccb",
+        "0x7dbed0a8e84ee188865b7734c17d723e45f13b271d3810fafe525e04b1e226c2",
+        "0x5683c5664c829df00f8f548aeaf45fd971eaf847c294f15d8583d7fb0daae9dc",
+        "0x3b45bf3ab99af75553aa526eebd4512b72f8e00695958954b2362c286c0f287c"
+    ],
+    "newJudge": [
+        {
+            "account": "0x9dfe0b99a25218aa349bfd5e0fde7af0801a1ec2",
+            "name": "Laura"
+        },
+        {
+            "account": "0xe3106ed542b9f25a1d79d3c8e98982df4dea01eb",
+            "name": "Vitalik"
+        },
+        {
+            "account": "0xe56e0ff39b6bd125f03f1931414aef9f6133c18f",
+            "name": "Gobierno de España"
+        },
+        {
+            "account": "0xcaaebd1734a96dedb213d17b4e59c89e70e7a004",
+            "name": "Comunidad de Madrid"
+        },
+        {
+            "account": "0xb36cf830cbb23aa89ab5e8d1d992ae33fafc45f3",
+            "name": "Youtubers"
+        },
+        {
+            "account": "0x102cd757b8460cd10ce6a9977ca491e00983cba3",
+            "name": "Angel"
+        },
+        {
+            "account": "0x231b5518d54ab5478b4d23a1b0f6448804c48368",
+            "name": "Maria"
+        },
+        {
+            "account": "0xa3f9a124f249bb7231ffaeeb7ea096f88a9afc4d",
+            "name": "Emilia"
+        },
+        {
+            "account": "0x20b85fefc92f9829f8524c42b489d214b8a5b340",
+            "name": "Rick"
+        },
+        {
+            "account": "0xc0ec23f5e23d6014e35424267a99dcabd0816ce5",
+            "name": "Morty"
+        }
+    ],
+    "candidature":[
+        {
+            "title":"Foto Torre Agbar",
+            "account": "0x9dfe0b99a25218aa349bfd5e0fde7af0801a1ec2",
+            "hash":"0x0ebd5612e3712f2c9971c1deb61d1c6e70f6aa6f5f8108b450775243803e26cc"
+        },
+        {
+            "title":"Coche",
+            "account": "0xe3106ed542b9f25a1d79d3c8e98982df4dea01eb",
+            "hash":"0x77a23a0d8f8cc9baf67488bf06d2c42931f60d7cc8678be7bee604aa15e68bc3"
+        },
+        {
+            "title":"Collserola",
+            "account": "0xe56e0ff39b6bd125f03f1931414aef9f6133c18f",
+            "hash":"0x182ee9e1d84dbadc0049f9bae53dce30546fcc80339ba550f9551ca17e5cd8b3"
+        },
+        {
+            "title":"Naturaleza",
+            "account": "0xcaaebd1734a96dedb213d17b4e59c89e70e7a004",
+            "hash":"0xefc5244553aaaf61b20057a8521cedd34bcc84b8e8b97f6df8fd21c19a31231d"
+        },
+        {
+            "title":"Retrato",
+            "account": "0xb36cf830cbb23aa89ab5e8d1d992ae33fafc45f3",
+            "hash":"0xa4674366cd83687f54bf601980b0aa7282c1f5f9ce9064531c3abca6f010bd2d"
+        },
+        {
+            "title":"Perro jugando",
+            "account": "0x102cd757b8460cd10ce6a9977ca491e00983cba3",
+            "hash":"0xc8565cb3a4378e0385f22b527887a28f4f1f630a80000d49e6d61fea7cf7cd12"
+        },
+        {
+            "title":"Barcelona desde el cielo",
+            "account": "0x231b5518d54ab5478b4d23a1b0f6448804c48368",
+            "hash":"0xe2e484b7d615919e4e1cfb3e8fd079cf82d9af897e722eb8197d490492a77e69"
+        },
+        {
+            "title":"Portada",
+            "account": "0xa3f9a124f249bb7231ffaeeb7ea096f88a9afc4d",
+            "hash":"0x583351dd5db85699e172b6104601cf092712d74b5e6fe9832680b8d80ed84fe6"
+        },
+        {
+            "title":"Dibujos",
+            "account": "0x20b85fefc92f9829f8524c42b489d214b8a5b340",
+            "hash":"0x29d11de1ed6a30e67d694b2b5adde78c0ae373bacf11f7c673d7afd65e8e01b7"
+        },
+        {
+            "title":"Niños",
+            "account": "0xc0ec23f5e23d6014e35424267a99dcabd0816ce5",
+            "hash":"0x23fa14959a3adfdf0dc01267d24718c17bff804bda17eb83c374b2f4e166eb97"
+        }
+    ]
+}

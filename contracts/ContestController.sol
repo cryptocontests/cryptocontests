@@ -20,7 +20,7 @@ contract ContestController is owned {
 
     event NewContest(string title, bytes32 contestHash);
     event MembershipChanged(string memberName, address member, bool isMember);
-    event NewCandidature(string contestTitle, string candidatureTitle);
+    event NewCandidature(string contestTitle, string candidatureTitle, bytes32 candidatureHash);
     event NewVote(string member, bytes32 contestHash, bytes32 candidatureHash);
     event CandidatureCancellation(string member, string contestTitle, string candidatureTitle, string reason);
     event ContestSolved(bytes32 contestHash, address winner, uint256 totalVotes);
@@ -310,7 +310,7 @@ contract ContestController is owned {
         contests[contestHash].candidatures[candidatureHash].cancelled = false;
         contests[contestHash].candidatures[candidatureHash].taxBalance = msg.value;
 
-        emit NewCandidature(contests[contestHash].title, title);
+        emit NewCandidature(contests[contestHash].title, title, candidatureHash);
     }
 
     function getCandidature(bytes32 contestHash, bytes32 candidatureHash) public view returns(string title, uint256 votes) {
