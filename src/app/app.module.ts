@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -16,13 +16,12 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { MaterialModule } from './material.module';
 import { AppComponent } from './app.component';
-import { ContestEffects } from './state/effects/contest.effects';
-import { contestReducer } from './state/reducers/contest.reducer';
+import { ContestEffects } from './state/contest.effects';
+import { contestReducer } from './state/contest.reducer';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CreateContestComponent } from './components/create-contest/create-contest.component';
 import { ContestGridComponent } from './components/contest-grid/contest-grid.component';
-import { Web3Module } from './web3/web3.module';
-import { LoadingUtilsModule } from './loading/loading-utils.module';
+import { Web3Module } from 'ng-web3';
 
 import { ContestContractService } from './services/contest-contract.service';
 import { ContestDetailComponent } from './components/contest-detail/contest-detail.component';
@@ -32,6 +31,10 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
 import { FilePickerComponent } from './components/file-picker/file-picker.component';
 import { CreateCandidatureComponent } from './components/create-candidature/create-candidature.component';
 import { JudgesListComponent } from './components/judges-list/judges-list.component';
+import { HashColorDirective } from './hash-color.directive';
+import { AddJudgeComponent } from './components/add-judge/add-judge.component';
+import { GenericGalleryModule } from 'projects/ng-generic-gallery/src/public_api';
+import { CancelCandidatureComponent } from './components/cancel-candidature/cancel-candidature.component';
 
 @NgModule({
   declarations: [
@@ -45,13 +48,22 @@ import { JudgesListComponent } from './components/judges-list/judges-list.compon
     ConfirmDialogComponent,
     FilePickerComponent,
     CreateCandidatureComponent,
-    JudgesListComponent
+    JudgesListComponent,
+    HashColorDirective,
+    AddJudgeComponent,
+    CancelCandidatureComponent
   ],
-  entryComponents: [ConfirmDialogComponent, CreateCandidatureComponent],
+  entryComponents: [
+    ConfirmDialogComponent,
+    CreateCandidatureComponent,
+    AddJudgeComponent,
+    CancelCandidatureComponent
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    FormsModule,
     MaterialModule,
     FileHelpersModule,
     AppRoutingModule,
@@ -65,8 +77,8 @@ import { JudgesListComponent } from './components/judges-list/judges-list.compon
     EffectsModule.forRoot([ContestEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     Web3Module,
-    LoadingUtilsModule,
-    CollectionUtilsModule
+    CollectionUtilsModule,
+    GenericGalleryModule
   ],
   providers: [ContestContractService],
   bootstrap: [AppComponent]

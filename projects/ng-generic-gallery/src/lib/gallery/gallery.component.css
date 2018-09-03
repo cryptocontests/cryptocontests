@@ -1,0 +1,24 @@
+.gallery {
+  height: 100%;
+  width: 100%;
+}
+
+.item {
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.unselected {
+  background-color: #eee !important;
+  height: 32px !important;
+  width: 32px !important;
+}
+
+.selected {
+  height: 32px !important;
+  width: 32px !important;
+}
+
+.indicators {
+  max-width: 100%;
+}

@@ -1,4 +1,4 @@
-import { CryptoValue } from '../web3/transaction.model';
+import { CryptoValue } from 'ng-web3';
 
 export enum ContestPhase {
   UPCOMING = 'UPCOMING',
@@ -22,9 +22,10 @@ export interface Hashable<T> {
 export interface Contest {
   id: string;
   title: string;
+  owner: string;
   additionalContent: Hashable<{ description: string; image: Buffer }>;
   prize: CryptoValue;
-  taxForCandidature: CryptoValue;
+  candidaturesStake: CryptoValue;
   createdDate: number;
   initialDate: number;
   candidatureLimitDate: number;
@@ -32,11 +33,14 @@ export interface Contest {
   tags: string[];
   judges?: Judge[];
   options: {};
+  winnerAddress: string;
+  winnerCandidature: string;
 }
 
 export interface Judge {
   address: string;
   name: string;
+  weight: number;
 }
 
 export interface Candidature {
@@ -46,7 +50,7 @@ export interface Candidature {
   content: Hashable<any>;
   votes: number;
   cancelled: boolean;
-  cancelledByMember?: string;
+  cancelledByJudge?: string;
   reasonForCancellation?: string;
 }
 

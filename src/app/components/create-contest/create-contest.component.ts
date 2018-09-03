@@ -9,9 +9,9 @@ import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
 import { default as _rollupMoment } from 'moment';
 import { Store } from '@ngrx/store';
-import { State, selectTags } from '../../state/reducers/contest.reducer';
+import { State, selectTags } from '../../state/contest.reducer';
 import { Contest } from '../../state/contest.model';
-import { CreateContest } from '../../state/actions/contest.actions';
+import { CreateContest } from '../../state/contest.actions';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import {
   MatChipInputEvent,
@@ -20,7 +20,7 @@ import {
 } from '@angular/material';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { Router } from '@angular/router';
-import { CryptoCurrency } from '../../web3/transaction.model';
+import { CryptoCurrency } from 'ng-web3';
 import { FilePickerComponent } from '../file-picker/file-picker.component';
 import { of, Observable } from 'rxjs';
 
@@ -37,8 +37,10 @@ export class CreateContestComponent implements OnInit {
   tags: string[] = [];
   separatorKeysCodes = [ENTER, COMMA];
 
-  @ViewChild('tagInput') tagInput: ElementRef;
-  @ViewChild('filePicker') filePicker: FilePickerComponent;
+  @ViewChild('tagInput')
+  tagInput: ElementRef;
+  @ViewChild('filePicker')
+  filePicker: FilePickerComponent;
 
   constructor(
     private store: Store<State>,
@@ -58,9 +60,10 @@ export class CreateContestComponent implements OnInit {
       title: ['', Validators.required],
       judgeName: ['', Validators.required],
       judgeAddress: ['', Validators.required],
+      judgeWeight: [1, Validators.required],
       description: '',
       prize: ['', Validators.required],
-      candidatureTax: ['', Validators.required],
+      candidaturesStake: ['', Validators.required],
       initialDate: ['', Validators.required],
       candidatureLimitDate: ['', Validators.required],
       endDate: ['', Validators.required],
@@ -115,11 +118,11 @@ export class CreateContestComponent implements OnInit {
   }
 
   createContest() {
-    const contest: Contest = {
-      id: null,
+    const contest: Partial<Contest> = {
       judges: [
         {
           name: this.contestForm.value.judgeName,
+          weight: this.contestForm.value.judgeWeight,
           address: this.contestForm.value.judgeAddress
         }
       ],
@@ -135,16 +138,14 @@ export class CreateContestComponent implements OnInit {
         value: this.contestForm.value.prize,
         currency: CryptoCurrency.ETH
       },
-      taxForCandidature: {
-        value: this.contestForm.value.candidatureTax,
+      candidaturesStake: {
+        value: this.contestForm.value.candidaturesStake,
         currency: CryptoCurrency.ETH
       },
-      createdDate: null,
       initialDate: this.contestForm.value.initialDate.valueOf(),
       candidatureLimitDate: this.contestForm.value.candidatureLimitDate.valueOf(),
       endDate: this.contestForm.value.endDate.valueOf(),
-      tags: this.tags,
-      options: {}
+      tags: this.tags
     };
     this.store.dispatch(new CreateContest(contest));
   }

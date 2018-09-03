@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutAlign="center stretch" fxLayoutGap="16px">
+<div fxLayout="column" fxLayoutAlign="center stretch">
 
   <mat-toolbar color="primary" class="mat-elevation-z4" fxLayoutGap="16px">
     <button mat-icon-button (click)="cancel($event)">
@@ -7,16 +7,23 @@
     <span fxFlex>New candidature</span>
 
     <button mat-raised-button color="accent" (click)="createCandidature()">
-      SUBMIT CANDIDATURE
+      {{ upload ? 'UPLOAD' : 'SUBMIT CANDIDATURE' }}
     </button>
   </mat-toolbar>
 
-  <div fxLayout="column" fxLayoutAlign="center stretch" class="form-padding" class="form-padding">
-    <cc-file-picker class="candidature-picker" #filePicker></cc-file-picker>
-    <form fxFlex [formGroup]="candidatureForm">
-      <mat-form-field cdkFocusStart>
+  <div class="form-padding" *ngIf="!upload">
+    <form [formGroup]="candidatureForm" fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="center center">
+      <mat-form-field cdkFocusStart fxFlexAlign="start">
         <input matInput formControlName="title" placeholder="Title" required>
       </mat-form-field>
+      <mat-divider fxFill></mat-divider>
+      <mat-form-field cdkFocusStart [style.width]="'40em'">
+        <input matInput formControlName="contentHash" placeholder="Content Hash" required>
+      </mat-form-field>
+      <mat-label>OR</mat-label>
+      <cc-file-picker class="candidature-picker" #filePicker (fileRead)="fileRead($event)"></cc-file-picker>
     </form>
+
   </div>
+  <cc-file-picker class="form-padding candidature-picker" #filePicker (fileRead)="fileRead($event)" *ngIf="upload"></cc-file-picker>
 </div>

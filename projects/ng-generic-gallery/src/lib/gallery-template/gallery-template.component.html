@@ -1,0 +1,14 @@
+<ng-template #overlayTemplate>
+	<div *ngIf="closePosition !== 'none'" class="close-button" [class.end]="closePosition === 'end'" (click)="closeOverlay()">
+		<ng-container [ngTemplateOutlet]="closeButton"></ng-container>
+	</div>
+	<div fxFlex>
+		<ng-content></ng-content>
+	</div>
+</ng-template>
+
+<ng-template #defaultCloseButton>
+	<button mat-icon-button>
+      <mat-icon>{{closeIcon}}</mat-icon>
+    </button>
+</ng-template>

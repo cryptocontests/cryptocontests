@@ -1,0 +1,51 @@
+<div class="gallery" fxLayout="column" fxLayoutAlign="center center" fxFlex>
+
+	<div fxFlex="12%" fxFlexAlign="end">
+		<div *ngIf="toolbar">
+			<ng-template [cdkPortalOutlet]="toolbarPortal"></ng-template>
+		</div>
+	</div>
+
+	<div fxFlex fxFill fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8%">
+
+		<div fxFlex="8%" fxLayoutAlign="center center">
+			<button mat-icon-button [disabled]="!canGoLeft()" (click)="selectLeftPage()" class="above">
+			  <mat-icon>{{leftArrowIcon}}</mat-icon>
+		  </button>
+		</div>
+
+		<div fxFlex="60%" fxFill fxLayout="column" fxLayoutAlign="center center" style="position: relative;" cdkFocusInitial cdkFocusStart>
+      <ng-template [cdkPortalOutlet]="pagesPortal"></ng-template>
+		</div>
+
+		<div fxFlex="8%" fxLayoutAlign="center center">
+			<button mat-icon-button [disabled]="!canGoRight()" (click)="selectRightPage()" class="above">
+        <mat-icon>{{rightArrowIcon}}</mat-icon>
+      </button>
+		</div>
+
+	</div>
+
+	<div class="indicators" fxFlex="24%" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="4%" fxFill cdkFocusRegionEnd>
+		<div fxFlex="4%" fxLayoutAlign="end center">
+			<mat-icon *ngIf="!indicatorFirstPage()">arrow_left</mat-icon>
+		</div>
+		<div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="center center">
+			<div *ngFor="let page of pages.toArray() | slice:getOffset():getOffset() + maxIndicators; let idx = index">
+				<div (click)="indicatorClick(idx + getOffset())" fxLayoutAlign="center center">
+					<ng-template [cdkPortalOutlet]="createPortal(idx + getOffset())"></ng-template>
+				</div>
+			</div>
+		</div>
+		<div fxFlex="4%" fxLayoutAlign="start center">
+			<mat-icon *ngIf="!indicatorLastPage()">arrow_right</mat-icon>
+		</div>
+	</div>
+
+	<ng-template #defaultIndicator let-index="idx" let-selected="selected">
+		<button [ngClass]="selected ? 'selected' : 'unselected'" mat-icon-button mat-raised-button [disabled]="selected">
+        <span class="item" ></span>
+    </button>
+	</ng-template>
+
+</div>

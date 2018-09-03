@@ -1,0 +1,28 @@
+<div fxLayout="column" fxLayoutAlign="center stretch">
+
+  <mat-toolbar color="primary" class="mat-elevation-z4" fxLayoutGap="16px">
+    <button mat-icon-button (click)="cancel($event)">
+      <mat-icon>close</mat-icon>
+    </button>
+    <span fxFlex>New judge</span>
+
+    <button mat-raised-button color="accent" (click)="addJudge()">
+      ADD JUDGE
+    </button>
+  </mat-toolbar>
+
+  <form [formGroup]="judgeForm" fxLayout="row" fxLayoutGap="8px" class="form-padding">
+    <mat-form-field cdkFocusStart [style.width]="'10em'">
+      <input matInput formControlName="name" placeholder="Name" required>
+    </mat-form-field>
+
+    <mat-form-field [style.width]="'5em'">
+      <input matInput type="number" min="1" formControlName="weight" placeholder="Weight" required>
+      <span matSuffix>VOTES</span>
+    </mat-form-field>
+
+    <mat-form-field [style.width]="'25em'">
+      <input matInput formControlName="address" placeholder="Address" required>
+    </mat-form-field>
+  </form>
+</div>

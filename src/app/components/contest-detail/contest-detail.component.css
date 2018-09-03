@@ -2,16 +2,28 @@
   pointer-events: none !important;
 }
 
-.no-padding {
-  padding: 0 !important;
+.winner-padding {
+  padding: 24px;
 }
 
 .mat-tab-body {
-  padding: 24px;
+  padding: 12px;
 }
 
 .mat-tab-label-container {
   position: sticky;
   top: 64px;
   z-index: 100 !important;
+}
+
+.mat-tab-label {
+  opacity: 1 !important;
+}
+
+.mat-tab-label:has(.align-end) {
+  justify-content: flex-end !important;
+}
+
+.mat-list {
+  padding-top: 0 !important;
 }

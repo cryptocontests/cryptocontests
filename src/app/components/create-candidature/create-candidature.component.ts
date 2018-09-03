@@ -2,7 +2,9 @@ import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { FilePickerComponent } from '../file-picker/file-picker.component';
-import { Candidature } from '../../state/contest.model';
+import { Candidature, Contest } from '../../state/contest.model';
+import { ReadFile } from 'ngx-file-helpers';
+import { IpfsService } from 'ng-web3';
 
 @Component({
   selector: 'cc-create-candidature',
@@ -11,18 +13,24 @@ import { Candidature } from '../../state/contest.model';
 })
 export class CreateCandidatureComponent {
   candidatureForm: FormGroup;
-  @ViewChild('filePicker') filePicker: FilePickerComponent;
+  @ViewChild('filePicker')
+  filePicker: FilePickerComponent;
+  upload = false;
 
   constructor(
     public dialogRef: MatDialogRef<CreateCandidatureComponent>,
-    private formBuilder: FormBuilder
+    @Inject(MAT_DIALOG_DATA) public data: boolean,
+    private formBuilder: FormBuilder,
+    private ipfsService: IpfsService
   ) {
-    this.buildForm();
+    if (!data) this.buildForm();
+    this.upload = data;
   }
 
   private buildForm() {
     this.candidatureForm = this.formBuilder.group({
-      title: ['', Validators.required]
+      title: ['', Validators.required],
+      contentHash: ['', Validators.required]
     });
   }
 
@@ -31,17 +39,48 @@ export class CreateCandidatureComponent {
   }
 
   createCandidature() {
-    const candidature: Candidature = {
-      title: this.candidatureForm.value.title,
-      creator: null,
-      date: null,
-      content: {
-        hash: null,
-        content: new Buffer(this.filePicker.file.content)
-      },
-      votes: 0,
-      cancelled: false
-    };
-    this.dialogRef.close(candidature);
+    if (this.upload) {
+      const candidature: Candidature = {
+        title: null,
+        creator: null,
+        date: null,
+        content: {
+          content: new Buffer(this.filePicker.file.content),
+          hash: null
+        },
+        votes: 0,
+        cancelled: false
+      };
+      this.dialogRef.close(candidature);
+    } else {
+      const candidature: Candidature = {
+        title: this.candidatureForm.value.title,
+        creator: null,
+        date: null,
+        content: {
+          hash: this.candidatureForm.value.contentHash
+        },
+        votes: 0,
+        cancelled: false
+      };
+      this.dialogRef.close(candidature);
+    }
+  }
+
+  hashEnabled(): boolean {
+    return this.filePicker.file && this.filePicker.file.content;
+  }
+
+  fileRead(file: ReadFile) {
+    if (!this.upload) {
+      this.ipfsService
+        .add(new Buffer(file.content), { onlyHash: true })
+        .then((fileReceipt: any) => {
+          this.candidatureForm.patchValue({
+            contentHash: fileReceipt[0].hash
+          });
+          this.candidatureForm.updateValueAndValidity();
+        }); // TODO: ADD ERROR
+    }
   }
 }

@@ -11,7 +11,7 @@
   </mat-toolbar>
 
   <div fxFlex fxLayout="row" fxLayoutAlign="center stretch">
-    <div fxLayout="column" fxFlex="70%" fxLayoutAlign="start stretch">
+    <div fxLayout="column" fxLayoutAlign="start stretch">
 
       <mat-card class="mat-elevation-z2" fxFlex fxLayout="column" fxLayoutGap="16px">
         <cc-file-picker fxFlex="35vh" #filePicker></cc-file-picker>
@@ -23,9 +23,13 @@
               <mat-form-field fxFlexAlign="start" style="min-width: 30em;">
                 <input matInput formControlName="title" placeholder="Title" required>
               </mat-form-field>
-              <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center">
+              <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
                 <mat-form-field fxFlex>
                   <input matInput formControlName="judgeName" placeholder="Judge name" required>
+                </mat-form-field>
+                <mat-form-field [style.width]="'10em'">
+                  <input matInput type="number" min="1" formControlName="judgeWeight" placeholder="Judge weight" required>
+                  <span matSuffix>VOTES</span>
                 </mat-form-field>
                 <mat-form-field [style.min-width]="'25em'">
                   <input matInput formControlName="judgeAddress" placeholder="Judge address" required>
@@ -60,7 +64,7 @@
                 <span matSuffix>ETH</span>
               </mat-form-field>
               <mat-form-field fxFlex>
-                <input matInput type="number" min="0.000000000000001" formControlName="candidatureTax" placeholder="Tax for candidature"
+                <input matInput type="number" min="0.000000000000001" formControlName="candidaturesStake" placeholder="Stake for candidature"
                   required>
                 <span matSuffix>ETH</span>
               </mat-form-field>

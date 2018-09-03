@@ -8,18 +8,33 @@ import {
   forkJoin,
   combineLatest
 } from 'rxjs';
-import { switchMap, map, tap, defaultIfEmpty } from 'rxjs/operators';
-import { Contest, Candidature, ContestPhase } from '../state/contest.model';
+import {
+  switchMap,
+  map,
+  tap,
+  defaultIfEmpty,
+  withLatestFrom,
+  catchError,
+  timeout
+} from 'rxjs/operators';
+import {
+  Contest,
+  Candidature,
+  ContestPhase,
+  Judge
+} from '../state/contest.model';
 import * as _ from 'lodash';
-import { Web3Service } from '../web3/services/web3.service';
-import { TransactionStateService } from '../web3/services/transaction-state.service';
-import { CryptoCurrency, CryptoValue } from '../web3/transaction.model';
-import { CurrencyService } from '../web3/services/currency.service';
 import {
   IpfsService,
-  FileReceipt,
-  IpfsFile
-} from '../web3/services/ipfs.service';
+  Web3Service,
+  TransactionStateService,
+  CryptoCurrency,
+  CryptoValue,
+  CurrencyService,
+  IpfsFile,
+  FileReceipt
+} from 'ng-web3';
+import { sha256, sha224 } from 'js-sha256';
 
 declare function require(url: string);
 const ContestController = require('./../../../build/contracts/ContestController.json');
@@ -43,7 +58,7 @@ export class ContestContractService {
   }
 
   /**
-   * All this methods composed help return a contest
+   * Helpers methods that interact directly with the contract
    */
 
   getDefaultAccount = from(this.web3Service.getDefaultAccount());
@@ -75,12 +90,23 @@ export class ContestContractService {
     this.contract.methods.getCandidature(contestHash, candidatureHash).call({
       from: address
     });
+  getOwnCandidatures = (address: string, contestHash: string) =>
+    this.contract.methods.getOwnCandidatures(contestHash).call({
+      from: address
+    });
   responseToContest = (contestHash: string, response: any) =>
     <Contest>{
       id: contestHash,
-      additionalContent: response.ipfsHash,
+      owner: response.owner,
+      additionalContent: {
+        hash: response.ipfsHash,
+        content: {
+          description: response.description,
+          image: response.image
+        }
+      },
       title: response.title,
-      createdDate: response.createdDate,
+      createdDate: parseInt(response.createdDate, 10) * 1000,
       initialDate: response.initialDate * 1000,
       candidatureLimitDate: response.candidatureLimitDate * 1000,
       endDate: response.endDate * 1000,
@@ -88,69 +114,35 @@ export class ContestContractService {
         value: response.award,
         currency: CryptoCurrency.WEIS
       },
-      taxForCandidature: {
-        value: response.taxForCandidatures,
+      candidaturesStake: {
+        value: response.candidaturesStake,
         currency: CryptoCurrency.WEIS
       },
       tags: response.tags.map(tag => this.web3Service.bytesToString(tag)),
       options: {},
-      judges: [
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        },
-        {
-          name: 'hi',
-          address: '0x01c2Ee12DF8fDEeE589b5a4D1e0511319Ba0ecF2'
-        }
-      ]
+      judges: response.judges,
+      winnerAddress:
+        parseInt(response.winnerAddress, 16) !== 0
+          ? response.winnerAddress
+          : null,
+      winnerCandidature:
+        parseInt(response.winnerCandidature, 16) !== 0
+          ? response.winnerCandidature
+          : null
     };
-  responseToCandidature = (response: any, ipfsFile: IpfsFile) =>
+  responseToCandidature = (response: any, ipfsFile?: IpfsFile) =>
     <Candidature>{
       title: response.title,
-      creator: response.owner,
-      date: response.creationDate,
+      creator: response.creator,
+      date: response.createdDate,
       content: {
         hash: response.content,
-        content: ipfsFile.content
+        content: ipfsFile ? ipfsFile.content : null
       },
-      votes: response.votes
+      votes: response.votes,
+      cancelled: parseInt(response.cancelledByJudge, 16) !== 0,
+      cancelledByJudge: response.cancelledByJudge,
+      reasonForCancellation: response.reasonForCancellation
     };
 
   /**
@@ -166,12 +158,63 @@ export class ContestContractService {
   /**
    * Get a contest from the contest hash
    */
-  public getContest(
-    contestHash: string,
-    address?: string
-  ): Observable<Contest> {
-    return (address ? observableOf(address) : this.getDefaultAccount).pipe(
-      switchMap(add => this.getContestByHash(add, contestHash)),
+  public getContest(contestHash: string): Observable<Contest> {
+    let address: string;
+    return this.getDefaultAccount.pipe(
+      tap(add => (address = add)),
+      switchMap(add =>
+        combineLatest(
+          from(this.getContestByHash(address, contestHash)).pipe(
+            switchMap(response =>
+              from(
+                this.ipfs.get(
+                  this.ipfs.getIpfsHashFromBytes32(response.ipfsHash)
+                )
+              ).pipe(
+                tap(console.log),
+                map(ipfsReceipt => ({
+                  ...response,
+                  description: ipfsReceipt.find(file =>
+                    file.path.includes('description.txt')
+                  ).content,
+                  image: ipfsReceipt.find(file =>
+                    file.path.includes('image.png')
+                  ).content
+                }))
+              )
+            )
+          ),
+          this.contract.methods
+            .getContestJudges(contestHash)
+            .call({ from: address }),
+          this.contract.methods
+            .getContestWinner(contestHash)
+            .call({ from: address })
+        )
+      ),
+      switchMap(([response, judgesAddresses, winner]) =>
+        forkJoin(
+          judgesAddresses.map((judgeAddress: string) =>
+            this.contract.methods
+              .getJudgeDetails(contestHash, judgeAddress)
+              .call({ from: address })
+          )
+        ).pipe(
+          map(judges => ({
+            ...response,
+            winnerAddress: winner.winnerAddress,
+            winnerCandidature: winner.winnerCandidature,
+            judges: judges.map(
+              (judgeResponse: any) =>
+                <Judge>{
+                  address: judgeResponse.judgeAddress,
+                  name: judgeResponse.judgeName,
+                  weight: judgeResponse.judgeWeight
+                }
+            )
+          }))
+        )
+      ),
       map((response: any) => this.responseToContest(contestHash, response))
     );
   }
@@ -186,15 +229,11 @@ export class ContestContractService {
       switchMap(() => this.getTotalContestCount(address)),
       switchMap((contestCount: number) =>
         forkJoin(
-          _
-            .range(0, contestCount)
-            .map((index: number) =>
-              from(this.getContestHashByIndex(address, index)).pipe(
-                switchMap((contestHash: string) =>
-                  this.getContest(contestHash, address)
-                )
-              )
+          _.range(0, contestCount).map((index: number) =>
+            from(this.getContestHashByIndex(address, index)).pipe(
+              switchMap((contestHash: string) => this.getContest(contestHash))
             )
+          )
         )
       ),
       defaultIfEmpty([])
@@ -204,9 +243,9 @@ export class ContestContractService {
   /**
    * Creates a contest
    */
-  public createContest(contest: Contest): Observable<TransactionReceipt> {
-    // TODO: uncomment when the contest includes an image
-    // const pinFile: Observable<FileReceipt> = from(this.ipfs.addFile(<Buffer>contest.imageHash));
+  public createContest(
+    contest: Partial<Contest>
+  ): Observable<TransactionReceipt> {
     const ipfsFiles: IpfsFile[] = [
       {
         path: 'image.png',
@@ -217,17 +256,19 @@ export class ContestContractService {
         content: new Buffer(contest.additionalContent.content.description)
       }
     ];
-    const additionalContestContent = from(
-      this.ipfs.add(ipfsFiles, {
-        pin: false,
-        wrapWithDirectory: true
-      })
-    );
+
+    let address: string;
 
     return this.getDefaultAccount.pipe(
-      //      withLatestFrom(additionalContestContent),
-      //      map(([address, receipt]) =>
-      map(address =>
+      tap(add => (address = add)),
+      switchMap(f =>
+        this.ipfs.ipfs.files.add(ipfsFiles, {
+          pin: false,
+          wrapWithDirectory: true
+        })
+      ),
+      tap(console.log),
+      map(ipfsReceipt =>
         this.contract.methods
           .setNewContest(
             contest.title,
@@ -235,10 +276,11 @@ export class ContestContractService {
             contest.initialDate / 1000,
             contest.candidatureLimitDate / 1000,
             contest.endDate / 1000,
-            this.currencyService.ethToWeis(contest.taxForCandidature.value),
-            '0x341f85f5eca6304166fcfb6f591d49f6019f23fa39be0615e6417da06bf747ce',
+            this.currencyService.ethToWeis(contest.candidaturesStake.value),
+            this.ipfs.getBytes32FromIpfsHash(ipfsReceipt[2].hash),
             contest.judges[0].address,
-            contest.judges[0].name
+            contest.judges[0].name,
+            contest.judges[0].weight
           )
           .send({
             from: address,
@@ -255,10 +297,63 @@ export class ContestContractService {
   }
 
   /**
+   * Add judge to the given contest
+   */
+  public addJudge(
+    contestHash: string,
+    judge: Judge
+  ): Observable<TransactionReceipt> {
+    return this.getDefaultAccount.pipe(
+      map(address =>
+        this.contract.methods
+          .addJudge(contestHash, judge.address, judge.name, judge.weight)
+          .send({
+            from: address,
+            gas: 4712388,
+            gasPrice: 20
+          })
+      ),
+      tap(txPromise =>
+        this.transactionStates.registerTransaction(
+          txPromise,
+          'Adding ' + judge.name
+        )
+      ),
+      switchMap(promise => promise)
+    );
+  }
+
+  /**
+   * Add judge to the given contest
+   */
+  public removeJudge(
+    contestHash: string,
+    judge: Judge
+  ): Observable<TransactionReceipt> {
+    return this.getDefaultAccount.pipe(
+      map(address =>
+        this.contract.methods.removeJudge(contestHash, judge.address).send({
+          from: address,
+          gas: 4712388,
+          gasPrice: 20
+        })
+      ),
+      tap(txPromise =>
+        this.transactionStates.registerTransaction(
+          txPromise,
+          'Removing ' + judge.name
+        )
+      ),
+      switchMap(promise => promise)
+    );
+  }
+
+  /**
    * Gets all the candidatures for the given contest
    */
   public getContestCandidatures(
-    contestHash: string
+    contestHash: string,
+    discardOnlyHash: boolean = false
   ): Observable<Candidature[]> {
     let address: string;
 
@@ -270,10 +365,23 @@ export class ContestContractService {
           hashes.map((candidatureHash: string) =>
             combineLatest(
               this.getCandidature(address, contestHash, candidatureHash),
-              this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(candidatureHash))
+              from(
+                this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(candidatureHash))
+              ).pipe(
+                timeout(5000),
+                catchError(
+                  err => (discardOnlyHash ? observableOf() : observableOf(null))
+                )
+              )
             ).pipe(
               map(([response, ipfsFile]) =>
-                this.responseToCandidature(response, ipfsFile[0])
+                this.responseToCandidature(
+                  {
+                    ...response,
+                    content: candidatureHash
+                  },
+                  ipfsFile ? ipfsFile[0] : null
+                )
               )
             )
           )
@@ -291,31 +399,153 @@ export class ContestContractService {
     stake: CryptoValue,
     candidature: Candidature
   ): Observable<TransactionReceipt> {
-    // Store candidature content on ipfs and retrieve hash
-    const candidatureContent = from(
-      this.ipfs.add(candidature.content.content, {
-        pin: false
-      })
-    );
-
-    return combineLatest(this.getDefaultAccount, candidatureContent).pipe(
-      map(([address, receipt]) =>
+    return this.getDefaultAccount.pipe(
+      map(address =>
         this.contract.methods
           .setNewCandidature(
             contestHash,
             candidature.title,
-            this.ipfs.getBytes32FromIpfsHash(receipt[0].hash)
+            this.ipfs.getBytes32FromIpfsHash(candidature.content.hash)
           )
           .send({
-            value: this.currencyService.ethToWeis(stake.value),
+            value: stake.value,
             from: address,
             gas: 4712388,
             gasPrice: 20
           })
       ),
-      tap(console.log),
       tap(txPromise =>
         this.transactionStates.registerTransaction(txPromise, candidature.title)
+      ),
+      switchMap(promise => promise)
+    );
+  }
+
+  /**
+   * Uploads a candidature to ipfs if its hash exists on the given contest
+   */
+  public uploadCandidature(
+    contestHash: string,
+    candidature: Candidature
+  ): Observable<FileReceipt> {
+    return this.getDefaultAccount.pipe(
+      switchMap(address =>
+        combineLatest(
+          this.contract.methods.getOwnCandidatures(contestHash).call({
+            from: address
+          }),
+          this.ipfs.add(candidature.content.content, { onlyHash: true })
+        )
+      ),
+      tap(([candidatureHashes, ipfsReceipt]) => {
+        if (
+          !candidatureHashes.includes(
+            this.ipfs.getBytes32FromIpfsHash(ipfsReceipt[0].hash)
+          )
+        ) {
+          throw new Error(
+            'The given content does not match any of the candidatures of the sender in the current contest'
+          );
+        }
+      }),
+      switchMap((candidatureHashes: string[]) =>
+        this.ipfs.add(candidature.content.content, {
+          pin: false
+        })
+      )
+    );
+  }
+
+  /**
+   * Vote the given candidature
+   */
+  public voteCandidature(
+    contestHash: string,
+    candidatureHash: string
+  ): Observable<TransactionReceipt> {
+    return this.getDefaultAccount.pipe(
+      map(address =>
+        this.contract.methods.setNewVote(contestHash, candidatureHash).send({
+          from: address,
+          gas: 4712388,
+          gasPrice: 20
+        })
+      ),
+      tap(txPromise =>
+        this.transactionStates.registerTransaction(
+          txPromise,
+          'Voting candidature ' + candidatureHash
+        )
+      ),
+      switchMap(promise => promise)
+    );
+  }
+
+  /**
+   * Cancel the given candidature
+   */
+  public cancelCandidature(
+    contestHash: string,
+    candidatureHash: string,
+    reasonForCancellation: string
+  ): Observable<TransactionReceipt> {
+    return this.getDefaultAccount.pipe(
+      map(address =>
+        this.contract.methods
+          .cancelCandidature(
+            contestHash,
+            candidatureHash,
+            reasonForCancellation
+          )
+          .send({
+            from: address,
+            gas: 4712388,
+            gasPrice: 20
+          })
+      ),
+      tap(txPromise =>
+        this.transactionStates.registerTransaction(
+          txPromise,
+          'Cancel candidature ' + candidatureHash
+        )
+      ),
+      switchMap(promise => promise)
+    );
+  }
+
+  /**
+   * Retrieve the stake of the candidature
+   */
+  public retrieveFunds(contestHash: string): Observable<TransactionReceipt> {
+    return this.getDefaultAccount.pipe(
+      map(address =>
+        this.contract.methods.refundToCandidates(contestHash).send({
+          from: address,
+          gas: 4712388,
+          gasPrice: 20
+        })
+      ),
+      tap(txPromise =>
+        this.transactionStates.registerTransaction(txPromise, contestHash)
+      ),
+      switchMap(promise => promise)
+    );
+  }
+
+  /**
+   * Solve the contest, declaring the winner
+   */
+  public solveContest(contestHash: string): Observable<TransactionReceipt> {
+    return this.getDefaultAccount.pipe(
+      map(address =>
+        this.contract.methods.solveContest(contestHash).send({
+          from: address,
+          gas: 4712388,
+          gasPrice: 20
+        })
+      ),
+      tap(txPromise =>
+        this.transactionStates.registerTransaction(txPromise, contestHash)
       ),
       switchMap(promise => promise)
     );

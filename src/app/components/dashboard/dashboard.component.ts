@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import * as fromReducer from '../../state/reducers/contest.reducer';
+import * as fromReducer from '../../state/contest.reducer';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PhasesList, ContestPhase } from '../../state/contest.model';
 import { Observable } from 'rxjs';

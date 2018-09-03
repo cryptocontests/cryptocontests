@@ -1,0 +1,19 @@
+<div fxLayout="column" fxLayoutAlign="center stretch">
+
+  <mat-toolbar color="primary" class="mat-elevation-z4" fxLayoutGap="16px">
+    <button mat-icon-button (click)="cancel($event)">
+      <mat-icon>close</mat-icon>
+    </button>
+    <span fxFlex>Give a reason for the cancellation</span>
+
+    <button mat-raised-button color="accent" (click)="cancelCandidature()" [disabled]="!reason">
+      CANCEL CANDIDATURE
+    </button>
+  </mat-toolbar>
+
+  <div [style.margin]="'24px'">
+    <mat-form-field [style.width]="'100%'">
+      <textarea matInput [(ngModel)]="reason" placeholder="Reason for the cancellation"></textarea>
+    </mat-form-field>
+  </div>
+</div>
