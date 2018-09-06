@@ -112,10 +112,10 @@ export class ContestEffects {
           )
           .pipe(
             map(
-              (candidatures: Candidature[]) =>
+              (candidature: Candidature) =>
                 new LoadedCandidatures({
                   contestHash: loadAction.payload,
-                  candidatures
+                  candidature
                 })
             )
           )

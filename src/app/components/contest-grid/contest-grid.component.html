@@ -6,7 +6,7 @@
         <div fxLayout="column" fxLayoutAlign="center stretch" fxLayoutGap="6%">
           <div fxLayout="row">
             <span class="title" fxFlex>{{contest.title}}</span>
-            <span class="subtitle">{{contest.prize | cryptoConvert: 'ETH'}} ETH</span>
+            <span class="subtitle">{{contest.award | cryptoConvert: 'ETH'}} ETH</span>
           </div>
           <div fxLayout="row" fxLayoutAlign="center center">
             <mat-chip-list fxFlex>

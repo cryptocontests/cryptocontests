@@ -22,7 +22,7 @@ export class DashboardComponent implements OnInit {
   ];
   sortOptions = [
     'Title',
-    'Prize',
+    'Award',
     'Creation Date',
     'Initial Date',
     'Candidature Limit Date',

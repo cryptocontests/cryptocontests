@@ -1,17 +1,23 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" fxFill style="position:relative">
-  <div fxLayoutAlign="center center" (dragenter)="dragging=true" (dragleave)="dragging=false" (drop)="dragging=false" class="dropzone"
-    [ngxFileDropzone]="readMode" (fileDrop)="finishedFileRead($event)" [class.dragging]="dragging" [ngClass]="file ? 'small-dropzone' : 'fill'">
-    <ng-container *ngIf="!file" [ngTemplateOutlet]="controls"></ng-container>
-  </div>
-  <div *ngIf="file" fxFlex fxLayout="column" class="drop-image fill">
-    <img [src]="file.content" fxFlex mat-card-image class="crop-image fill">
-    <ng-container [ngTemplateOutlet]="controls"></ng-container>
+  <div fxLayoutAlign="center center" (dragenter)="dragging=true" (dragleave)="dragging=false" (drop)="dragging=false" [ngxFileDropzone]="readMode"
+    (fileDrop)="finishedFileRead($event)" [class.dragging]="dragging" class="fill" [class.dropzone]="!file">
+    <div *ngIf="!file" fxLayout="column" fxLayoutGap="16px">
+      <mat-label *ngIf="title"><strong>{{title}}</strong></mat-label>
+      <ng-container [ngTemplateOutlet]="controls"></ng-container>
+    </div>
+
+    <div *ngIf="file" fxFill fxLayout="column" class="drop-image" fxLayoutGap="16px">
+      <div class="dropzone wrapper" fxFlex>
+        <img [src]="file.content" class="crop-image image-file">
+      </div>
+      <ng-container [ngTemplateOutlet]="controls"></ng-container>
+    </div>
   </div>
 </div>
 
 <ng-template #controls>
-  <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
-    <span *ngIf="!file">DROP A FILE OR</span>
+  <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px" class="controls">
+    <mat-label *ngIf="!file">Drop a file or</mat-label>
     <button mat-raised-button *ngIf="file" (click)="removeFile()">REMOVE FILE</button>
     <button mat-raised-button color="accent" ngxFilePicker (filePick)="finishedFileRead($event)">PICK FILE</button>
   </div>

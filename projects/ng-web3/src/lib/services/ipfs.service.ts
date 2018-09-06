@@ -35,7 +35,7 @@ export class IpfsService {
     return this.ipfs.files.add(data, options);
   }
 
-  public get(ipfsPath: string): Promise<IpfsFile> {
+  public get(ipfsPath: string): Promise<IpfsFile[]> {
     return this.ipfs.files.get(ipfsPath);
   }
 

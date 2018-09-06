@@ -26,7 +26,7 @@
                 [matTooltipDisabled]="isVotingEnabled()" fxLayout="row" fxLayoutGap="8px">
                 <button mat-raised-button color="accent" (click)="voteCandidature(candidature.content.hash)" [disabled]="!isVotingEnabled()">
                   VOTE
-                </button><button mat-raised-button color="accent" (click)="cancelCandidature(candidature.content.hash)" [disabled]="!isVotingEnabled()">
+                </button><button mat-raised-button (click)="cancelCandidature(candidature.content.hash)" [disabled]="!isVotingEnabled()">
                   CANCEL CANDIDATURE
                 </button>
               </div>
