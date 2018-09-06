@@ -1,5 +1,7 @@
 pragma solidity ^0.4.23;
 
+import "./SafeMath.sol";
+
 contract owned {
     address public owner;
 
@@ -17,6 +19,8 @@ contract owned {
     }
 }
 contract ContestController is owned {
+    
+    using SafeMath for uint256;
 
     event NewContest(string title, bytes32 contestHash);
     event MembershipChanged(string memberName, address member, bool isMember);
@@ -368,7 +372,9 @@ contract ContestController is owned {
         for (uint256 i = 0; i < contest.judgeList.length; i++) {
             Judge storage judge = contest.judges[contest.judgeList[i]];
             if (judge.votedCandidature == candidatureHash) {
-                votes += judge.weight;
+                // removed for using SafeMath
+                // votes += judge.weight;
+                votes.add(judge.weight);
             }
         }
     }
@@ -426,7 +432,9 @@ contract ContestController is owned {
 
         require(judge.votedCandidature == 0, "The given judge has already voted");
         judge.votedCandidature = candidatureHash;
-        contest.candidatures[candidatureHash].votes += judge.weight;
+        // removed for using SafeMath
+        //contest.candidatures[candidatureHash].votes += judge.weight;
+        contest.candidatures[candidatureHash].votes.add(judge.weight);
 
         emit NewVote(
             contest.judges[msg.sender].name,
@@ -435,7 +443,7 @@ contract ContestController is owned {
     }
 
     /*************************************************************
-     *                 SOLVE CONTEST & REFUND                    *
+     *                 SOLVE CONTEST & REFUND   )                 *
      *************************************************************/
 
     /**
@@ -483,12 +491,16 @@ contract ContestController is owned {
         uint256 amount = 0;
         for (uint256 i = 0; i < creations.candidatureHashes.length; i++) {
             if (!contest.candidatures[creations.candidatureHashes[i]].cancelled) {
-                amount += contest.candidaturesStake;
+                // removed for using SafeMath
+                //amount += contest.candidaturesStake;
+                amount.add(contest.candidaturesStake);
             }
         }
 
         if (msg.sender == contest.winnerAddress) {
-            amount += contest.award;
+            // removed for using SafeMath
+            //amount += contest.award;
+            amount.add(contest.award);
         }
 
         creations.refunded = true;
