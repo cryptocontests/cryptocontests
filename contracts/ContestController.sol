@@ -90,7 +90,7 @@ contract ContestController is owned {
     mapping (bytes32  => Contest) private contests;
     bytes32[] public contestList; // array with all contests hashes
 
-    mapping (bytes32 => bytes32[]) public contestsInTags;
+    mapping (bytes32 => bool) public existingTags;
     bytes32[] public tagsList;
 
     // ONLY FOR DEBUG PURPOSES
@@ -145,6 +145,7 @@ contract ContestController is owned {
         require(candidaturesStake > 0, "Making a candidature must cost a stake");
         require(initialDate < candidatureLimitDate, "The initial date is not before the candidature limit date");
         require(candidatureLimitDate < endDate, "The candidature limit date is not before the end date");
+        require(tags.length < 5, "The contest must have less than 5 tags");
 
         contestHash = keccak256(abi.encodePacked(msg.sender, title, initialDate));
         require(contests[contestHash].award == 0, "Contest with this owner, title and initial date already exists");
@@ -159,6 +160,13 @@ contract ContestController is owned {
         contests[contestHash].endDate = endDate;
         contests[contestHash].candidaturesStake = candidaturesStake;
         contests[contestHash].award = msg.value;
+
+        for (uint8 i = 0; i < tags.length; i++) {
+            if (!existingTags[tags[i]]) {
+                tagsList.push(tags[i]);
+                existingTags[tags[i]] = true;
+            }
+        }
 
         addJudge(contestHash, initialJudgeAddress, initialJudgeName, initialJudgeWeight);
 
