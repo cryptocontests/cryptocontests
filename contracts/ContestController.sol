@@ -93,7 +93,7 @@ contract ContestController is owned {
     mapping (bytes32 => bool) public existingTags;
     bytes32[] public tagsList;
 
-    // ONLY FOR DEBUG PURPOSES
+    // ONLY FOR TESTING PURPOSES
     // FIXME: SECURITY ERROR
     uint date = 0;
     function setTime (uint256 newDate) public onlyOwner {
@@ -123,6 +123,9 @@ contract ContestController is owned {
     * @param endDate contest end date
     * @param candidaturesStake //required tax for each candidature
     * @param ipfsHash hash for photo set in ipfs
+    * @param initialJudgeAddress first required judge address
+    * @param initialJudgeName first required judge common name
+    * @param initialJudgeWeight first required judge weighing
     *
     * itself specifies the hash function and length of the hash in the first two bytes of the multihash.
     * In the examples above the first two bytes in hex is 1220, where 12 denotes that this is the
@@ -262,7 +265,8 @@ contract ContestController is owned {
     *
     * @param contestHash contest hash
     * @param judgeAddress judge ethereum address
-    * @param judgeName judge name
+    * @param judgeName judge common name
+    * @param weight judge weighing
     */
     function addJudge(bytes32 contestHash, address judgeAddress, string judgeName, uint weight)
       public contestExists(contestHash) theOwnerOf(contestHash) {
