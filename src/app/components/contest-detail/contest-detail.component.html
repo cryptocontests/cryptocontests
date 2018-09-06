@@ -1,10 +1,10 @@
-<div fxLayout="column">
+<div fxLayout="column" fxFlex>
   <mat-toolbar color="primary" class="mat-elevation-z4 toolbar" fxLayoutGap="16px">
     <button mat-icon-button (click)="goBack($event)">
       <mat-icon>arrow_back</mat-icon>
     </button>
     <mat-label fxFlex>{{(contest$ | async)?.title}}</mat-label>
-    <mat-label>{{(contest$ | async) ? ((contest$ | async).prize | cryptoConvert: 'ETH') : ''}} ETH</mat-label>
+    <mat-label>Award: {{(contest$ | async) ? ((contest$ | async).award | cryptoConvert: 'ETH') : ''}} ETH</mat-label>
     <mat-chip>{{(contest$ | async) ? getContestPhase(contest$ | async) : ''}}</mat-chip>
     <div matTooltip="New candidatures can only be submitted during the new candidatures phase" [matTooltipDisabled]="contestPhase !== 0">
       <button mat-raised-button color="accent" (click)="openCreateCandidatureDialog()" *ngIf="contestPhase < 3" [disabled]="!contestPhase || (contestPhase !== 1 && contestPhase !== 2)">
@@ -12,9 +12,9 @@
       </button>
     </div>
     <div [matTooltip]="!winnerCandidature ? 'The contest has not yet been resolved: the stake cannot be retrieved yet' : 'Only people who have submitted at least one candidature to this contest can retrieve the funds'"
-      [matTooltipDisabled]="hasOwnCandidatures || !winnerCandidature">
-      <button mat-raised-button color="accent" *ngIf="contestPhase && contestPhase === 3" (click)="retrieveFunds()" [disabled]="!hasOwnCandidatures && winnerCandidature ">
-        {{ winnerCandidature && winnerCandidature.creator === userAddress ? 'RETRIEVE PRIZE!' : 'RETRIEVE STAKE' }}
+      [matTooltipDisabled]="hasOwnCandidatures && winnerCandidature">
+      <button mat-raised-button color="accent" *ngIf="contestPhase && contestPhase === 3" (click)="retrieveFunds()" [disabled]="!hasOwnCandidatures || !winnerCandidature">
+        {{ winnerCandidature && winnerCandidature.creator === userAddress ? 'RETRIEVE AWARD!' : 'RETRIEVE STAKE' }}
       </button>
     </div>
   </mat-toolbar>
@@ -27,9 +27,9 @@
           <mat-label>
             <strong>{{contest.title}}</strong>
           </mat-label>
-          <div fxLayout="row" fxLayoutGap="8px">
-            <div fxFlex fxLayout="column" fxLayoutGap="8px">
-              <p fxFlex>{{contest.additionalContent?.content?.description}}</p>
+          <div fxLayout="row" fxLayoutGap="16px">
+            <div fxFlex fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="start start">
+              <span class="description">{{contest.additionalContent?.content?.description}}</span>
               <ng-container *ngIf="contest.tags.length > 0">
                 <mat-label>
                   <strong>Tags</strong>
@@ -38,26 +38,30 @@
               </ng-container>
             </div>
             <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="center stretch">
-              <mat-label fxFlex>Stake to participate: {{contest.candidaturesStake | cryptoConvert: 'ETH'}} ETH</mat-label>
+              <mat-label fxFlex><strong>Stake to participate:</strong> {{contest.candidaturesStake | cryptoConvert: 'ETH'}}
+                ETH
+              </mat-label>
             </div>
           </div>
-          <mat-label>
-            <strong>Phases</strong>
-          </mat-label>
-          <mat-horizontal-stepper linear="false" #stepper [selectedIndex]="getPhaseIndex(contest)" disabled>
-            <mat-step label="Created on {{contest.createdDate | date}}">
-              Currently the contest owner can <strong>add or remove judges</strong> from the contest.
-            </mat-step>
-            <mat-step label="New candidatures from {{contest.initialDate | date}}">
-              Now is the time to <strong>submit new candidatures</strong> for the contest.
-            </mat-step>
-            <mat-step label="Revision begins on {{contest.candidatureLimitDate | date}}">
-              The judges are reviewing the candidatures. <strong>Upload your candidature now</strong> for it to be reviewed!
-            </mat-step>
-            <mat-step label="Contest ends on {{contest.endDate | date}}">
-              The contest has ended. <strong>Retrieve your stake</strong> from the contest.
-            </mat-step>
-          </mat-horizontal-stepper>
+          <div>
+            <mat-label>
+              <strong>Phases</strong>
+            </mat-label>
+            <mat-horizontal-stepper linear="false" #stepper [selectedIndex]="getPhaseIndex(contest)" disabled>
+              <mat-step label="Created on {{contest.createdDate | date}}">
+                Currently the contest owner can <strong>add or remove judges</strong> from the contest.
+              </mat-step>
+              <mat-step label="New candidatures from {{contest.initialDate | date}}">
+                Now is the time to <strong>submit new candidatures</strong> for the contest.
+              </mat-step>
+              <mat-step label="Revision begins on {{contest.candidatureLimitDate | date}}">
+                The judges are reviewing the candidatures. <strong>Upload your candidature now</strong> for it to be reviewed!
+              </mat-step>
+              <mat-step label="Contest ends on {{contest.endDate | date}}">
+                The contest has ended. <strong>Retrieve your stake</strong> from the contest.
+              </mat-step>
+            </mat-horizontal-stepper>
+          </div>
         </mat-card-content>
       </mat-card>
 
@@ -73,7 +77,7 @@
               </div>
             </ng-template>
             <cc-candidature-grid fxFlex [isUserJudge]="isUserJudge" [contestHash]="contestHash" [candidatures]="candidatures$ | async"
-              [contestPhase]="contestPhase" *ngIf="!(loadingCandidatures$ | async); else loading">
+              [contestPhase]="contestPhase" *ngIf="!(loadingCandidatures$ | async) && contestPhase > 1; else loading">
             </cc-candidature-grid>
             <ng-template #loading>
               <loading></loading>
@@ -99,11 +103,8 @@
             </div>
             <ng-template #nowinner>
               <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px">
-                <mat-label>{{ isUserOwner(contest) ? 'Solve the contest to declare a winner!' : 'The contest has not declared
-                  a winner yet: wait for the creator of the contest to solve it' }}</mat-label>
-                <div *ngIf="isUserOwner(contest)">
-                  <button mat-raised-button color="accent" (click)="solveContest()">SOLVE CONTEST</button>
-                </div>
+                <mat-label>Solve the contest to declare a winner!</mat-label>
+                <button mat-raised-button color="accent" (click)="solveContest()">SOLVE CONTEST</button>
               </div>
             </ng-template>
           </mat-tab>
