@@ -24,7 +24,7 @@ export interface Contest {
   title: string;
   owner: string;
   additionalContent: Hashable<{ description: string; image: Buffer }>;
-  prize: CryptoValue;
+  award: CryptoValue;
   candidaturesStake: CryptoValue;
   createdDate: number;
   initialDate: number;

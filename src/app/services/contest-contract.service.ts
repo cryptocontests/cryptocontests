@@ -6,7 +6,8 @@ import {
   from,
   of as observableOf,
   forkJoin,
-  combineLatest
+  combineLatest,
+  merge
 } from 'rxjs';
 import {
   switchMap,
@@ -15,7 +16,8 @@ import {
   defaultIfEmpty,
   withLatestFrom,
   catchError,
-  timeout
+  timeout,
+  mergeMap
 } from 'rxjs/operators';
 import {
   Contest,
@@ -110,7 +112,7 @@ export class ContestContractService {
       initialDate: response.initialDate * 1000,
       candidatureLimitDate: response.candidatureLimitDate * 1000,
       endDate: response.endDate * 1000,
-      prize: {
+      award: {
         value: response.award,
         currency: CryptoCurrency.WEIS
       },
@@ -171,8 +173,7 @@ export class ContestContractService {
                   this.ipfs.getIpfsHashFromBytes32(response.ipfsHash)
                 )
               ).pipe(
-                tap(console.log),
-                map(ipfsReceipt => ({
+                map((ipfsReceipt: IpfsFile[]) => ({
                   ...response,
                   description: ipfsReceipt.find(file =>
                     file.path.includes('description.txt')
@@ -192,7 +193,7 @@ export class ContestContractService {
             .call({ from: address })
         )
       ),
-      switchMap(([response, judgesAddresses, winner]) =>
+      switchMap(([response, judgesAddresses, winner]: [any, any, any]) =>
         forkJoin(
           judgesAddresses.map((judgeAddress: string) =>
             this.contract.methods
@@ -267,7 +268,6 @@ export class ContestContractService {
           wrapWithDirectory: true
         })
       ),
-      tap(console.log),
       map(ipfsReceipt =>
         this.contract.methods
           .setNewContest(
@@ -284,7 +284,7 @@ export class ContestContractService {
           )
           .send({
             from: address,
-            value: this.currencyService.ethToWeis(contest.prize.value),
+            value: this.currencyService.ethToWeis(contest.award.value),
             gas: 4712388,
             gasPrice: 20
           })
@@ -354,35 +354,32 @@ export class ContestContractService {
   public getContestCandidatures(
     contestHash: string,
     discardOnlyHash: boolean = false
-  ): Observable<Candidature[]> {
+  ): Observable<Candidature> {
     let address: string;
 
     return this.getDefaultAccount.pipe(
       tap(add => (address = add)),
       switchMap(() => this.getCandidaturesByContestHash(address, contestHash)),
-      switchMap(hashes =>
-        forkJoin(
-          hashes.map((candidatureHash: string) =>
-            combineLatest(
-              this.getCandidature(address, contestHash, candidatureHash),
-              from(
-                this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(candidatureHash))
-              ).pipe(
-                timeout(5000),
-                catchError(
-                  err => (discardOnlyHash ? observableOf() : observableOf(null))
-                )
-              )
-            ).pipe(
-              map(([response, ipfsFile]) =>
-                this.responseToCandidature(
-                  {
-                    ...response,
-                    content: candidatureHash
-                  },
-                  ipfsFile ? ipfsFile[0] : null
-                )
-              )
+      switchMap(hashes => from(hashes)),
+      mergeMap(candidatureHash =>
+        combineLatest(
+          this.getCandidature(address, contestHash, candidatureHash),
+          from(
+            this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(candidatureHash))
+          ).pipe(
+            timeout(20000),
+            catchError(
+              err => (discardOnlyHash ? observableOf() : observableOf(null))
+            )
+          )
+        ).pipe(
+          map(([response, ipfsFile]) =>
+            this.responseToCandidature(
+              {
+                ...response,
+                content: candidatureHash
+              },
+              ipfsFile ? ipfsFile[0] : null
             )
           )
         )

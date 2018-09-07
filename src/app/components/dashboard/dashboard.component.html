@@ -28,7 +28,7 @@
     </mat-toolbar>
 
     <filter-toolbar #filter [style.z-index]="10" (valueChanges)="filterChanged($event)">
-      <filter-number title="Prize" name="prize"></filter-number>
+      <filter-number title="Award" name="award"></filter-number>
       <filter-date title="Initial Date" name="initialDate"></filter-date>
       <filter-autocomplete title="Filter by tags" name="tags" [autocompleteValues]="tags$ | async"></filter-autocomplete>
       <filter-advanced>

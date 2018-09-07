@@ -17,9 +17,13 @@ export class FilePickerComponent implements OnInit {
   public readMode = ReadMode.dataURL;
 
   @Input()
+  title: string;
+  @Input()
   multiple = false;
   @Output()
   fileRead = new EventEmitter<ReadFile>();
+  @Output()
+  fileRemoved = new EventEmitter<void>();
 
   file: ReadFile;
   dragging = false;
@@ -44,6 +48,7 @@ export class FilePickerComponent implements OnInit {
   removeFile() {
     this.file = undefined;
     this.filePicker.reset();
+    this.fileRemoved.emit();
   }
 
   onReadEnd(fileCount: number) {}

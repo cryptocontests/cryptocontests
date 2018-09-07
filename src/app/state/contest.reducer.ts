@@ -55,12 +55,20 @@ export function contestReducer(
       });
     }
     case ContestActionTypes.LoadCandidatures: {
-      return Object.assign({}, state, { loadingCandidatures: true });
+      return Object.assign({}, state, {
+        loadingCandidatures: true,
+        candidatures: {}
+      });
     }
     case ContestActionTypes.LoadedCandidatures: {
       const addCandidature = { candidatures: {}, loadingCandidatures: false };
-      addCandidature.candidatures[action.payload.contestHash] =
-        action.payload.candidatures;
+      let list = [];
+      if (state.candidatures.hasOwnProperty(action.payload.contestHash)) {
+        list = state.candidatures[action.payload.contestHash];
+      }
+      list.push(action.payload.candidature);
+
+      addCandidature.candidatures[action.payload.contestHash] = list;
       return Object.assign({}, state, addCandidature);
     }
 
