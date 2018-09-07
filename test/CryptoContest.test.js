@@ -53,8 +53,9 @@ contract('ContestController', function (accounts) {
 
   describe("Contest functions without errors: ", async function () {
     //setNewContest()
-    it("Should set 10 new contest", async function () {
-      for (let i = 0; i < Contest.setNewContest.length; i++) {
+
+    it("Should set a new contest", async function () {
+     for (let i = 0; i < Contest.setNewContest.length; i++) {
         let txTime = await instance.setTime(Contest.setNewContest[i].createdDate);
         let tx = await instance.setNewContest(
           Contest.setNewContest[i].title,
@@ -66,6 +67,7 @@ contract('ContestController', function (accounts) {
           Contest.setNewContest[i].ipfsHash,
           Contest.setNewContest[i].initialJudge,
           Contest.setNewContest[i].judgeName,
+          Contest.setNewContest[i].initialJudgeWeight,
           { from: Contest.setNewContest[i].contestOwner, value: Contest.setNewContest[i].award });
         assert.equal(tx.logs[1].args.contestHash, Contest.contestHash[i], "The result must be the contestHash");
       };
@@ -154,6 +156,7 @@ contract('ContestController', function (accounts) {
           Contest.contestHash[i],
           Contest.newJudge[i].account,
           Contest.newJudge[i].name,
+          Contest.setNewContest[i].initialJudgeWeight,
           { from: Contest.setNewContest[i].contestOwner });
         assert.isTrue(tx.logs[0].args.isMember);
       };
@@ -179,6 +182,7 @@ contract('ContestController', function (accounts) {
             Contest.contestHash[i],
             Contest.newJudge[i].account,
             Contest.newJudge[i].name,
+            Contest.setNewContest[i].initialJudgeWeight,
             { from: Contest.setNewContest[i].contestOwner });
           test = false;
         } catch (e) {
@@ -213,6 +217,7 @@ contract('ContestController', function (accounts) {
             Contest.newJudge[i].account,
             Contest.newJudge[i].account,
             Contest.newJudge[i].name,
+            Contest.setNewContest[i].initialJudgeWeight,
             { from: Contest.setNewContest[i].contestOwner });
           test = false;
         } catch (e) {
@@ -230,6 +235,7 @@ contract('ContestController', function (accounts) {
             Contest.contestHash[i],
             Contest.setNewContest[i].initialJudge,
             Contest.setNewContest[i].judgeName,
+            Contest.setNewContest[i].initialJudgeWeight,
             { from: Contest.setNewContest[i].contestOwner });
           test = false;
         } catch (e) {
@@ -316,8 +322,9 @@ contract('ContestController', function (accounts) {
           let tx = await instance.setNewCandidature(
             Contest.contestHash[i],
             Contest.candidature[j].title,
-            Contest.setNewContest[i].ipfsHash,
+            Contest.candidature[j].hash,
             { from: Contest.candidature[j].account, value: 5 });
+            console.log("TX : ",tx.logs[0].args)
           assert.equal(tx.logs[0].args.candidatureTitle, Contest.candidature[j].title, "The result must be:'" + Contest.candidature[j].title + "'");
         };
       };
