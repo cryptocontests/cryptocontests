@@ -71,9 +71,9 @@ export class ContestEffects {
     }),
     switchMap(() => this.web3Service.getDefaultAccount()),
     tap(address => {
-      console.log(address);
       if (!address || typeof address !== typeof 'string') throw Error();
     }),
+    switchMap(() => this.contestContract.getTags()),
     catchError(() => observableOf(this.displayWeb3Error()))
   );
 
