@@ -16,6 +16,7 @@ export class CreateCandidatureComponent {
   @ViewChild('filePicker')
   filePicker: FilePickerComponent;
   upload = false;
+  loadingIpfs = false;
 
   constructor(
     public dialogRef: MatDialogRef<CreateCandidatureComponent>,
@@ -53,6 +54,8 @@ export class CreateCandidatureComponent {
       };
       this.dialogRef.close(candidature);
     } else {
+      this.candidatureForm.get('contentHash').enable();
+
       const candidature: Candidature = {
         title: this.candidatureForm.value.title,
         creator: null,
@@ -73,14 +76,21 @@ export class CreateCandidatureComponent {
 
   fileRead(file: ReadFile) {
     if (!this.upload) {
+      this.candidatureForm.get('contentHash').disable();
+      this.loadingIpfs = true;
       this.ipfsService
         .add(new Buffer(file.content), { onlyHash: true })
         .then((fileReceipt: any) => {
+          this.loadingIpfs = false;
           this.candidatureForm.patchValue({
             contentHash: fileReceipt[0].hash
           });
           this.candidatureForm.updateValueAndValidity();
         }); // TODO: ADD ERROR
     }
+  }
+
+  fileRemoved() {
+    this.candidatureForm.get('contentHash').enable();
   }
 }

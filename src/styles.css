@@ -30,7 +30,7 @@ body {
 }
 
 .crop-image {
-  object-fit: contain;
+  object-fit: cover;
   overflow: hidden;
 }
 

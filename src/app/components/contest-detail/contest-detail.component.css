@@ -27,3 +27,7 @@
 .mat-list {
   padding-top: 0 !important;
 }
+
+.description {
+  word-break: break-all;
+}

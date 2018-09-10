@@ -214,6 +214,7 @@ export class ContestDetailComponent implements OnInit {
     this.winnerCandidature = candidatures.find(
       candidature => candidature.content.hash === contest.winnerCandidature
     );
+    console.log(this.winnerCandidature);
   }
 
   solveContest() {

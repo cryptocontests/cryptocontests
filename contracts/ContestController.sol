@@ -44,12 +44,6 @@ contract ContestController is owned {
         bytes32 votedCandidature;
     }
 
-    struct Multihash {
-        bytes32 hash_tail;
-        uint8 hash_function;
-        uint8 hash_size;
-    }
-
     struct Creations {
         bytes32[] candidatureHashes;
         bool refunded;
@@ -440,13 +434,11 @@ contract ContestController is owned {
     *
     * @param contestHash contest hash
     */
-    function solveContest(bytes32 contestHash) public contestExists(contestHash) theOwnerOf(contestHash)
-      returns (address winnerAddress, bytes32 winnerCandidature, uint256 totalVotes) {
+    function solveContest(bytes32 contestHash) public contestExists(contestHash)
+      returns (address winnerAddress, bytes32 winnerCandidature, uint256 winnerVotes) {
         Contest storage contest = contests[contestHash];
         require(getTime() > contest.endDate, "Contests can only be solved after their end date");
         require(contest.winnerCandidature == 0, "The contest has already been solved");
-
-        uint winnerVotes;
 
         for (uint256 i = 0; i < contest.judgeList.length; i++) {
             address judgeAddress = contest.judgeList[i];

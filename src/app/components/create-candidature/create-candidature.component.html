@@ -12,16 +12,21 @@
   </mat-toolbar>
 
   <div class="form-padding" *ngIf="!upload">
-    <form [formGroup]="candidatureForm" fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="center center">
-      <mat-form-field cdkFocusStart fxFlexAlign="start">
-        <input matInput formControlName="title" placeholder="Title" required>
-      </mat-form-field>
-      <mat-divider fxFill></mat-divider>
-      <mat-form-field cdkFocusStart [style.width]="'40em'">
-        <input matInput formControlName="contentHash" placeholder="Content Hash" required>
-      </mat-form-field>
-      <mat-label>OR</mat-label>
-      <cc-file-picker class="candidature-picker" #filePicker (fileRead)="fileRead($event)"></cc-file-picker>
+    <form [formGroup]="candidatureForm" fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="center center">
+      <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="center stretch" [style.width]="'100%'">
+        <mat-form-field cdkFocusStart fxFlexAlign="start">
+          <input matInput formControlName="title" placeholder="Title" required>
+        </mat-form-field>
+        <mat-divider fxFill></mat-divider>
+      </div>
+      <div fxLayout="column" fxLayoutAlign="center center" [style.position]="'relative'">
+        <mat-form-field cdkFocusStart [style.width]="'40em'">
+          <input matInput formControlName="contentHash" placeholder="Content Hash" required>
+        </mat-form-field>
+        <mat-progress-bar *ngIf="loadingIpfs" mode="indeterminate" class="loading-file"></mat-progress-bar>
+        <mat-label>OR</mat-label>
+      </div>
+      <cc-file-picker class="candidature-picker" #filePicker (fileRead)="fileRead($event)" (fileRemoved)="fileRemoved()"></cc-file-picker>
     </form>
 
   </div>

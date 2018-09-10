@@ -29,15 +29,18 @@
                 <mat-form-field fxFlex>
                   <input matInput formControlName="judgeName" placeholder="Judge name" required>
                   <mat-error>The name of the initial judge cannot be empty</mat-error>
+                  <mat-hint>Name of the initial judge</mat-hint>
                 </mat-form-field>
                 <mat-form-field [style.width]="'10em'">
                   <input matInput type="number" min="1" formControlName="judgeWeight" placeholder="Judge weight" required>
                   <span matSuffix>VOTES</span>
                   <mat-error>The initial judge has to have 1 or more votes to give</mat-error>
+                  <mat-hint>The initial judge's weight</mat-hint>
                 </mat-form-field>
                 <mat-form-field [style.min-width]="'25em'">
                   <input matInput formControlName="judgeAddress" placeholder="Judge address" required>
                   <mat-error>The address of the initial judge cannot be empty</mat-error>
+                  <mat-hint>Enter the initial judge ethereum address'</mat-hint>
                 </mat-form-field>
               </div>
               <mat-form-field>
@@ -73,6 +76,7 @@
                   required>
                 <span matSuffix>ETH</span>
                 <mat-error>The candidature stake must be smaller than the award</mat-error>
+                <mat-hint>Will be requested with each candidature</mat-hint>
               </mat-form-field>
 
               <mat-form-field>

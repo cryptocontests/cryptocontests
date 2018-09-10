@@ -96,7 +96,7 @@ export class LoadedCandidatures implements Action {
   readonly type = ContestActionTypes.LoadedCandidatures;
 
   constructor(
-    public payload: { contestHash: string; candidatures: Candidature[] }
+    public payload: { contestHash: string; candidature: Candidature }
   ) {}
 }
 
