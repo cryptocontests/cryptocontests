@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { FilterComponent } from '../filter.component';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ChipsAutocompleteComponent } from '../../components';
+import { ChipsAutocompleteComponent } from '../../components/chips-autocomplete/chips-autocomplete.component';
 
 @Component({
   selector: 'filter-autocomplete',

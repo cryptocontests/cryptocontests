@@ -1,5 +1,5 @@
 /*
- * Public API Surface of ng-filter-utils
+ * Public API Surface of ng-collection-utils
  */
 
 export * from './lib/components';

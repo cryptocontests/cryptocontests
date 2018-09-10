@@ -1,30 +1,23 @@
 import { environment } from './../../environments/environment';
-import { TransactionReceipt, PromiEvent, Contract } from 'web3/types';
+import { TransactionReceipt, Contract } from 'web3/types';
 import { Injectable } from '@angular/core';
 import {
   Observable,
   from,
   of as observableOf,
   forkJoin,
-  combineLatest,
-  merge
+  combineLatest
 } from 'rxjs';
 import {
   switchMap,
   map,
   tap,
   defaultIfEmpty,
-  withLatestFrom,
   catchError,
   timeout,
   mergeMap
 } from 'rxjs/operators';
-import {
-  Contest,
-  Candidature,
-  ContestPhase,
-  Judge
-} from '../state/contest.model';
+import { Contest, Candidature, Judge } from '../state/contest.model';
 import * as _ from 'lodash';
 import {
   IpfsService,
@@ -36,9 +29,6 @@ import {
   IpfsFile,
   FileReceipt
 } from 'ng-web3';
-import { sha256, sha224 } from 'js-sha256';
-import { MatDialog } from '@angular/material';
-import { Web3ErrorComponent } from '../components/web3-error/web3-error.component';
 
 declare function require(url: string);
 const ContestController = require('./../../../build/contracts/ContestController.json');
