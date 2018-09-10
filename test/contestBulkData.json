@@ -2,7 +2,7 @@
     "setNewContest":[
         {
             "title": "Concurso Fotográfico Cartel Fiestas Barcelona",
-            "tags": ["6e6174757265","70656f706c65"],
+            "tags": ["NZQXI5LSMFWGK6TB","70656f706c65"],
             "createdDate": 1535760000,
             "initialDate": 1537747200,
             "candidatureLimitDate": 1538611200,
@@ -213,47 +213,47 @@
         },
         {
             "title":"Coche",
-            "account": "0xe3106ed542b9f25a1d79d3c8e98982df4dea01eb",
-            "hash":"6d61726b6574696e67"
+            "account": "0xa6af4e8a7561188ad87d8895cac3e9dfa83085f2",
+            "hash":"0x182ee9e1d84dbadc0049f9bee53dce30546fcc80339ba550f9551ca17e5cd8b3"
         },
         {
             "title":"Collserola",
-            "account": "0xe56e0ff39b6bd125f03f1931414aef9f6133c18f",
-            "hash":"0x182ee9e1d84dbadc0049f9bae53dce30546fcc80339ba550f9551ca17e5cc8b3"
+            "account": "0x335a941ac5f1cb73378865b40f7c1a180eec5b22",
+            "hash":"0x182ee9e1d84dbadc0049f9bae53dce30216fcc80339ba550f9551ca17e5cc212"
         },
         {
             "title":"Naturaleza",
-            "account": "0xcaaebd1734a96dedb213d17b4e59c89e70e7a004",
+            "account": "0x353839f39e01f2526381dcef95e424f7467de49a",
             "hash":"0xefc5244553aaaf61b20057a8521cedd34bcc84b8e8b97f6df8fd21c19a31231d"
         },
         {
             "title":"Retrato",
-            "account": "0xb36cf830cbb23aa89ab5e8d1d992ae33fafc45f3",
+            "account": "0xa7f6d3f615b7c146753f6683047ee978754bf76a",
             "hash":"0xa4674366cd83687f54bf601980b0aa7282c1f5f9ce9064531c3abca6f010bd2d"
         },
         {
             "title":"Perro jugando",
-            "account": "0x102cd757b8460cd10ce6a9977ca491e00983cba3",
+            "account": "0x7e647f2469188d1fd41ea960b643185fbd936346",
             "hash":"0xc8565cb3a4378e0385f22b527887a28f4f1f630a80000d49e6d61fea7cf7cd12"
         },
         {
             "title":"Barcelona desde el cielo",
-            "account": "0x231b5518d54ab5478b4d23a1b0f6448804c48368",
+            "account": "0x28ee7fcc86e1d371892349f9fdb86a2ae10e13ec",
             "hash":"0xe2e484b7d615919e4e1cfb3e8fd079cf82d9af897e722eb8197d490492a77e69"
         },
         {
             "title":"Portada",
-            "account": "0xa3f9a124f249bb7231ffaeeb7ea096f88a9afc4d",
+            "account": "0x52b93a06df9884db1672439c355230b6c295d776",
             "hash":"0x583351dd5db85699e172b6104601cf092712d74b5e6fe9832680b8d80ed84fe6"
         },
         {
             "title":"Dibujos",
-            "account": "0x20b85fefc92f9829f8524c42b489d214b8a5b340",
+            "account": "0x9449af28c0a43acd7782ceddd7406b28bdb1de87",
             "hash":"0x29d11de1ed6a30e67d694b2b5adde78c0ae373bacf11f7c673d7afd65e8e01b7"
         },
         {
             "title":"Niños",
-            "account": "0xc0ec23f5e23d6014e35424267a99dcabd0816ce5",
+            "account": "0x75c31c112d82bc8ea9885f8570ad04f2728410ed",
             "hash":"0x23fa14959a3adfdf0dc01267d24718c17bff804bda17eb83c374b2f4e166eb97"
         }
     ]
