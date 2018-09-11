@@ -1,21 +1,6 @@
 const ContestController = artifacts.require("ContestController");
 const Contest = require("./contestBulkData.json");
 contract('ContestController', function (accounts) {
-  //FIXME
-  /*
-  const InitialDate = 1530784800;  // Thu, 05 Jul 2018 10:00:00 GMT
-  const CandidatureLimitDate = 1535759999; //Fri, 31 Aug 2018 23:59:59 GMT
-  const EndDate = 1538438399; // Mon, 01 Oct 2018 23:59:59 GMT
-  const CreatedDate = 1530403200;  // Sun, 01 Jul 2018 00:00:00 GMT
-  //Present candidatures time
-  const CandidaturesTime = 1535758999;
-  //Vote time
-  const VoteTime = 1538437399;
-  //Out time
-  const OutTimeJudge = 1530784801;
-  const OutTimeCandidatures = 1535760000;
-
- */
 
   beforeEach(async function () {
     instance = await ContestController.deployed();
@@ -434,7 +419,7 @@ contract('ContestController', function (accounts) {
   });
 
 
-  //TODO
+
   describe("Candidatures functions catching errors: ", async function () {
     //NOT setNewCandidature()
     it("Should not add 10 new candidature for each contest because missing", async function () {
@@ -531,7 +516,6 @@ contract('ContestController', function (accounts) {
         };
       };
     });
-
     //NOT setNewCandidature()
     it("Should not add 10 new candidature for each contest because the time is over", async function () {
       for (let i = 0; i < Contest.setNewContest.length; i++) {
@@ -556,9 +540,9 @@ contract('ContestController', function (accounts) {
     it("Should not get a candidature by hash contest and hash candidature because missing parameters", async function () {
       for (let i = 0; i < Contest.setNewContest.length; i++) {
         for (let j = 0; j < Contest.candidature.length; j++) {
-          try{
-          let tx = await instance.getCandidature(
-            Contest.candidature[j].hash);
+          try {
+            let tx = await instance.getCandidature(
+              Contest.candidature[j].hash);
             test = false;
           } catch (e) {
             test = true;
@@ -572,10 +556,10 @@ contract('ContestController', function (accounts) {
     it("Should not get a candidature by hash contest and hash candidature because the contest hash is wrong", async function () {
       for (let i = 0; i < Contest.setNewContest.length; i++) {
         for (let j = 0; j < Contest.candidature.length; j++) {
-          try{
-          let tx = await instance.getCandidature(
-            Contest.candidature[j].hash,
-            Contest.candidature[j].hash);
+          try {
+            let tx = await instance.getCandidature(
+              Contest.candidature[j].hash,
+              Contest.candidature[j].hash);
             test = false;
           } catch (e) {
             test = true;
@@ -684,9 +668,6 @@ contract('ContestController', function (accounts) {
         }
       };
     });
-
-
-
     //NOT getOwnCandidatures() missing parameters
     it("Should not get own candidatures by contest and candidate because missing parameters", async function () {
       for (let i = 0; i < Contest.setNewContest.length; i++) {
@@ -728,6 +709,9 @@ contract('ContestController', function (accounts) {
       };
     });
   });
+
+
+
   describe("Votation functions without errors: ", async function () {
     //setNewVote()
     it("Should add a new vote", async function () {
@@ -741,6 +725,7 @@ contract('ContestController', function (accounts) {
       };
     });
   });
+  /*
   describe("Votation functions catching errors: ", async function () {
     //NOT setNewVote()
     it("Should not add a new vote because missing parameters", async function () {
@@ -810,139 +795,258 @@ contract('ContestController', function (accounts) {
       };
     });
   });
-
-  describe("Solve Contest and Refund functions without errores: ", async function () {
+  */
+  describe("Solve Contest and Refund functions without errors: ", async function () {
     //solveContest()
     it("Should solve all contests", async function () {
       for (let i = 0; i < Contest.setNewContest.length; i++) {
         let txTime = await instance.setTime(1540252801);
         let tx = await instance.solveContest(
           Contest.contestHash[i])
-          console.log("TX : ",tx.logs[0].args);
-        assert.equal(tx.logs[0].args.winner, Contest.candidature[1].account, "The result must be:'" + Contest.candidature[1].account + "'");
+        assert.equal(tx.logs[0].args.winnerAddress, Contest.candidature[1].account, "The result must be:'" + Contest.candidature[1].account + "'");
+      };
+    });
+    //getWinner()
+    it("Should get winner of all contests", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        let txTime = await instance.setTime(1540252801);
+        let tx = await instance.getWinner(
+          Contest.contestHash[i])
+        assert.equal(tx[0], Contest.candidature[1].account, "The result must be:'" + Contest.candidature[1].account + "'");
+      };
+    });
+    //getContestWinner()
+    it("Should get winner of all contests", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        let txTime = await instance.setTime(1540252801);
+        let tx = await instance.getContestWinner(
+          Contest.contestHash[i])
+        assert.equal(tx[0], Contest.candidature[1].account, "The result must be:'" + Contest.candidature[1].account + "'");
+      };
+    });
+    //refuntToCandidates()
+    it("Should refund award to winner of all contests", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        let txTime = await instance.setTime(1540252801);
+        let tx = await instance.refundToCandidates(
+          Contest.contestHash[i],
+          { from: Contest.candidature[1].account });
+        assert.equal(tx.receipt.status, "0x01", "The result must be: '0x01'");
+      };
+    });
+    //refuntToCandidates()
+    it("Should refund stake to candidates of all contests", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        let txTime = await instance.setTime(1540252801);
+        let tx = await instance.refundToCandidates(
+          Contest.contestHash[i],
+          { from: Contest.candidature[3].account });
+        assert.equal(tx.receipt.status, "0x01", "The result must be: '0x01'");
       };
     });
   });
 
-});
-
-  /*
-    describe("Votation functions catching errors: ", async function () {
-      //setNewVote()
-      it("Should add a new vote", async function () {
-        for (let i = 0; i < Contest.setNewContest.length; i++) {
-          let txTime = await instance.setTime(1539454332);
-          let tx = await instance.setNewVote(
-            Contest.contestHash[i],
-            Contest.candidature[1].hash,
-            { from: Contest.setNewContest[i].initialJudge });
-            console.log("HASH : ",Contest.candidature[1].hash);
-            console.log("TX : ",tx.logs[0].args);
-          assert.equal(tx.logs[0].args.candidatureHash, Contest.candidature[1].hash, "The result must be:'" + Contest.candidature[1].hash + "'");
-        };
-      });
-    });
-  
-    describe("Solve Contest and Refund functions without errores: ", async function () {
-      //setNewVote()
-      it("Should add a new vote", async function () {
-        for (let i = 0; i < Contest.setNewContest.length; i++) {
-          let txTime = await instance.setTime(1540318332);
+  describe("Solve Contest and Refund functions catching errors: ", async function () {
+    //NOT solveContest()
+    it("Should not solve all contests because is not time to do", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1000252801);
           let tx = await instance.solveContest(
+            Contest.contestHash[i])
+          test = false;
+        } catch (e) {
+          test = true;
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
+        }
+      };
+    });
+    //NOT solveContest()
+    it("Should not solve all contests because missing paramaters", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1540252801);
+          let tx = await instance.solveContest()
+          test = false;
+        } catch (e) {
+          test = true;
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
+        }
+      };
+    });
+    //NOT solveContest()
+    it("Should not solve all contests because the contest hash is wrong", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1540252801);
+          let tx = await instance.solveContest(
+            Contest.candidature[i].account)
+          test = false;
+        } catch (e) {
+          test = true;
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
+        }
+      };
+    });
+    //NOT solveContest()
+    it("Should not solve all contests because the contest has already solved", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1540252801);
+          let tx = await instance.solveContest(
+            Contest.contestHash[i])
+          test = false;
+        } catch (e) {
+          test = true;
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
+        }
+      };
+    });
+    //NOT getWinner()
+    it("Should not get winner of all contests because missing parameters", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1540252801);
+          let tx = await instance.getWinner()
+          test = false;
+        } catch (e) {
+          test = true;
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
+        }
+      };
+    });
+    //NOT getWinner()
+    it("Should not get winner of all contests because the contest hash is wrong", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1540252801);
+          let tx = await instance.getWinner(
+            Contest.candidature[i].account)
+          test = false;
+        } catch (e) {
+          test = true;
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
+        }
+      };
+    });
+
+    //NOT getContestWinner()
+    it("Should not get winner of all contests because missing parameters", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1540252801);
+          let tx = await instance.getContestWinner()
+          test = false;
+        } catch (e) {
+          test = true;
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
+        }
+      };
+    });
+    //NOT getContestWinner()
+    it("Should not get winner of all contests because the contest hash is wrong", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1540252801);
+          let tx = await instance.getContestWinner(
+            Contest.candidature[i].account)
+          test = false;
+        } catch (e) {
+          test = true;
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
+        }
+      };
+    });
+    //NOT refundToCandidates
+    it("Should not refund to candidates of all contests because missing parameters", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1540252801);
+          let tx = await instance.refundToCandidates(
             Contest.contestHash[i],
-            { from: Contest.setNewContest[i].contestOwner });
-            console.log("TX : ",tx.logs[0].args);
-          assert.equal(tx.logs[0].args.winner, Contest.candidature[1].account, "The result must be:'" + Contest.candidature[1].account + "'");
-        };
-      });
-    });
-  */
-
-/*
-  describe("Candidatures functions catching errors: ", async function() {
-    //NOT setNewCandidature() out of time
-    it("Should not add a new candidature because out of time", async function() { 
-      let txTime = await instance.setTime(OutTimeCandidatures);
-      try{
-        let tx = await instance.setNewCandidature( 
-          ContestHash, 
-          TitleCandidature,                                               
-          IpfsHash,
-          {from: CandidatureAddress,value:5});
+            { from: Contest.candidature[1].account });
           test = false;
-        }catch(e){
+        } catch (e) {
           test = true;
-        }finally{
-          assert.isTrue(test,"The result must be 'ERROR'");
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
         }
+      };
     });
-    //NOT setNewCandidature() missing parameters
-    it("Should not add a new candidature because missing parameters", async function() { 
-      let txTime = await instance.setTime(CandidaturesTime);
-      try{
-        let tx = await instance.setNewCandidature( 
-          ContestHash,                                               
-          IpfsHash,
-          {from: CandidatureAddress,value:5});
-        test = false;
-      }catch(e){
-        test = true;
-      }finally{
-        assert.isTrue(test,"The result must be 'ERROR'");
-      }
-    });
-    //NOT setNewCandidature() contest hash is wrong
-    it("Should not add a new candidature because contest hash is wrong", async function() { 
-      let txTime = await instance.setTime(CandidaturesTime);
-      try{
-        let tx = await instance.setNewCandidature( 
-          IpfsHash,
-          TitleCandidature,                                             
-          IpfsHash,
-          {from: CandidatureAddress,value:5});
-        test = false;
-      }catch(e){
-        test = true;
-      }finally{
-        assert.isTrue(test,"The result must be 'ERROR'");
-      }
-    });
-    //NOT setNewCandidature() tax it is less than required
-    it("Should not add a new candidature because tax it is less than required", async function() { 
-      let txTime = await instance.setTime(CandidaturesTime);
-      try{
-        let tx = await instance.setNewCandidature( 
-          ContestHash,
-          TitleCandidature,                                             
-          IpfsHash,
-          {from: CandidatureAddress,value:3});
+    //NOT refundToCandidates
+    it("Should not refund to candidates of all contests because the contest hash is wrong", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1540252801);
+          let tx = await instance.refundToCandidates(
+            Contest.candidature[i].account,
+            { from: Contest.candidature[1].account });
           test = false;
-        }catch(e){
+        } catch (e) {
           test = true;
-        }finally{
-          assert.isTrue(test,"The result must be 'ERROR'");
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
         }
+      };
     });
-    //NOT setNewCandidature() tax it is more than required
-    it("Should not add a new candidature because tax it is more than required", async function() { 
-      let txTime = await instance.setTime(CandidaturesTime);
-      try{
-        let tx = await instance.setNewCandidature( 
-          ContestHash,
-          TitleCandidature,                                             
-          IpfsHash,
-          {from: CandidatureAddress,value:8});
+    //NOT refundToCandidates
+    it("Should not refund stake to candidate of all contests because the stake has already refunded", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1540252801);
+          let tx = await instance.refundToCandidates(
+            Contest.contestHash[i],
+            { from: Contest.candidature[3].account });
+          console.log("TX: ", tx)
           test = false;
-        }catch(e){
+        } catch (e) {
           test = true;
-        }finally{
-          assert.isTrue(test,"The result must be 'ERROR'");
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
         }
+      };
     });
-  
+    //NOT refundToCandidates
+    it("Should not refund award to winner of all contests because the award has already refunded", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1540252801);
+          let tx = await instance.refundToCandidates(
+            Contest.contestHash[i],
+            { from: Contest.candidature[1].account });
+          test = false;
+        } catch (e) {
+          test = true;
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
+        }
+      };
+    });
+    //NOT refundToCandidates
+    it("Should not refund to candidates of all contests because is not time to do", async function () {
+      for (let i = 0; i < Contest.setNewContest.length; i++) {
+        try {
+          let txTime = await instance.setTime(1000252801);
+          let tx = await instance.refundToCandidates(
+            Contest.contestHash[i],
+            { from: Contest.candidature[1].account });
+          test = false;
+        } catch (e) {
+          test = true;
+        } finally {
+          assert.isTrue(test, "The result must be 'ERROR'");
+        }
+      };
+    });
   });
-
-
-     */
+});
 
 

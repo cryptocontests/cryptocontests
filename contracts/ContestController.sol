@@ -434,9 +434,9 @@ contract ContestController is owned {
 
         require(judge.votedCandidature == 0, "The given judge has already voted");
         judge.votedCandidature = candidatureHash;
-        // removed for using SafeMath
-        //contest.candidatures[candidatureHash].votes += judge.weight;
-        contest.candidatures[candidatureHash].votes.add(judge.weight);
+        // FIXME: removed for using SafeMath
+        contest.candidatures[candidatureHash].votes += judge.weight;
+       // contest.candidatures[candidatureHash].votes.add(judge.weight);
 
         emit NewVote(
             contest.judges[msg.sender].name,
@@ -464,7 +464,6 @@ contract ContestController is owned {
             address judgeAddress = contest.judgeList[i];
             Judge storage judge = contest.judges[judgeAddress];
             Candidature storage candidature = contest.candidatures[judge.votedCandidature];
-
             if (!candidature.cancelled && candidature.votes > winnerVotes) {
                 winnerCandidature = judge.votedCandidature;
                 winnerVotes = candidature.votes;
@@ -514,55 +513,4 @@ contract ContestController is owned {
         return (contests[contestHash].winnerAddress, contests[contestHash].winnerCandidature);
     }
 
-     /************************************************************
-     *                       PAGINATION                          *
-     *************************************************************/
-
-/*    function fetchContestsPage(uint256 cursor, uint256 howMany) public view returns (bytes32[] values) {
-        require(contestList.length > 0);
-        require(cursor < contestList.length - 1);
-
-        uint256 i;
-
-        if (cursor + howMany < contestList.length){
-            values = new bytes32[](howMany);
-            for (i = 0; i < howMany; i++) {
-                values[i] = contestList[i + cursor];
-            }
-
-        } else {
-            uint256 lastPageLength = contestList.length - cursor;
-            values = new bytes32[](lastPageLength);
-            for (i = 0; i < lastPageLength; i++) {
-                values[i] = contestList[cursor + i];
-            }
-        }
-
-        return (values);
-    }
-
-    function fetchCandidaturesPage(bytes32 contestHash, uint256 cursor, uint256 howMany)
-      public view contestExists(contestHash) returns (bytes32[] values) {
-        require(contests[contestHash].award > 0);
-        require(contests[contestHash].candidatureList.length > 0);
-        require(cursor < contests[contestHash].candidatureList.length - 1);
-
-        uint256 i;
-
-        if (cursor + howMany < contests[contestHash].candidatureList.length){
-            values = new bytes32[](howMany);
-            for (i = 0; i < howMany; i++) {
-                values[i] = contests[contestHash].candidatureList[i + cursor];
-            }
-
-        } else {
-            uint256 lastPageLength = contestList.length - cursor;
-            values = new bytes32[](lastPageLength);
-            for (i = 0; i < lastPageLength; i++) {
-                values[i] = contests[contestHash].candidatureList[cursor + i];
-            }
-        }
-
-        return (values);
-    } */
 }
