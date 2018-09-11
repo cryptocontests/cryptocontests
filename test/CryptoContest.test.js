@@ -725,7 +725,7 @@ contract('ContestController', function (accounts) {
       };
     });
   });
-  /*
+  
   describe("Votation functions catching errors: ", async function () {
     //NOT setNewVote()
     it("Should not add a new vote because missing parameters", async function () {
@@ -795,7 +795,7 @@ contract('ContestController', function (accounts) {
       };
     });
   });
-  */
+  
   describe("Solve Contest and Refund functions without errors: ", async function () {
     //solveContest()
     it("Should solve all contests", async function () {
