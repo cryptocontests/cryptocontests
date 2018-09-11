@@ -97,7 +97,7 @@
             </ng-template>
             <div *ngIf="!(loadingCandidatures$ | async); else loading">
               <div *ngIf="contest.winnerAddress; else nowinner" fxLayout="column">
-                <img [src]="winnerCandidature.content.content" style="width: 100%; height: auto;">
+                <img [src]="winnerCandidature.content?.content" style="width: 100%; height: auto;">
                 <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center" class="winner-padding">
                   <div fxLayout="column" fxLayoutGap="16px" fxFlex>
                     <mat-label><strong>{{winnerCandidature.title}}</strong></mat-label>

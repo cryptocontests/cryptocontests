@@ -117,11 +117,11 @@ export class ContestContractService {
       tags: response.tags.map(tag => this.web3Service.bytesToString(tag)),
       options: {},
       judges: response.judges,
-      winnerAddress:
+      winnersAddresses:
         parseInt(response.winnerAddress, 16) !== 0
           ? response.winnerAddress
           : null,
-      winnerCandidature:
+      winnersCandidatures:
         parseInt(response.winnerCandidature, 16) !== 0
           ? response.winnerCandidature
           : null
