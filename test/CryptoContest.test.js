@@ -831,7 +831,11 @@ contract('ContestController', function (accounts) {
         let tx = await instance.refundToCandidates(
           Contest.contestHash[i],
           { from: Contest.candidature[1].account });
-        assert.equal(tx.receipt.status, "0x01", "The result must be: '0x01'");
+          if (tx.receipt.status == "0x1" || tx.receipt.status == "0x01"|| tx.receipt.status == "0x001"){
+            assert.isTrue(true, "The result must be: '0x1', '0x01' or '0x001'");
+          } else {
+            assert.isTrue(false, "The result must be: '0x1', '0x01' or '0x001'");
+          }
       };
     });
     //refuntToCandidates()
@@ -841,7 +845,11 @@ contract('ContestController', function (accounts) {
         let tx = await instance.refundToCandidates(
           Contest.contestHash[i],
           { from: Contest.candidature[3].account });
-        assert.equal(tx.receipt.status, "0x01", "The result must be: '0x01'");
+        if (tx.receipt.status == "0x1" || tx.receipt.status == "0x01"|| tx.receipt.status == "0x001"){
+            assert.isTrue(true, "The result must be: '0x1', '0x01' or '0x001'");
+        } else {
+          assert.isTrue(false, "The result must be: '0x1', '0x01' or '0x001'");
+        }
       };
     });
   });
