@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "ganache": "ganache-cli -m 'student tent patch puzzle away swing cake toe surprise same purchase range'",
-    "dev": "concurrently --kill-others-on-fail \"npm run ganache\" \"npm run migrate\"",
+    "dev": "concurrently --kill-others-on-fail \"npm run ganache\" \"npm run migrate\" \"npm start\"",
     "migrate": "truffle compile && wait-on tcp:8545 && truffle migrate --reset --network ganache",
     "start": "ng serve --watch",
     "build": "ng build && truffle compile",

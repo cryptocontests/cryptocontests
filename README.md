@@ -1,36 +1,63 @@
 # Cryptocontests
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+Cryptocontests is a dApp for the creation of uncorruptible contests by utilizing blockchain
+technology in the Ethereum network.
 
-## Development server
+Ropsten live system:
+[http://cryptocontests.rf.gd](http://cryptocontest.rf.gd)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Funcionalities available to the system:
 
-## Code scaffolding
+* Create contests, configuring its award, rules and dates.
+* Add and remove judges from the contest
+* Participate freely in the contest, presenting a stake
+* Vote candidatures
+* Transfer award automatically to the winner
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Each contest goes through these phases:
 
-## Build
+* Upcoming contest: contest not yet started, judges can be modified
+* Ongoing contest: new candidatures are presented to the contest
+* Contest on revision: judges are revising and voting the candidatures 
+* Ended contest: retrieve the stake presented with the candidatures, plus the award if you have won!
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+This project was part of the "Postgrau en Tecnologies Blockchain" of the 
+"Univesitat Politècnica de Catalunya" (Barcelona, September 2018).
 
-## Running unit tests
+## Development
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+The dApp is divided in frontend (based in Angular 6) and Ethereum's smart-contracts.
 
-## Running end-to-end tests
+Frontend is stored in `src` (source code for the frontend) and `projects` (component libraries).
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+Smart-contracts are stored in `contracts/`.
 
-## Further help
+To install the dependencies, run `npm install`. Also run `npm i -g truffle ganache-cli` if 
+not installed globally.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+To boot up the local development server, run `npm run dev`. Frontend changes should be reloaded to
+the application directly, smart-contract changes require a restart of the command.
 
-## Test ⚙️
+### Build
 
-### Smart Contracts
+Run `truffle compile` to build the smart-contracts. The build artifacts, including ABI, will
+be stored in the `build/` folder.
 
-The smartcontract tests will be executed with truffle in the ganache network and we will verify that the smartcontract methods work and give the expected results. The tests are in /test/CryptoContest.test.js where we can modify the parameters used.
+Run `ng build` to build the frontend project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+
+### Deploy
+
+To deploy the smart contract to Ethereum's Ropsten testnet, run `truffle migrate --network ropsten`.
+This requires gas on your account on the Ropsten network.
+
+To deploy the frontend, copy the content of the `dist/cryptocontests` folder
+ to the root of folder of your usual server, that should be able capable of serving static files.
+
+### Test 
+
+#### Smart Contracts
+
+The smart-contract tests will be executed with truffle in the ganache network and we will verify that the smart-contract methods work and give the expected results. The tests are in /test/CryptoContest.test.js where we can modify the parameters used.
 
 To start the tests we will execute the following script that starts the ganache network with personalized accounts to use them in the tests:
 
