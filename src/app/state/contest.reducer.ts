@@ -31,6 +31,8 @@ export function contestReducer(
   state = initialState,
   action: ContestActions
 ): State {
+  console.log('State before update', state);
+  console.log(action);
   switch (action.type) {
     case ContestActionTypes.LoadedTags: {
       return Object.assign(state, { tags: action.payload });

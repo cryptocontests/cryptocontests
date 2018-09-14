@@ -59,6 +59,10 @@ To deploy the frontend, copy the content of the `dist/cryptocontests` folder
 
 The smart-contract tests will be executed with truffle in the ganache network and we will verify that the smart-contract methods work and give the expected results. The tests are in /test/CryptoContest.test.js where we can modify the parameters used.
 
+In order to run de tests, it is necessary to uncomment the block of functions that is indicated.
+This is because the tests need to modify the time stored in the smart contract in order to test
+the lifecycle of the contests, but these functions represent a vulnerability if deployed to the testnet.
+
 To start the tests we will execute the following script that starts the ganache network with personalized accounts to use them in the tests:
 
 ```

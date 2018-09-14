@@ -40,6 +40,8 @@ const ContestController = require('./../../../build/contracts/ContestController.
 })
 export class ContestContractService {
   protected contract: Contract;
+  gasPrice = 4000;
+  gas = 4712388;
 
   constructor(
     private web3Service: Web3Service,
@@ -276,8 +278,8 @@ export class ContestContractService {
           .send({
             from: address,
             value: this.currencyService.ethToWeis(contest.award.value),
-            gas: 4712388,
-            gasPrice: 20
+            gas: this.gas,
+            gasPrice: this.gasPrice
           })
       ),
       tap(txPromise =>
@@ -300,8 +302,8 @@ export class ContestContractService {
           .addJudge(contestHash, judge.address, judge.name, judge.weight)
           .send({
             from: address,
-            gas: 4712388,
-            gasPrice: 20
+            gas: this.gas,
+            gasPrice: this.gasPrice
           })
       ),
       tap(txPromise =>
@@ -325,8 +327,8 @@ export class ContestContractService {
       map(address =>
         this.contract.methods.removeJudge(contestHash, judge.address).send({
           from: address,
-          gas: 4712388,
-          gasPrice: 20
+          gas: this.gas,
+          gasPrice: this.gasPrice
         })
       ),
       tap(txPromise =>
@@ -398,8 +400,8 @@ export class ContestContractService {
           .send({
             value: stake.value,
             from: address,
-            gas: 4712388,
-            gasPrice: 20
+            gas: this.gas,
+            gasPrice: this.gasPrice
           })
       ),
       tap(txPromise =>
@@ -455,8 +457,8 @@ export class ContestContractService {
       map(address =>
         this.contract.methods.setNewVote(contestHash, candidatureHash).send({
           from: address,
-          gas: 4712388,
-          gasPrice: 20
+          gas: this.gas,
+          gasPrice: this.gasPrice
         })
       ),
       tap(txPromise =>
@@ -487,8 +489,8 @@ export class ContestContractService {
           )
           .send({
             from: address,
-            gas: 4712388,
-            gasPrice: 20
+            gas: this.gas,
+            gasPrice: this.gasPrice
           })
       ),
       tap(txPromise =>
@@ -509,8 +511,8 @@ export class ContestContractService {
       map(address =>
         this.contract.methods.refundToCandidates(contestHash).send({
           from: address,
-          gas: 4712388,
-          gasPrice: 20
+          gas: this.gas,
+          gasPrice: this.gasPrice
         })
       ),
       tap(txPromise =>
@@ -528,8 +530,8 @@ export class ContestContractService {
       map(address =>
         this.contract.methods.solveContest(contestHash).send({
           from: address,
-          gas: 4712388,
-          gasPrice: 20
+          gas: this.gas,
+          gasPrice: this.gasPrice
         })
       ),
       tap(txPromise =>
