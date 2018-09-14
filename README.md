@@ -32,10 +32,12 @@ Frontend is stored in `src` (source code for the frontend) and `projects` (compo
 
 Smart-contracts are stored in `contracts/`.
 
-To install the dependencies, run `npm install`. Also run `npm i -g truffle ganache-cli` if 
-not installed globally.
+To install the dependencies, run `npm install` and `npm run build:all`. 
+Also run `npm i -g truffle ganache-cli` if these packages are not installed globally.
 
-To boot up the local development server, run `npm run dev`. Frontend changes should be reloaded to
+To boot up the local development server, run `npm run dev` (ganache) in one terminal, and `truffle migrate --reset --network ganache` and `npm start` separatelly in two terminals. Application will be available on http://localhost:4200/. Your Metamask provider has to listen to `localhost:8545` in order to access the ganache local network.
+
+Frontend changes should be reloaded to
 the application directly, smart-contract changes require a restart of the command.
 
 ### Build
