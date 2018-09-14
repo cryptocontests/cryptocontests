@@ -4,7 +4,7 @@ Cryptocontests is a dApp for the creation of uncorruptible contests by utilizing
 technology in the Ethereum network.
 
 Ropsten live system:
-[http://cryptocontests.rf.gd](http://cryptocontest.rf.gd)
+[http://cryptocontests.rf.gd](http://cryptocontests.rf.gd)
 
 Funcionalities available to the system:
 
