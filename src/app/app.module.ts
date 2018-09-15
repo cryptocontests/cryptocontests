@@ -35,6 +35,7 @@ import { HashColorDirective } from './hash-color.directive';
 import { AddJudgeComponent } from './components/add-judge/add-judge.component';
 import { GenericGalleryModule } from 'projects/ng-generic-gallery/src/public_api';
 import { CancelCandidatureComponent } from './components/cancel-candidature/cancel-candidature.component';
+import { Web3ErrorComponent } from './components/web3-error/web3-error.component';
 
 @NgModule({
   declarations: [
@@ -51,13 +52,15 @@ import { CancelCandidatureComponent } from './components/cancel-candidature/canc
     JudgesListComponent,
     HashColorDirective,
     AddJudgeComponent,
-    CancelCandidatureComponent
+    CancelCandidatureComponent,
+    Web3ErrorComponent
   ],
   entryComponents: [
     ConfirmDialogComponent,
     CreateCandidatureComponent,
     AddJudgeComponent,
-    CancelCandidatureComponent
+    CancelCandidatureComponent,
+    Web3ErrorComponent
   ],
   imports: [
     BrowserModule,

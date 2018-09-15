@@ -10,7 +10,7 @@ import { FormBuilder } from '@angular/forms';
     '../filter-toolbar/filter-toolbar.component.css'
   ]
 })
-export class FilterStringComponent extends FilterComponent implements OnInit {
+export class FilterStringComponent extends FilterComponent {
   constructor(protected formBuilder: FormBuilder) {
     super(formBuilder);
   }

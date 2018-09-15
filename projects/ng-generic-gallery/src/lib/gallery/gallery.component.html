@@ -1,7 +1,7 @@
 <div class="gallery" fxLayout="column" fxLayoutAlign="center center" fxFlex>
 
-	<div fxFlex="12%" fxFlexAlign="end">
-		<div *ngIf="toolbar">
+	<div *ngIf="toolbar" fxFlex="12%" fxFlexAlign="end">
+		<div >
 			<ng-template [cdkPortalOutlet]="toolbarPortal"></ng-template>
 		</div>
 	</div>
@@ -26,7 +26,7 @@
 
 	</div>
 
-	<div class="indicators" fxFlex="24%" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="4%" fxFill cdkFocusRegionEnd>
+	<div class="indicators" fxFlex="16%" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="4%" fxFill cdkFocusRegionEnd>
 		<div fxFlex="4%" fxLayoutAlign="end center">
 			<mat-icon *ngIf="!indicatorFirstPage()">arrow_left</mat-icon>
 		</div>

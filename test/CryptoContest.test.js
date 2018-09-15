@@ -40,7 +40,7 @@ contract('ContestController', function (accounts) {
       let tx = await instance.getTotalContestsCount();
       assert.equal(tx.c, Contest.setNewContest.length, "The result must be: ", Contest.setNewContest.length);
     });
-    //FIXME: 
+    //FIXME:
     //getAllTags()
     it("Should get all tags", async function () {
       let tx = await instance.getAllTags();
@@ -108,7 +108,7 @@ contract('ContestController', function (accounts) {
 
 
   describe("Judge functions without errors: ", async function () {
-    //addJudge() 
+    //addJudge()
     it("Should add a new judge member", async function () {
       for (let i = 0; i < Contest.setNewContest.length; i++) {
         let tx = await instance.addJudge(
@@ -803,23 +803,23 @@ contract('ContestController', function (accounts) {
         let txTime = await instance.setTime(1540252801);
         let tx = await instance.solveContest(
           Contest.contestHash[i])
-        assert.equal(tx.logs[0].args.winnerAddress, Contest.candidature[1].account, "The result must be:'" + Contest.candidature[1].account + "'");
+        assert.equal(tx.logs[0].args.winnersAddresses[0], Contest.candidature[1].account, "The result must be:'" + Contest.candidature[1].account + "'");
       };
     });
     //getWinner()
     it("Should get winner of all contests", async function () {
       for (let i = 0; i < Contest.setNewContest.length; i++) {
         let txTime = await instance.setTime(1540252801);
-        let tx = await instance.getWinner(
+        let tx = await instance.getContestWinners(
           Contest.contestHash[i])
         assert.equal(tx[0], Contest.candidature[1].account, "The result must be:'" + Contest.candidature[1].account + "'");
       };
     });
-    //getContestWinner()
+    //getContestWinners()
     it("Should get winner of all contests", async function () {
       for (let i = 0; i < Contest.setNewContest.length; i++) {
         let txTime = await instance.setTime(1540252801);
-        let tx = await instance.getContestWinner(
+        let tx = await instance.getContestWinners(
           Contest.contestHash[i])
         assert.equal(tx[0], Contest.candidature[1].account, "The result must be:'" + Contest.candidature[1].account + "'");
       };
@@ -944,12 +944,12 @@ contract('ContestController', function (accounts) {
       };
     });
 
-    //NOT getContestWinner()
+    //NOT getContestWinners()
     it("Should not get winner of all contests because missing parameters", async function () {
       for (let i = 0; i < Contest.setNewContest.length; i++) {
         try {
           let txTime = await instance.setTime(1540252801);
-          let tx = await instance.getContestWinner()
+          let tx = await instance.getContestWinners()
           test = false;
         } catch (e) {
           test = true;
@@ -958,12 +958,12 @@ contract('ContestController', function (accounts) {
         }
       };
     });
-    //NOT getContestWinner()
+    //NOT getContestWinners()
     it("Should not get winner of all contests because the contest hash is wrong", async function () {
       for (let i = 0; i < Contest.setNewContest.length; i++) {
         try {
           let txTime = await instance.setTime(1540252801);
-          let tx = await instance.getContestWinner(
+          let tx = await instance.getContestWinners(
             Contest.candidature[i].account)
           test = false;
         } catch (e) {

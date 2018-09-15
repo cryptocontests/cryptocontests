@@ -1,14 +1,20 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   Input,
   ViewChild,
   ElementRef,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  Output,
+  EventEmitter,
+  AfterViewInit
 } from '@angular/core';
 import { ESCAPE } from '@angular/cdk/keycodes';
 import { ViewEncapsulation } from '@angular/core';
 import { transition, trigger, animate, style } from '@angular/animations';
+import { Observable, fromEvent, Subscription } from 'rxjs';
+import { debounce, debounceTime, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'search-box',
@@ -35,30 +41,50 @@ import { transition, trigger, animate, style } from '@angular/animations';
   encapsulation: ViewEncapsulation.None
 })
 export class SearchBoxComponent implements OnInit {
-  @Input() placeholder = 'Search';
+  @Input()
+  placeholder = 'Search';
+  @Input()
+  debounceMs = 300;
+  @Output()
+  searchChange = new EventEmitter<string>();
   expanded = false;
   expandable = true;
   inputAnimationEnded = true;
 
-  @ViewChild('container') container: ElementRef<any>;
+  @ViewChild('container')
+  container: ElementRef<any>;
 
+  @ViewChild('searchInput')
+  searchInput: ElementRef<any>;
+
+  @Input()
   searchValue: string;
+  subscription: Subscription;
 
   constructor(private changeDetectionRef: ChangeDetectorRef) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.searchValue) this.toggleExpanded();
+  }
 
   toggleExpanded() {
     this.expanded = !this.expanded;
     setTimeout(() => {
       if (this.expanded) {
         this.container.nativeElement.querySelector('input').focus();
+        this.subscription = fromEvent(this.searchInput.nativeElement, 'keyup')
+          .pipe(debounceTime(this.debounceMs))
+          .subscribe(() => this.searchChange.emit(this.searchValue));
+        this.searchChange.emit(this.searchValue);
+      } else {
+        this.searchChange.emit('');
+        this.subscription.unsubscribe();
       }
     });
   }
 
   onKeydown($event) {
-    if ($event.keyCode === ESCAPE) this.expanded = false;
+    if ($event.keyCode === ESCAPE && this.expanded) this.toggleExpanded();
   }
 
   onBlur($event) {

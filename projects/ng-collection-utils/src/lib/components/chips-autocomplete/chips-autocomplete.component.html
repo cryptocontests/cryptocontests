@@ -1,12 +1,13 @@
 <form [formGroup]="formGroup">
-  <mat-form-field [floatLabel]="floatLabel" class="center-field">
+  <mat-form-field [floatLabel]="floatLabel" class="center-field" [style.width]="'20em'">
     <mat-chip-list #chipList>
       <mat-chip *ngFor="let chip of chips" selectable="false" removable="true" (removed)="remove(chip)">
         {{ chip }}
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>
-      <input [placeholder]="placeholder" #textInput [formControlName]="controlName" [matAutocomplete]="auto" [matChipInputFor]="chipList"
+      <input [placeholder]="placeholder" #textInput [matAutocomplete]="auto" [matChipInputFor]="chipList"
         [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="add($event)">
+      <input [formControlName]="controlName" [style.display]="'none'">
     </mat-chip-list>
   </mat-form-field>
   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">

@@ -18,7 +18,8 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import {
   MatChipInputEvent,
   MatAutocompleteSelectedEvent,
-  MatDialog
+  MatDialog,
+  MatSnackBar
 } from '@angular/material';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { Router } from '@angular/router';
@@ -48,7 +49,8 @@ export class CreateContestComponent implements OnInit {
     private store: Store<State>,
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {
     this.buildForm();
   }
@@ -155,35 +157,45 @@ export class CreateContestComponent implements OnInit {
   }
 
   createContest() {
-    const contest: Partial<Contest> = {
-      judges: [
+    if (this.tags.length < 5) {
+      const contest: Partial<Contest> = {
+        judges: [
+          {
+            name: this.contestForm.value.judgeName,
+            weight: this.contestForm.value.judgeWeight,
+            address: this.contestForm.value.judgeAddress
+          }
+        ],
+        title: this.contestForm.value.title,
+        additionalContent: {
+          hash: null,
+          content: {
+            description: this.contestForm.value.description,
+            image: new Buffer(this.filePicker.getFile().content)
+          }
+        },
+        award: {
+          value: this.contestForm.value.award,
+          currency: CryptoCurrency.ETH
+        },
+        candidaturesStake: {
+          value: this.contestForm.value.candidaturesStake,
+          currency: CryptoCurrency.ETH
+        },
+        initialDate: this.contestForm.value.initialDate.valueOf(),
+        candidatureLimitDate: this.contestForm.value.candidatureLimitDate.valueOf(),
+        endDate: this.contestForm.value.endDate.valueOf(),
+        tags: this.tags
+      };
+      this.store.dispatch(new CreateContest(contest));
+    } else {
+      this.snackBar.open(
+        'Only 4 or less tags are allowed for the contest',
+        null,
         {
-          name: this.contestForm.value.judgeName,
-          weight: this.contestForm.value.judgeWeight,
-          address: this.contestForm.value.judgeAddress
+          duration: 3000
         }
-      ],
-      title: this.contestForm.value.title,
-      additionalContent: {
-        hash: null,
-        content: {
-          description: this.contestForm.value.description,
-          image: new Buffer(this.filePicker.getFile().content)
-        }
-      },
-      award: {
-        value: this.contestForm.value.award,
-        currency: CryptoCurrency.ETH
-      },
-      candidaturesStake: {
-        value: this.contestForm.value.candidaturesStake,
-        currency: CryptoCurrency.ETH
-      },
-      initialDate: this.contestForm.value.initialDate.valueOf(),
-      candidatureLimitDate: this.contestForm.value.candidatureLimitDate.valueOf(),
-      endDate: this.contestForm.value.endDate.valueOf(),
-      tags: this.tags
-    };
-    this.store.dispatch(new CreateContest(contest));
+      );
+    }
   }
 }

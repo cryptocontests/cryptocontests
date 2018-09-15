@@ -123,3 +123,14 @@ export const candidaturesLoading = createSelector(
   getContestState,
   (state: State) => state.loadingCandidatures
 );
+
+export const uploadedCandidatures = (contestHash: string) =>
+  createSelector(
+    getContestState,
+    (state: State) =>
+      state.candidatures[contestHash]
+        ? state.candidatures[contestHash].filter(
+            candidature => candidature.content && candidature.content.content
+          )
+        : []
+  );

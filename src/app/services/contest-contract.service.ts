@@ -1,30 +1,23 @@
 import { environment } from './../../environments/environment';
-import { TransactionReceipt, PromiEvent, Contract } from 'web3/types';
+import { TransactionReceipt, Contract } from 'web3/types';
 import { Injectable } from '@angular/core';
 import {
   Observable,
   from,
   of as observableOf,
   forkJoin,
-  combineLatest,
-  merge
+  combineLatest
 } from 'rxjs';
 import {
   switchMap,
   map,
   tap,
   defaultIfEmpty,
-  withLatestFrom,
   catchError,
   timeout,
   mergeMap
 } from 'rxjs/operators';
-import {
-  Contest,
-  Candidature,
-  ContestPhase,
-  Judge
-} from '../state/contest.model';
+import { Contest, Candidature, Judge } from '../state/contest.model';
 import * as _ from 'lodash';
 import {
   IpfsService,
@@ -36,7 +29,8 @@ import {
   IpfsFile,
   FileReceipt
 } from 'ng-web3';
-import { sha256, sha224 } from 'js-sha256';
+import { Web3ErrorComponent } from '../components/web3-error/web3-error.component';
+import { MatDialog } from '@angular/material';
 
 declare function require(url: string);
 const ContestController = require('./../../../build/contracts/ContestController.json');
@@ -51,12 +45,15 @@ export class ContestContractService {
     private web3Service: Web3Service,
     private transactionStates: TransactionStateService,
     private currencyService: CurrencyService,
-    private ipfs: IpfsService
+    private ipfs: IpfsService,
+    private dialog: MatDialog
   ) {
-    this.contract = this.web3Service.newContract(
-      ContestController.abi,
-      environment.contractAddress
-    );
+    if (this.web3Service.isWeb3Present()) {
+      this.contract = this.web3Service.newContract(
+        ContestController.abi,
+        environment.contractAddress
+      );
+    }
   }
 
   /**
@@ -123,14 +120,8 @@ export class ContestContractService {
       tags: response.tags.map(tag => this.web3Service.bytesToString(tag)),
       options: {},
       judges: response.judges,
-      winnerAddress:
-        parseInt(response.winnerAddress, 16) !== 0
-          ? response.winnerAddress
-          : null,
-      winnerCandidature:
-        parseInt(response.winnerCandidature, 16) !== 0
-          ? response.winnerCandidature
-          : null
+      winnersAddresses: response.winnersAddresses,
+      winnersCandidatures: response.winnersCandidatures
     };
   responseToCandidature = (response: any, ipfsFile?: IpfsFile) =>
     <Candidature>{
@@ -189,7 +180,7 @@ export class ContestContractService {
             .getContestJudges(contestHash)
             .call({ from: address }),
           this.contract.methods
-            .getContestWinner(contestHash)
+            .getContestWinners(contestHash)
             .call({ from: address })
         )
       ),
@@ -203,8 +194,8 @@ export class ContestContractService {
         ).pipe(
           map(judges => ({
             ...response,
-            winnerAddress: winner.winnerAddress,
-            winnerCandidature: winner.winnerCandidature,
+            winnersAddresses: winner.winnersAddresses,
+            winnersCandidatures: winner.winnersCandidatures,
             judges: judges.map(
               (judgeResponse: any) =>
                 <Judge>{
@@ -264,7 +255,7 @@ export class ContestContractService {
       tap(add => (address = add)),
       switchMap(f =>
         this.ipfs.ipfs.files.add(ipfsFiles, {
-          pin: false,
+          pin: true,
           wrapWithDirectory: true
         })
       ),
@@ -447,7 +438,7 @@ export class ContestContractService {
       }),
       switchMap((candidatureHashes: string[]) =>
         this.ipfs.add(candidature.content.content, {
-          pin: false
+          pin: true
         })
       )
     );

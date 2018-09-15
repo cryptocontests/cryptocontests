@@ -6,7 +6,7 @@
     </button>
     <span fxFlex>New candidature</span>
 
-    <button mat-raised-button color="accent" (click)="createCandidature()">
+    <button mat-raised-button color="accent" (click)="createCandidature()" [disabled]="!upload && !candidatureForm.valid">
       {{ upload ? 'UPLOAD' : 'SUBMIT CANDIDATURE' }}
     </button>
   </mat-toolbar>

@@ -17,8 +17,7 @@ export enum Operator {
     '../filter-toolbar/filter-toolbar.component.css'
   ]
 })
-export class FilterNumberComponent extends FilterGroupComponent
-  implements OnInit {
+export class FilterNumberComponent extends FilterGroupComponent {
   @Input()
   operators: Operator[] = [
     Operator.GREATER_THAN,

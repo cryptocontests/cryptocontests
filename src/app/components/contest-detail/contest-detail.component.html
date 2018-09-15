@@ -7,14 +7,16 @@
     <mat-label>Award: {{(contest$ | async) ? ((contest$ | async).award | cryptoConvert: 'ETH') : ''}} ETH</mat-label>
     <mat-chip>{{(contest$ | async) ? getContestPhase(contest$ | async) : ''}}</mat-chip>
     <div matTooltip="New candidatures can only be submitted during the new candidatures phase" [matTooltipDisabled]="contestPhase !== 0">
-      <button mat-raised-button color="accent" (click)="openCreateCandidatureDialog()" *ngIf="contestPhase < 3" [disabled]="!contestPhase || (contestPhase !== 1 && contestPhase !== 2)">
+      <button mat-raised-button color="accent" (click)="openCreateCandidatureDialog()" *ngIf="contestPhase < 3"
+        [disabled]="!contestPhase || (contestPhase !== 1 && contestPhase !== 2)">
         {{ contestPhase > 1 ? 'UPLOAD CANDIDATURE' : 'SUBMIT CANDIDATURE' }}
       </button>
     </div>
-    <div [matTooltip]="!winnerCandidature ? 'The contest has not yet been resolved: the stake cannot be retrieved yet' : 'Only people who have submitted at least one candidature to this contest can retrieve the funds'"
-      [matTooltipDisabled]="hasOwnCandidatures && winnerCandidature">
-      <button mat-raised-button color="accent" *ngIf="contestPhase && contestPhase === 3" (click)="retrieveFunds()" [disabled]="!hasOwnCandidatures || !winnerCandidature">
-        {{ winnerCandidature && winnerCandidature.creator === userAddress ? 'RETRIEVE AWARD!' : 'RETRIEVE STAKE' }}
+    <div [matTooltip]="!winnersCandidatures ? 'The contest has not yet been resolved: the stake cannot be retrieved yet' : 'Only people who have submitted at least one candidature to this contest can retrieve the funds'"
+      [matTooltipDisabled]="hasOwnCandidatures && winnersCandidatures.length > 0">
+      <button mat-raised-button color="accent" *ngIf="contestPhase && contestPhase === 3" (click)="retrieveFunds()"
+        [disabled]="!hasOwnCandidatures || winnersCandidatures.length === 0">
+        {{ winnersCandidatures && isUserWinner() ? 'RETRIEVE AWARD!' : 'RETRIEVE STAKE' }}
       </button>
     </div>
   </mat-toolbar>
@@ -55,7 +57,8 @@
                 Now is the time to <strong>submit new candidatures</strong> for the contest.
               </mat-step>
               <mat-step label="Revision begins on {{contest.candidatureLimitDate | date}}">
-                The judges are reviewing the candidatures. <strong>Upload your candidature now</strong> for it to be reviewed!
+                The judges are reviewing the candidatures. <strong>Upload your candidature now</strong> for it to be
+                reviewed!
               </mat-step>
               <mat-step label="Contest ends on {{contest.endDate | date}}">
                 The contest has ended. <strong>Retrieve your stake</strong> from the contest.
@@ -66,7 +69,8 @@
       </mat-card>
 
       <mat-card [@cardState] class="no-padding mat-elevation-z2">
-        <mat-tab-group mat-stretch-tabs [selectedIndex]="getPhaseIndex(contest) - 1 >= 0 ? getPhaseIndex(contest) - 1: 0" (selectedIndexChange)="selectedTabChange($event)">
+        <mat-tab-group mat-stretch-tabs [selectedIndex]="getPhaseIndex(contest) - 1 >= 0 ? getPhaseIndex(contest) - 1: 0"
+          (selectedIndexChange)="selectedTabChange($event)">
           <mat-tab label="{{contest.judges.length}} Judges">
             <cc-judges-list [judges]="contest.judges" [removables]="contestPhase === 0" (removeJudge)="removeJudge($event)"></cc-judges-list>
           </mat-tab>
@@ -85,24 +89,29 @@
           </mat-tab>
           <mat-tab [disabled]="contestPhase !== 3">
             <ng-template mat-tab-label>
-              <div matTooltip="Winner candidature will be shown when the contest has ended and a winner has been declared" [matTooltipDisabled]="contestPhase === 3">
-                <mat-label>Winner candidature</mat-label>
+              <div matTooltip="Winner candidatures will be shown when the contest has ended and a winner has been declared"
+                [matTooltipDisabled]="contestPhase === 3">
+                <mat-label>Winner candidatures</mat-label>
               </div>
             </ng-template>
-            <div *ngIf="!(loadingCandidatures$ | async); else loading">
-              <div *ngIf="contest.winnerAddress; else nowinner" fxLayout="column">
-                <img [src]="winnerCandidature.content.content" style="width: 100%; height: auto;">
-                <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center" class="winner-padding">
-                  <div fxLayout="column" fxLayoutGap="16px" fxFlex>
-                    <mat-label><strong>{{winnerCandidature.title}}</strong></mat-label>
-                    <mat-label class="address">By {{winnerCandidature.creator}}</mat-label>
-                  </div>
-                  <mat-label><strong>{{winnerCandidature.votes}} votes</strong></mat-label>
-                </div>
+            <div *ngIf="!(loadingCandidatures$ | async) && winnersCandidatures.length === contest.winnersAddresses.length ; else loading">
+              <div *ngIf="contest.winnersAddresses.length > 0; else nowinner">
+                <gallery style="height: 600px;">
+                  <gallery-page *ngFor="let winnerCandidature of winnersCandidatures" fxLayout="column" fxFlex>
+                    <img [src]="winnerCandidature.content?.content" style="width: auto; max-height: 85%;">
+                    <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center" class="winner-padding">
+                      <div fxLayout="column" fxLayoutGap="16px" fxFlex>
+                        <mat-label><strong>{{winnerCandidature.title}}</strong></mat-label>
+                        <mat-label class="address">By {{winnerCandidature.creator}}</mat-label>
+                      </div>
+                      <mat-label><strong>{{winnerCandidature.votes}} votes</strong></mat-label>
+                    </div>
+                  </gallery-page>
+                </gallery>
               </div>
             </div>
             <ng-template #nowinner>
-              <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px">
+              <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px" [style.padding]="'96px'">
                 <mat-label>Solve the contest to declare a winner!</mat-label>
                 <button mat-raised-button color="accent" (click)="solveContest()">SOLVE CONTEST</button>
               </div>

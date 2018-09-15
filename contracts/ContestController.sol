@@ -19,7 +19,7 @@ contract owned {
     }
 }
 contract ContestController is owned {
-    
+
     using SafeMath for uint256;
 
     event NewContest(string title, bytes32 contestHash);
@@ -27,7 +27,7 @@ contract ContestController is owned {
     event NewCandidature(string contestTitle, string candidatureTitle);
     event NewVote(string member, bytes32 contestHash, bytes32 candidatureHash);
     event CandidatureCancellation(string member, string contestTitle, string candidatureTitle, string reason);
-    event ContestSolved(bytes32 contestHash, address winnerAddress, bytes32 winnerCandidature, uint256 totalVotes);
+    event ContestSolved(bytes32 contestHash, address[] winnersAddresses, bytes32[] winnersCandidatures, uint256 totalVotes);
 
     struct Candidature {
         uint index;
@@ -48,33 +48,34 @@ contract ContestController is owned {
         bytes32 votedCandidature;
     }
 
-    struct Creations {
+    struct Participant {
         bytes32[] candidatureHashes;
+        uint256 amountToRefund;
         bool refunded;
     }
+
+    /**
+     * Contest Phases
+     * ==============
+     *                         +-------+          +------------+   +-------+
+     *                         |Initial|          |Candidatures|   |endDate|
+     *                         |Date   |          |Limit Date  |   |       |
+     *                         +-------+          +------------+   +-------+
+     *                             |                    |              |
+     *                             v                    v              v
+     * CREATE  -->  [EditContest] -+->  [Candidatures] -+->  [Voting] -+->  RESOLVE --> REFUND
+     * CONTEST                                                              CONTEST
+     */
 
     struct Contest {
         uint index;
 
         mapping (bytes32 => Candidature) candidatures;
-        mapping (address => Creations) creators;
+        mapping (address => Participant) participants;
         bytes32[] candidatureList;
 
         mapping (address => Judge) judges;
         address[] judgeList;
-
-        /**
-        * Contest Stages
-        * ==============
-        *                         +-------+          +------------+   +-------+
-        *                         |Initial|          |Candidatures|   |endDate|
-        *                         |Date   |          |Limit Date  |   |       |
-        *                         +-------+          +------------+   +-------+
-        *                             |                    |              |
-        *                             v                    v              v
-        * CREATE  -->  [EditContest] -+->  [Candidatures] -+->  [Voting] -+->  RESOLVE --> REFUND
-        * CONTEST                                                              CONTEST
-        */
 
         address owner;
         string title;
@@ -87,8 +88,8 @@ contract ContestController is owned {
         uint256 candidaturesStake;
 
         uint256 award;
-        address winnerAddress;
-        bytes32 winnerCandidature;
+        address[] winnersAddresses;
+        bytes32[] winnersCandidatures;
     }
 
     mapping (bytes32  => Contest) private contests;
@@ -97,17 +98,63 @@ contract ContestController is owned {
     mapping (bytes32 => bool) public existingTags;
     bytes32[] public tagsList;
 
-    // ONLY FOR TESTING PURPOSES
-    // FIXME: SECURITY ERROR
-    uint date = 0;
-    function setTime (uint256 newDate) public onlyOwner {
-        date = newDate;
-    }
 
     function getTime() public view returns (uint256){
-        if (date == 0)
-          return now;
-        else return date;
+        return now;
+    }
+
+    /*************************************************************
+     *                          GLOBAL                           *
+     *************************************************************/
+
+    /**
+     * Checks whether the given address is a valid ethereum address
+     */
+    modifier validAddress(address to) {
+        require (to != address(0), "The provided address is invalid");
+        require(to != address(this), "The provided address is invalid");
+        _;
+    }
+
+    /**
+     * Only the owner of the given contests can execute the transaction
+     */
+    modifier theOwnerOf(bytes32 contestHash){
+        require(msg.sender == contests[contestHash].owner, "This transaction can only be executed by the owner of the contest");
+        _;
+    }
+
+    /**
+     * Checks that the given contest exists in the contract
+     * @param contestHash contest hash of an existent contest
+     */
+    modifier contestExists(bytes32 contestHash) {
+        require(contests[contestHash].owner != 0, "The given content does not exist");
+        _;
+    }
+
+    /**
+     * Checks that the given candidature exists in the contest
+     * @param contestHash contest hash of an existent contest
+     * @param candidatureHash candidature hash for the given contest
+     */
+    modifier candidatureExists(bytes32 contestHash, bytes32 candidatureHash) {
+        require(contests[contestHash].candidatures[candidatureHash].creator != 0, "The given candidature does not exist in the given contest");
+        _;
+    }
+
+    /**
+     * Returns the total count of contests
+     */
+    function getTotalContestsCount() public view returns (uint256 contestsCount) {
+        return contestList.length;
+    }
+
+    /**
+     * Returns all the different tags stored
+     */
+    function getAllTags() public view returns (bytes32[] tags) {
+        return tagsList;
     }
 
     /*************************************************************
@@ -115,26 +162,20 @@ contract ContestController is owned {
      *************************************************************/
 
     /**
-    *
-    * Create New contest
-    *
-    * Set new contest with settings
-    *
-    * @param title title contest
-    * @param tags tags for category
-    * @param initialDate limit date for contest editing
-    * @param candidatureLimitDate limit date for new candidatures
-    * @param endDate contest end date
-    * @param candidaturesStake //required tax for each candidature
-    * @param ipfsHash hash for photo set in ipfs
-    * @param initialJudgeAddress first required judge address
-    * @param initialJudgeName first required judge common name
-    * @param initialJudgeWeight first required judge weighing
-    *
-    * itself specifies the hash function and length of the hash in the first two bytes of the multihash.
-    * In the examples above the first two bytes in hex is 1220, where 12 denotes that this is the
-    * SHA256 hash function and 20 is the length of the hash in bytes - 32 bytes.
-    */
+     * Create New contest
+     * Set new contest with all its properties
+     *
+     * @param title title contest
+     * @param tags tags for category
+     * @param initialDate limit date for contest editing
+     * @param candidatureLimitDate limit date for new candidatures
+     * @param endDate contest end date
+     * @param candidaturesStake required stake for each candidature
+     * @param ipfsHash hash for additional content set in IPFS
+     * @param initialJudgeAddress first required judge address
+     * @param initialJudgeName first required judge common name
+     * @param initialJudgeWeight first required judge weight
+     */
     function setNewContest(
         string title,
         bytes32[] tags,
@@ -168,10 +209,12 @@ contract ContestController is owned {
         contests[contestHash].candidaturesStake = candidaturesStake;
         contests[contestHash].award = msg.value;
 
+        // Add tags to global tags list if necessary
         for (uint8 i = 0; i < tags.length; i++) {
-            if (!existingTags[tags[i]]) {
-                tagsList.push(tags[i]);
-                existingTags[tags[i]] = true;
+            bytes32 tag = tags[i];
+            if (!existingTags[tag]) {
+                tagsList.push(tag);
+                existingTags[tag] = true;
             }
         }
 
@@ -182,11 +225,9 @@ contract ContestController is owned {
     }
 
     /**
-    *
-    * Return contest based in 'contestHash' param
-    *
-    * @param contestHash contest hash to return
-    */
+     * Returns all properties of the given contest
+     * @param contestHash contest hash
+     */
     function getContest(bytes32 contestHash) public view
         returns (
             address owner,
@@ -214,64 +255,56 @@ contract ContestController is owned {
         candidaturesCount = contests[contestHash].candidatureList.length;
     }
 
-    function getContestWinner(bytes32 contestHash) public view contestExists(contestHash)
-        returns (address winnerAddress, bytes32 winnerCandidature) {
-        winnerAddress = contests[contestHash].winnerAddress;
-        winnerCandidature = contests[contestHash].winnerCandidature;
+    /**
+     * Returns the list of winner of the given contest
+     * @param contestHash contest hash of an existent contest
+     */
+    function getContestWinners(bytes32 contestHash) public view contestExists(contestHash)
+        returns (address[] winnersAddresses, bytes32[] winnersCandidatures) {
+        winnersAddresses = contests[contestHash].winnersAddresses;
+        winnersCandidatures = contests[contestHash].winnersCandidatures;
     }
 
-    function getContestJudges(bytes32 contestHash) public view returns (address[] judges) {
-        judges = contests[contestHash].judgeList;
-    }
-
-    function getJudgeDetails(bytes32 contestHash, address judge) public view returns (address judgeAddress, string judgeName, uint judgeWeight) {
-        judgeAddress = judge;
-        judgeName = contests[contestHash].judges[judge].name;
-        judgeWeight = contests[contestHash].judges[judge].weight;
-    }
-
-    function getTotalContestsCount() public view returns (uint256 contestsCount) {
-        return contestList.length;
-    }
-
-    function getAllTags() public view returns (bytes32[] tags) {
-        return tagsList;
-    }
-
-    modifier contestExists(bytes32 contestHash) {
-        require(contests[contestHash].owner != 0, "The given content does not exist");
-        _;
-    }
-
-    modifier candidatureExists(bytes32 contestHash, bytes32 candidatureHash) {
-        require(contests[contestHash].candidatures[candidatureHash].creator != 0, "The given candidature does not exist in the given contest");
-        _;
-    }
 
     /*************************************************************
      *                         JUDGE MEMBERS                     *
      *************************************************************/
-    modifier theOwnerOf(bytes32 contestHash){
-        require(msg.sender == contests[contestHash].owner, "This transaction can only be executed by the owner of the contest");
-        _;
-    }
 
+    /**
+     * Only judges of the given contests can execute the transaction
+     */
     modifier isJudgeOf(bytes32 contestHash) {
         require(bytes(contests[contestHash].judges[msg.sender].name).length != 0, "This transaction can only be executed by a judge of the contest");
         _;
     }
 
     /**
-    *
-    * Add judge member
-    *
-    * Make 'memberAddress' a member named 'memberName'
-    *
-    * @param contestHash contest hash
-    * @param judgeAddress judge ethereum address
-    * @param judgeName judge common name
-    * @param weight judge weighing
-    */
+     * Returns the list of judges for the given contest
+     * @param contestHash contest hash of an existent contest
+     */
+    function getContestJudges(bytes32 contestHash) public view returns (address[] judges) {
+        judges = contests[contestHash].judgeList;
+    }
+
+    /**
+     * Returns all of the judge's properties for the given contest
+     * @param contestHash contest hash of an existent contest
+     * @param judge judge address
+     */
+    function getJudgeDetails(bytes32 contestHash, address judge) public view returns (address judgeAddress, string judgeName, uint judgeWeight) {
+        judgeAddress = judge;
+        judgeName = contests[contestHash].judges[judge].name;
+        judgeWeight = contests[contestHash].judges[judge].weight;
+    }
+
+    /**
+     * Add judge member with the given properties
+     *
+     * @param contestHash contest hash of an existent contest
+     * @param judgeAddress judge ethereum address
+     * @param judgeName judge common name
+     * @param weight judge weight
+     */
     function addJudge(bytes32 contestHash, address judgeAddress, string judgeName, uint weight)
       public contestExists(contestHash) theOwnerOf(contestHash) {
         require(getTime() < contests[contestHash].initialDate, "The judges cannot be changed once the contest has begun");
@@ -290,14 +323,11 @@ contract ContestController is owned {
     }
 
     /**
-    *
-    * Remove judge member
-    *
-    * @notice Remove membership from 'memberAddress'
-    *
-    * @param contestHash contest hash
-    * @param judgeAddress judge ethereum address to be removed
-    */
+     * Removes judge member from the given contest
+     *
+     * @param contestHash contest hash of an existent contest
+     * @param judgeAddress address of the judge to be removed
+     */
     function removeJudge(bytes32 contestHash, address judgeAddress) public
       contestExists(contestHash) theOwnerOf(contestHash) {
         require(getTime() < contests[contestHash].initialDate, "Judges can only be removed before the initial date of the contest");
@@ -325,20 +355,56 @@ contract ContestController is owned {
      *                        CANDIDATURES                       *
      *************************************************************/
 
-    modifier validAddress(address to) {
-        require (to != address(0));
-        require(to != address(this));
-        _;
+    /**
+     * Returns all the properties of the given candidature in the given contest
+     * @param contestHash contest hash of an existent contest
+     * @param candidatureHash candidature hash
+     */
+    function getCandidature(bytes32 contestHash, bytes32 candidatureHash)
+      public view contestExists(contestHash) candidatureExists(contestHash, candidatureHash) returns (string title, uint256 votes,
+      address creator, uint256 createdDate, address cancelledByJudge, string reasonForCancellation) {
+        Contest storage contest = contests[contestHash];
+        title = contest.candidatures[candidatureHash].title;
+        votes = contest.candidatures[candidatureHash].votes;
+        createdDate = contest.candidatures[candidatureHash].createdDate;
+        creator = contest.candidatures[candidatureHash].creator;
+        cancelledByJudge = contest.candidatures[candidatureHash].cancelledByJudge;
+        reasonForCancellation = contest.candidatures[candidatureHash].reasonForCancellation;
     }
 
     /**
-    *
-    * Add new candidature
-    *
-    * @param contestHash contest hash for candidature
-    * @param title title for candidature
-    * @param candidatureHash hash of image
-    */
+     * Returns list of candidature hashes presented in the given contest
+     * @param contestHash contest hash of an existent contest
+     */
+    function getCandidaturesByContest(bytes32 contestHash)
+      public view contestExists(contestHash) returns (bytes32[] candidatureList) {
+        return contests[contestHash].candidatureList;
+    }
+
+    /**
+     * Returns the count of candidatures presented in the given contest
+     * @param contestHash contest hash of an existent contest
+     */
+    function getTotalCandidaturesByContest(bytes32 contestHash)
+      public view contestExists(contestHash) returns (uint256 candidaturesCount){
+        return contests[contestHash].candidatureList.length;
+    }
+
+    /**
+     * Returns the list of candidatures presented in the given contest by the sender
+     * @param contestHash contest hash of an existent contest
+     */
+    function getOwnCandidatures(bytes32 contestHash) public view contestExists(contestHash) returns (bytes32[] candidatureList) {
+        return contests[contestHash].participants[msg.sender].candidatureHashes;
+    }
+
+    /**
+     * Add new candidature to the given contest
+     *
+     * @param contestHash contest hash of an existent contest
+     * @param title title for candidature
+     * @param candidatureHash hash of the content of the candidature, stored in IPFS
+     */
     function setNewCandidature(bytes32 contestHash, string title, bytes32 candidatureHash)
       public validAddress(msg.sender) contestExists(contestHash) payable {
         Contest storage contest = contests[contestHash];
@@ -355,75 +421,54 @@ contract ContestController is owned {
         contest.candidatures[candidatureHash].createdDate = getTime();
         contest.candidatures[candidatureHash].cancelled = false;
 
-        Creations storage creations = contest.creators[msg.sender];
-        creations.candidatureHashes.push(candidatureHash);
+        Participant storage participant = contest.participants[msg.sender];
+        participant.candidatureHashes.push(candidatureHash);
+        participant.amountToRefund += msg.value;
 
         emit NewCandidature(contest.title, title);
     }
 
-    function getCandidature(bytes32 contestHash, bytes32 candidatureHash)
-      public view contestExists(contestHash) candidatureExists(contestHash, candidatureHash) returns (string title, uint256 votes,
-      address creator, uint256 createdDate, address cancelledByJudge, string reasonForCancellation) {
-        Contest storage contest = contests[contestHash];
-        title = contest.candidatures[candidatureHash].title;
-        createdDate = contest.candidatures[candidatureHash].createdDate;
-        creator = contest.candidatures[candidatureHash].creator;
-        cancelledByJudge = contest.candidatures[candidatureHash].cancelledByJudge;
-        reasonForCancellation = contest.candidatures[candidatureHash].reasonForCancellation;
-
-        for (uint256 i = 0; i < contest.judgeList.length; i++) {
-            Judge storage judge = contest.judges[contest.judgeList[i]];
-            if (judge.votedCandidature == candidatureHash) {
-                // removed for using SafeMath
-                // votes += judge.weight;
-                votes.add(judge.weight);
-            }
-        }
-    }
-
-    function getCandidaturesByContest(bytes32 contestHash)
-      public view contestExists(contestHash) returns (bytes32[] candidatureList) {
-        return contests[contestHash].candidatureList;
-    }
-
-    function getTotalCandidaturesByContest(bytes32 contestHash)
-      public view contestExists(contestHash) returns (uint256 candidaturesCount){
-        return contests[contestHash].candidatureList.length;
-    }
-
-    function getOwnCandidatures(bytes32 contestHash) public view contestExists(contestHash) returns (bytes32[] candidatureList) {
-        return contests[contestHash].creators[msg.sender].candidatureHashes;
-    }
-
     /**
+    * Cancel candidature by breaking of rules
+    * Only judges can cancel a candidature
     *
-    * Cancel candidature by breach of rules
-    *
-    * @param contestHash contest hash
+    * @param contestHash contest hash of an existent contest
     * @param candidatureHash candidature hash
     * @param reason reason for cancellation
     */
     function cancelCandidature(bytes32 contestHash, bytes32 candidatureHash, string reason)
       external contestExists(contestHash) candidatureExists(contestHash, candidatureHash) isJudgeOf(contestHash) {
-        // Only judges can cancel a candidature
-        require(getTime() < contests[contestHash].endDate, "Candidatures can only be cancelled before the contest ends");
-        require(!contests[contestHash].candidatures[candidatureHash].cancelled, "The given candidature has already been cancelled");
+        Contest storage contest = contests[contestHash];
+        require(getTime() < contest.endDate, "Candidatures can only be cancelled before the contest ends");
+        Candidature storage candidature = contest.candidatures[candidatureHash];
+        require(!candidature.cancelled, "The given candidature has already been cancelled");
 
-        contests[contestHash].candidatures[candidatureHash].cancelled = true;
-        contests[contestHash].candidatures[candidatureHash].cancelledByJudge = msg.sender;
-        contests[contestHash].candidatures[candidatureHash].reasonForCancellation = reason;
+        candidature.cancelled = true;
+        candidature.cancelledByJudge = msg.sender;
+        candidature.reasonForCancellation = reason;
+
+        // Stake is burned since the candidature has been cancelled
+        Participant storage participant = contests[contestHash].participants[candidature.creator];
+        participant.amountToRefund -= contest.candidaturesStake;
 
         emit CandidatureCancellation(
-            contests[contestHash].judges[msg.sender].name,
-            contests[contestHash].title,
-            contests[contestHash].candidatures[candidatureHash].title,
+            contest.judges[msg.sender].name,
+            contest.title,
+            candidature.title,
             reason);
     }
 
     /*************************************************************
-     *                         VOTATION                          *
+     *                         VOTING                          *
      *************************************************************/
 
+    /**
+     * Sets the vote of the sending judge to the given candidature
+     * Can only be executed by one of the given contest's judges
+     *
+     * @param contestHash contest hash of an existent contest
+     * @param candidatureHash candidature hash of an existent candidature in the given contest
+     */
     function setNewVote(bytes32 contestHash, bytes32 candidatureHash)
       external contestExists(contestHash) candidatureExists(contestHash, candidatureHash) isJudgeOf(contestHash) {
         Contest storage contest = contests[contestHash];
@@ -434,9 +479,7 @@ contract ContestController is owned {
 
         require(judge.votedCandidature == 0, "The given judge has already voted");
         judge.votedCandidature = candidatureHash;
-        // FIXME: removed for using SafeMath
         contest.candidatures[candidatureHash].votes += judge.weight;
-       // contest.candidatures[candidatureHash].votes.add(judge.weight);
 
         emit NewVote(
             contest.judges[msg.sender].name,
@@ -445,72 +488,68 @@ contract ContestController is owned {
     }
 
     /*************************************************************
-     *                 SOLVE CONTEST & REFUND   )                 *
+     *                 SOLVE CONTEST & REFUND                    *
      *************************************************************/
 
     /**
-    *
-    * Solve the contest
-    *
-    * @param contestHash contest hash
-    */
+     * Solves the contest
+     * Computes the winners and sets up the refund function to participants
+     *
+     * @param contestHash contest hash of an existent contest
+     */
     function solveContest(bytes32 contestHash) public contestExists(contestHash)
-      returns (address winnerAddress, bytes32 winnerCandidature, uint256 winnerVotes) {
+      returns (address[] winnersAddresses, bytes32[] winnerCandidature, uint256 winnerVotes) {
         Contest storage contest = contests[contestHash];
         require(getTime() > contest.endDate, "Contests can only be solved after their end date");
-        require(contest.winnerCandidature == 0, "The contest has already been solved");
+        require(contest.winnersCandidatures.length == 0, "The contest has already been solved");
+
+        // There might be a draw: maintain an array of possible winners
+        address[] storage addresses = contest.winnersAddresses;
+        bytes32[] storage candidatures = contest.winnersCandidatures;
 
         for (uint256 i = 0; i < contest.judgeList.length; i++) {
             address judgeAddress = contest.judgeList[i];
             Judge storage judge = contest.judges[judgeAddress];
             Candidature storage candidature = contest.candidatures[judge.votedCandidature];
-            if (!candidature.cancelled && candidature.votes > winnerVotes) {
-                winnerCandidature = judge.votedCandidature;
-                winnerVotes = candidature.votes;
+
+            if (!candidature.cancelled && candidature.votes >= winnerVotes) {
+                if (candidature.votes > winnerVotes) { // New high number of votes: no draw possible for the previous votes
+                    addresses.length = 0;
+                    candidatures.length = 0;
+                    winnerVotes = candidature.votes;
+                }
+                addresses.push(candidature.creator);
+                candidatures.push(judge.votedCandidature);
             }
         }
 
-        contest.winnerCandidature = winnerCandidature;
-        winnerAddress = contest.candidatures[winnerCandidature].creator;
-        contest.winnerAddress = winnerAddress;
+        // Add the respective award of the winners to their refund amount
+        for (uint256 j = 0; j < addresses.length; j++) {
+            contest.participants[addresses[j]].amountToRefund += contest.award / addresses.length;
+        }
 
-        emit ContestSolved(contestHash, winnerAddress, winnerCandidature, winnerVotes);
+        emit ContestSolved(contestHash, addresses, candidatures, winnerVotes);
 
-        return (winnerAddress, winnerCandidature, winnerVotes);
+        return (addresses, candidatures, winnerVotes);
     }
 
+    /**
+     * Withdrawal function for each participant of the contest
+     * If the participant is one of the winners, they will receive their share of the award as well
+     *
+     * @param contestHash contest hash of an existent contest
+     */
     function refundToCandidates(bytes32 contestHash) public contestExists(contestHash) {
         Contest storage contest = contests[contestHash];
         require(getTime() > contest.endDate, "Candidates can only be refunded once the contest has ended");
-        require(contest.winnerAddress != 0, "The contest has not been solved yet");
+        require(contest.winnersAddresses.length != 0, "The contest has not been solved yet");
 
-        Creations storage creations = contest.creators[msg.sender];
-        require(creations.candidatureHashes.length != 0, "The sender of the transaction did not participate in the given contest");
-        require(!creations.refunded, "The candidate has already been refunded");
+        Participant storage participant = contest.participants[msg.sender];
+        require(participant.candidatureHashes.length != 0, "The sender of the transaction did not participate in the given contest");
+        require(!participant.refunded, "The candidate has already been refunded");
 
-        uint256 amount = 0;
-        for (uint256 i = 0; i < creations.candidatureHashes.length; i++) {
-            if (!contest.candidatures[creations.candidatureHashes[i]].cancelled) {
-                // removed for using SafeMath
-                //amount += contest.candidaturesStake;
-                amount.add(contest.candidaturesStake);
-            }
-        }
-
-        if (msg.sender == contest.winnerAddress) {
-            // removed for using SafeMath
-            //amount += contest.award;
-            amount.add(contest.award);
-        }
-
-        creations.refunded = true;
-        msg.sender.transfer(amount);
-    }
-
-    function getWinner(bytes32 contestHash) public view contestExists(contestHash)
-      returns (address winnerAddress, bytes32 winnerCandidature) {
-        require(contests[contestHash].winnerCandidature != 0, "The contest has not been resolved yet");
-        return (contests[contestHash].winnerAddress, contests[contestHash].winnerCandidature);
+        participant.refunded = true;
+        msg.sender.transfer(participant.amountToRefund);
     }
 
 }

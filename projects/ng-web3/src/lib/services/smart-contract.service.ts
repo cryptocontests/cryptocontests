@@ -10,6 +10,8 @@ export abstract class SmartContractService {
     private contractAbi: any,
     private contractAddress: string
   ) {
-    this.contract = this.web3.newContract(contractAbi, contractAddress);
+    if (this.web3.initWeb3()) {
+      this.contract = this.web3.newContract(contractAbi, contractAddress);
+    }
   }
 }

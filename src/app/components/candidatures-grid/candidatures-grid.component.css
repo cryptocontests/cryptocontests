@@ -17,6 +17,17 @@
 }
 
 .tile-image {
+  width: auto;
+  max-height: 100%;
   top: 0;
   left: 0;
+}
+
+.gallery-card {
+  overflow: auto;
+}
+
+.gallery-image {
+  max-width: 100%;
+  max-height: 87%;
 }

@@ -9,7 +9,7 @@
             <span class="subtitle">{{contest.award | cryptoConvert: 'ETH'}} ETH</span>
           </div>
           <div fxLayout="row" fxLayoutAlign="center center">
-            <mat-chip-list fxFlex>
+            <mat-chip-list fxFlex style="display: block; height: 32px; overflow: hidden;">
               <mat-chip *ngFor="let tag of contest.tags">{{tag}}</mat-chip>
             </mat-chip-list>
             <span>{{contest.endDate | date}}</span>
@@ -18,8 +18,12 @@
       </mat-card-content>
     </mat-card>
   </mat-grid-tile>
-  <loading-empty *ngIf="(contests$ | async).length === 0"></loading-empty>
+  <div fxFill fxLayoutAlign="center center" *ngIf="(contests$ | async).length === 0">
+    <loading-empty></loading-empty>
+  </div>
 </mat-grid-list>
 <ng-template #loading>
-  <loading></loading>
+  <div fxFill fxLayoutAlign="center center">
+    <loading></loading>
+  </div>
 </ng-template>

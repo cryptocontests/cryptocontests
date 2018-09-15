@@ -2,7 +2,7 @@
 	<div *ngIf="closePosition !== 'none'" class="close-button" [class.end]="closePosition === 'end'" (click)="closeOverlay()">
 		<ng-container [ngTemplateOutlet]="closeButton"></ng-container>
 	</div>
-	<div fxFlex>
+	<div fxFlex style="padding-top: 48px;">
 		<ng-content></ng-content>
 	</div>
 </ng-template>

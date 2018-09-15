@@ -9,12 +9,12 @@
 </mat-grid-list>
 <loading-empty *ngIf="candidatures.length === 0"></loading-empty>
 
-<gallery-template #mygallery [close-position]="'start'">
+<gallery-template #mygallery [close-position]="'start'" (close)="selectedCandidature = undefined">
   <gallery [selectedPage]="selectedCandidature" *ngIf="selectedCandidature !== undefined">
     <gallery-page *ngFor="let candidature of candidatures">
-      <mat-card [style.width]="'100%'" class="no-padding">
-        <img [src]="candidature.content.content" style="width: 100%; height: auto;">
-        <mat-card-content [style.padding]="'24px'">
+      <mat-card class="no-padding gallery-card">
+        <img [src]="candidature.content.content" class="gallery-image">
+        <mat-card-content style="width: 100%; padding: 24px;">
           <div fxLayout="row" fxLayoutGap="8px" fxFlex>
             <div fxLayout="column" fxLayoutGap="16px" fxFlex>
               <mat-label><strong>{{candidature.title}}</strong></mat-label>
