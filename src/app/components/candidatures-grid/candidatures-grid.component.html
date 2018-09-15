@@ -9,7 +9,7 @@
 </mat-grid-list>
 <loading-empty *ngIf="candidatures.length === 0"></loading-empty>
 
-<gallery-template #mygallery [close-position]="'start'">
+<gallery-template #mygallery [close-position]="'start'" (close)="selectedCandidature = undefined">
   <gallery [selectedPage]="selectedCandidature" *ngIf="selectedCandidature !== undefined">
     <gallery-page *ngFor="let candidature of candidatures">
       <mat-card class="no-padding gallery-card">

@@ -5,7 +5,7 @@ var mnemonic = "student tent patch puzzle away swing cake toe surprise same purc
 
 module.exports = {
   networks: {
-    development: {
+    ganache: {
       host: "localhost",
       port: 8545,
       network_id: "*" // Match any network id

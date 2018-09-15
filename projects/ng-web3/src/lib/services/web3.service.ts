@@ -38,8 +38,8 @@ export class Web3Service {
     return typeof window.web3 !== 'undefined';
   }
 
-  public getNetworkVersion(): string {
-    return EthereumNetwork[this.web3.version.network];
+  public getNetworkVersion(): Promise<string> {
+    return this.web3.eth.net.getNetworkType();
   }
 
   public getAccounts(): Promise<string[]> {

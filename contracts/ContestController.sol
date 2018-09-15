@@ -98,17 +98,9 @@ contract ContestController is owned {
     mapping (bytes32 => bool) public existingTags;
     bytes32[] public tagsList;
 
-    // ONLY FOR TESTING PURPOSES
-    // FIXME: SECURITY ERROR
-    uint date = 0;
-    function setTime (uint256 newDate) public onlyOwner {
-        date = newDate;
-    }
 
     function getTime() public view returns (uint256){
-        if (date == 0)
-          return now;
-        else return date;
+        return now;
     }
 
     /*************************************************************

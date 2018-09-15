@@ -14,7 +14,7 @@
     <div fxLayout="column" fxLayoutAlign="start stretch">
 
       <mat-card class="mat-elevation-z2" fxFlex fxLayout="column" fxLayoutGap="16px">
-        <cc-file-picker fxFlex="35vh" #filePicker title="Presentation image for the contest *"></cc-file-picker>
+        <cc-file-picker fxFlex="256px" #filePicker title="Presentation image for the contest *"></cc-file-picker>
         <mat-error *ngIf="false">The contest must have a presentation image</mat-error>
 
         <form [formGroup]="contestForm" class="card-padding">
