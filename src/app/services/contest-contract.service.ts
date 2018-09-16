@@ -29,6 +29,8 @@ import {
   IpfsFile,
   FileReceipt
 } from 'ng-web3';
+import { Web3ErrorComponent } from '../components/web3-error/web3-error.component';
+import { MatDialog } from '@angular/material';
 
 declare function require(url: string);
 const ContestController = require('./../../../build/contracts/ContestController.json');
@@ -43,7 +45,8 @@ export class ContestContractService {
     private web3Service: Web3Service,
     private transactionStates: TransactionStateService,
     private currencyService: CurrencyService,
-    private ipfs: IpfsService
+    private ipfs: IpfsService,
+    private dialog: MatDialog
   ) {
     if (this.web3Service.isWeb3Present()) {
       this.contract = this.web3Service.newContract(

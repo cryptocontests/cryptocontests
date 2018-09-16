@@ -53,14 +53,15 @@ export class ContestEffects {
   ) {}
 
   @Effect()
-  loadContests$: Observable<Action> = this.actions$
+  loadContests$ = this.actions$
     .ofType<LoadContests>(ContestActionTypes.LoadContests)
     .pipe(
       switchMap((loadAction: LoadContests) =>
         this.contestContract
           .getContests(loadAction.payload)
           .pipe(map((contests: Contest[]) => new LoadedContests(contests)))
-      )
+      ),
+      catchError(() => observableOf(this.displayWeb3Error()))
     );
 
   @Effect({ dispatch: false })
