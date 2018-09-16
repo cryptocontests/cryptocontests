@@ -8,9 +8,10 @@
     "migrate": "truffle compile && wait-on tcp:8545 && truffle migrate --reset --network ganache",
     "start": "ng serve --watch",
     "build": "ng build && truffle compile",
+    "build:prod": "ng build --prod --base-href http://cryptocontests.rf.gd",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e",
+    "deploy:ropsten": "truffle migrate --network ropsten",
     "postinstall": "node patch.js"
   },
   "private": true,
@@ -45,6 +46,7 @@
     "ngx-moment": "^3.1.0",
     "rxjs": "^6.0.0",
     "truffle-assertions": "^0.3.1",
+    "truffle-hdwallet-provider": "0.0.6",
     "ts-md5": "^1.2.4",
     "web3": "^1.0.0-beta.35",
     "zone.js": "^0.8.26"

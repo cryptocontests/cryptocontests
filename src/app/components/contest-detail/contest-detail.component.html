@@ -12,7 +12,7 @@
         {{ contestPhase > 1 ? 'UPLOAD CANDIDATURE' : 'SUBMIT CANDIDATURE' }}
       </button>
     </div>
-    <div [matTooltip]="!winnerCandidature ? 'The contest has not yet been resolved: the stake cannot be retrieved yet' : 'Only people who have submitted at least one candidature to this contest can retrieve the funds'"
+    <div [matTooltip]="!winnersCandidatures ? 'The contest has not yet been resolved: the stake cannot be retrieved yet' : 'Only people who have submitted at least one candidature to this contest can retrieve the funds'"
       [matTooltipDisabled]="hasOwnCandidatures && winnersCandidatures.length > 0">
       <button mat-raised-button color="accent" *ngIf="contestPhase && contestPhase === 3" (click)="retrieveFunds()"
         [disabled]="!hasOwnCandidatures || winnersCandidatures.length === 0">
