@@ -15,7 +15,8 @@ import {
   defaultIfEmpty,
   catchError,
   timeout,
-  mergeMap
+  mergeMap,
+  retry
 } from 'rxjs/operators';
 import { Contest, Candidature, Judge } from '../state/contest.model';
 import * as _ from 'lodash';
@@ -225,7 +226,9 @@ export class ContestContractService {
         forkJoin(
           _.range(0, contestCount).map((index: number) =>
             from(this.getContestHashByIndex(address, index)).pipe(
-              switchMap((contestHash: string) => this.getContest(contestHash))
+              switchMap((contestHash: string) => this.getContest(contestHash)),
+              retry(2),
+              catchError((error) => observableOf())
             )
           )
         )
