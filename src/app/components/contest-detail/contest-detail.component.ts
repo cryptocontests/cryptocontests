@@ -66,7 +66,8 @@ export class ContestDetailComponent implements OnInit {
     private location: Location,
     public dialog: MatDialog,
     private contestService: ContestContractService,
-    private web3: Web3Service
+    private web3: Web3Service,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -128,7 +129,7 @@ export class ContestDetailComponent implements OnInit {
   }
 
   goBack($event) {
-    this.location.back();
+    this.router.navigate(['/contests/']);
   }
 
   isUserOwner(contest: Contest): boolean {
