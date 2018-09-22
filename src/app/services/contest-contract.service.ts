@@ -367,6 +367,7 @@ export class ContestContractService {
           from(
             this.ipfs.get(this.ipfs.getIpfsHashFromBytes32(candidatureHash))
           ).pipe(
+            timeout(20000),
             catchError(
               err => (discardOnlyHash ? observableOf() : observableOf(null))
             )

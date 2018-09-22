@@ -77,7 +77,7 @@
               </div>
             </ng-template>
             <cc-candidature-grid fxFlex [isUserJudge]="isUserJudge" [contestHash]="contestHash" [candidatures]="candidatures$ | async"
-              [contestPhase]="contestPhase" *ngIf="!(loadingCandidatures$ | async); else loading">
+              [contestPhase]="contestPhase" *ngIf="!(loadingCandidatures$ | async) && contestPhase > 1; else loading">
             </cc-candidature-grid>
             <ng-template #loading>
               <loading></loading>

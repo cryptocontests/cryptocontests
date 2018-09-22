@@ -8,7 +8,7 @@ contract owned {
     }
 
     modifier onlyOwner {
-        //require(msg.sender == owner);
+        require(msg.sender == owner, "Only the owner can execute this function");
         _;
     }
 
@@ -443,10 +443,11 @@ contract ContestController is owned {
         for (uint256 i = 0; i < contest.judgeList.length; i++) {
             address judgeAddress = contest.judgeList[i];
             Judge storage judge = contest.judges[judgeAddress];
+            Candidature storage candidature = contest.candidatures[judge.votedCandidature];
 
-            if (contest.candidatures[judge.votedCandidature].votes > winnerVotes) {
+            if (!candidature.cancelled && candidature.votes > winnerVotes) {
                 winnerCandidature = judge.votedCandidature;
-                winnerVotes = contest.candidatures[judge.votedCandidature].votes;
+                winnerVotes = candidature.votes;
             }
         }
 
@@ -461,11 +462,11 @@ contract ContestController is owned {
 
     function refundToCandidates(bytes32 contestHash) public contestExists(contestHash) {
         Contest storage contest = contests[contestHash];
-        require(getTime() >= contest.endDate, "Candidates can only be refunded once the contest has ended");
+        require(getTime() > contest.endDate, "Candidates can only be refunded once the contest has ended");
         require(contest.winnerAddress != 0, "The contest has not been solved yet");
 
         Creations storage creations = contest.creators[msg.sender];
-        require(creations.candidatureHashes.length == 0, "The sender of the transaction did not participate in the given contest");
+        require(creations.candidatureHashes.length != 0, "The sender of the transaction did not participate in the given contest");
         require(!creations.refunded, "The candidate has already been refunded");
 
         uint256 amount = 0;

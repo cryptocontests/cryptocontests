@@ -56,7 +56,7 @@ export class ContestDetailComponent implements OnInit {
   getContestPhase = getContestPhase;
   candidatures$: Observable<Candidature[]>;
   selectedTabIndex = 0;
-  hasOwnCandidatures = true;
+  hasOwnCandidatures = false;
   isUserJudge = false;
   winnerCandidature: Candidature = null;
 
@@ -78,11 +78,13 @@ export class ContestDetailComponent implements OnInit {
     this.contest$.subscribe((contest: Contest) => {
       if (contest) {
         this.contestPhase = this.getPhaseIndex(contest);
-        this.store.dispatch(
-          new LoadCandidatures(this.contestHash, this.contestPhase > 1)
-        );
         this.candidatureStake = contest.candidaturesStake;
-        if (this.contestPhase > 1) this.getOwnCandidatures();
+        if (this.contestPhase > 1) {
+          this.getOwnCandidatures();
+          this.store.dispatch(
+            new LoadCandidatures(this.contestHash, this.contestPhase > 1)
+          );
+        }
 
         this.web3
           .getDefaultAccount()
@@ -197,13 +199,13 @@ export class ContestDetailComponent implements OnInit {
   }
 
   getOwnCandidatures() {
-    this.contestService.getDefaultAccount.pipe(
-      switchMap(address =>
-        this.contestService.getOwnCandidatures(address, this.contestHash)
-      ),
-      map(candidatures => candidatures.length > 0),
-      tap(hasOwnCandidatures => (this.hasOwnCandidatures = hasOwnCandidatures))
-    );
+    this.contestService.getDefaultAccount.subscribe(address => {
+      this.contestService
+        .getOwnCandidatures(address, this.contestHash)
+        .then(candidatures => {
+          this.hasOwnCandidatures = candidatures.length > 0;
+        });
+    });
   }
 
   retrieveFunds() {
@@ -214,7 +216,6 @@ export class ContestDetailComponent implements OnInit {
     this.winnerCandidature = candidatures.find(
       candidature => candidature.content.hash === contest.winnerCandidature
     );
-    console.log(this.winnerCandidature);
   }
 
   solveContest() {
