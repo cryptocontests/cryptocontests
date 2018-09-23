@@ -13,10 +13,10 @@
       </button>
     </div>
     <div [matTooltip]="!winnerCandidature ? 'The contest has not yet been resolved: the stake cannot be retrieved yet' : 'Only people who have submitted at least one candidature to this contest can retrieve the funds'"
-      [matTooltipDisabled]="hasOwnCandidatures && winnerCandidature">
+      [matTooltipDisabled]="hasOwnCandidatures && winnersCandidatures.length > 0">
       <button mat-raised-button color="accent" *ngIf="contestPhase && contestPhase === 3" (click)="retrieveFunds()"
-        [disabled]="!hasOwnCandidatures || !winnerCandidature">
-        {{ winnerCandidature && winnerCandidature.creator === userAddress ? 'RETRIEVE AWARD!' : 'RETRIEVE STAKE' }}
+        [disabled]="!hasOwnCandidatures || winnersCandidatures.length === 0">
+        {{ winnersCandidatures && isUserWinner() ? 'RETRIEVE AWARD!' : 'RETRIEVE STAKE' }}
       </button>
     </div>
   </mat-toolbar>
@@ -40,8 +40,7 @@
               </ng-container>
             </div>
             <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="center stretch">
-              <mat-label fxFlex><strong>Stake to participate:</strong> {{contest.candidaturesStake | cryptoConvert:
-                'ETH'}}
+              <mat-label fxFlex><strong>Stake to participate:</strong> {{contest.candidaturesStake | cryptoConvert: 'ETH'}}
                 ETH
               </mat-label>
             </div>
@@ -90,21 +89,25 @@
           </mat-tab>
           <mat-tab [disabled]="contestPhase !== 3">
             <ng-template mat-tab-label>
-              <div matTooltip="Winner candidature will be shown when the contest has ended and a winner has been declared"
+              <div matTooltip="Winner candidatures will be shown when the contest has ended and a winner has been declared"
                 [matTooltipDisabled]="contestPhase === 3">
-                <mat-label>Winner candidature</mat-label>
+                <mat-label>Winner candidatures</mat-label>
               </div>
             </ng-template>
-            <div *ngIf="!(loadingCandidatures$ | async); else loading">
-              <div *ngIf="contest.winnerAddress; else nowinner" fxLayout="column">
-                <img [src]="winnerCandidature.content?.content" style="width: 100%; height: auto;">
-                <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center" class="winner-padding">
-                  <div fxLayout="column" fxLayoutGap="16px" fxFlex>
-                    <mat-label><strong>{{winnerCandidature.title}}</strong></mat-label>
-                    <mat-label class="address">By {{winnerCandidature.creator}}</mat-label>
-                  </div>
-                  <mat-label><strong>{{winnerCandidature.votes}} votes</strong></mat-label>
-                </div>
+            <div *ngIf="!(loadingCandidatures$ | async) && winnersCandidatures.length === contest.winnersAddresses.length ; else loading">
+              <div *ngIf="contest.winnersAddresses.length > 0; else nowinner">
+                <gallery style="height: 600px;">
+                  <gallery-page *ngFor="let winnerCandidature of winnersCandidatures" fxLayout="column" fxFlex>
+                    <img [src]="winnerCandidature.content?.content" style="width: auto; max-height: 85%;">
+                    <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center" class="winner-padding">
+                      <div fxLayout="column" fxLayoutGap="16px" fxFlex>
+                        <mat-label><strong>{{winnerCandidature.title}}</strong></mat-label>
+                        <mat-label class="address">By {{winnerCandidature.creator}}</mat-label>
+                      </div>
+                      <mat-label><strong>{{winnerCandidature.votes}} votes</strong></mat-label>
+                    </div>
+                  </gallery-page>
+                </gallery>
               </div>
             </div>
             <ng-template #nowinner>

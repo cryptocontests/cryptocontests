@@ -58,7 +58,7 @@ export class ContestDetailComponent implements OnInit {
   selectedTabIndex = 0;
   hasOwnCandidatures = false;
   isUserJudge = false;
-  winnerCandidature: Candidature = null;
+  winnersCandidatures: Candidature[] = null;
 
   constructor(
     private store: Store<fromReducer.State>,
@@ -113,7 +113,7 @@ export class ContestDetailComponent implements OnInit {
       ([contest, candidatures]) =>
         contest &&
         candidatures &&
-        this.getWinnerCandidature(contest, candidatures)
+        this.getWinnersCandidatures(contest, candidatures)
     );
   }
 
@@ -133,6 +133,10 @@ export class ContestDetailComponent implements OnInit {
 
   isUserOwner(contest: Contest): boolean {
     return contest.owner === this.userAddress;
+  }
+
+  isUserWinner() {
+    return this.winnersCandidatures && this.winnersCandidatures.some(candidature => candidature.creator === this.userAddress);
   }
 
   openCreateCandidatureDialog(): void {
@@ -212,9 +216,9 @@ export class ContestDetailComponent implements OnInit {
     this.store.dispatch(new RetrieveFunds(this.contestHash));
   }
 
-  getWinnerCandidature(contest: Contest, candidatures: Candidature[]) {
-    this.winnerCandidature = candidatures.find(
-      candidature => candidature.content.hash === contest.winnerCandidature
+  getWinnersCandidatures(contest: Contest, candidatures: Candidature[]) {
+    this.winnersCandidatures = candidatures.filter(
+      candidature => contest.winnersCandidatures.includes(candidature.content.hash)
     );
   }
 

@@ -117,14 +117,8 @@ export class ContestContractService {
       tags: response.tags.map(tag => this.web3Service.bytesToString(tag)),
       options: {},
       judges: response.judges,
-      winnersAddresses:
-        parseInt(response.winnerAddress, 16) !== 0
-          ? response.winnerAddress
-          : null,
-      winnersCandidatures:
-        parseInt(response.winnerCandidature, 16) !== 0
-          ? response.winnerCandidature
-          : null
+      winnersAddresses: response.winnersAddresses,
+      winnersCandidatures: response.winnersCandidatures
     };
   responseToCandidature = (response: any, ipfsFile?: IpfsFile) =>
     <Candidature>{
@@ -183,7 +177,7 @@ export class ContestContractService {
             .getContestJudges(contestHash)
             .call({ from: address }),
           this.contract.methods
-            .getContestWinner(contestHash)
+            .getContestWinners(contestHash)
             .call({ from: address })
         )
       ),
@@ -197,8 +191,8 @@ export class ContestContractService {
         ).pipe(
           map(judges => ({
             ...response,
-            winnerAddress: winner.winnerAddress,
-            winnerCandidature: winner.winnerCandidature,
+            winnersAddresses: winner.winnersAddresses,
+            winnersCandidatures: winner.winnersCandidatures,
             judges: judges.map(
               (judgeResponse: any) =>
                 <Judge>{

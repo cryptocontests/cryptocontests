@@ -268,9 +268,9 @@ contract ContestController is owned {
      * @param contestHash contest hash of an existent contest
      */
     function getContestWinners(bytes32 contestHash) public view contestExists(contestHash)
-        returns (address[] winnerAddress, bytes32[] winnerCandidature) {
-        winnerAddress = contests[contestHash].winnersAddresses;
-        winnerCandidature = contests[contestHash].winnersCandidatures;
+        returns (address[] winnersAddresses, bytes32[] winnersCandidatures) {
+        winnersAddresses = contests[contestHash].winnersAddresses;
+        winnersCandidatures = contests[contestHash].winnersCandidatures;
     }
 
 
@@ -487,9 +487,7 @@ contract ContestController is owned {
 
         require(judge.votedCandidature == 0, "The given judge has already voted");
         judge.votedCandidature = candidatureHash;
-        // FIXME: removed for using SafeMath
         contest.candidatures[candidatureHash].votes += judge.weight;
-        // contest.candidatures[candidatureHash].votes.add(judge.weight);
 
         emit NewVote(
             contest.judges[msg.sender].name,
@@ -535,7 +533,7 @@ contract ContestController is owned {
 
         // Add the respective award of the winners to their refund amount
         for (uint256 j = 0; j < addresses.length; j++) {
-            contest.participants[addresses[j]].amountToRefund.add(contest.award / addresses.length);
+            contest.participants[addresses[j]].amountToRefund += contest.award / addresses.length;
         }
 
         emit ContestSolved(contestHash, addresses, candidatures, winnerVotes);
