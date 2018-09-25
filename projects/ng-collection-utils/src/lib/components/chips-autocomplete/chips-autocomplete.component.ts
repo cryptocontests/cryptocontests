@@ -15,13 +15,20 @@ import { FormGroup, FormBuilder } from '@angular/forms';
   ]
 })
 export class ChipsAutocompleteComponent implements OnInit {
-  @Input() autocompleteValues = [];
-  @Input() placeholder = 'List';
-  @Input() controlName: string;
-  @ViewChild('textInput') textInput: ElementRef;
-  @Input() separatorKeysCodes = [ENTER, COMMA];
-  @Input() floatLabel = 'always';
+  @Input()
+  autocompleteValues = [];
+  @Input()
+  placeholder = 'List';
+  @Input()
+  controlName: string;
+  @ViewChild('textInput')
+  textInput: ElementRef;
+  @Input()
+  separatorKeysCodes = [ENTER, COMMA];
+  @Input()
+  floatLabel = 'always';
 
+  @Input()
   chips: string[] = [];
   formGroup: FormGroup;
 
@@ -29,11 +36,10 @@ export class ChipsAutocompleteComponent implements OnInit {
 
   ngOnInit() {
     this.formGroup = this.formBuilder.group({ [this.controlName]: '' });
+    this.formGroup.patchValue({ tags: this.chips });
   }
 
-  /**
-   * Management of the tags component
-   */
+  /** Management of the tags component **/
 
   add(event: MatChipInputEvent) {
     const input = event.input;
@@ -50,16 +56,19 @@ export class ChipsAutocompleteComponent implements OnInit {
     }
 
     //    this.contestForm.value.tags = null;
+    this.formGroup.patchValue({ tags: this.chips });
   }
 
   remove(chip: string) {
     const index = this.chips.indexOf(chip);
     if (index >= 0) this.chips.splice(index, 1);
+    this.formGroup.patchValue({ tags: this.chips });
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
     this.chips.push(event.option.viewValue);
     this.textInput.nativeElement.value = '';
     // this.contestForm.value.tags = null;
+    this.formGroup.patchValue({ tags: this.chips });
   }
 }

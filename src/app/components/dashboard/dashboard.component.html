@@ -11,12 +11,12 @@
 
       <mat-toolbar-row fxLayout="row" fxLayoutAlign="center stretch" class="height-auto">
         <nav mat-tab-nav-bar backgroundColor="primary" fxFlex>
-          <a mat-tab-link *ngFor="let routeLink of routeLinks; let i = index" [routerLink]="[routeLink.link]" [active]="activeLinkIndex === i"
-            (click)="activeLinkIndex = i">
+          <a mat-tab-link *ngFor="let routeLink of routeLinks; let i = index" [routerLink]="[routeLink.link]"
+            queryParamsHandling="merge" [active]="activeLinkIndex === i" (click)="activeLinkIndex = i">
             {{routeLink.label}}</a>
         </nav>
         <div fxLayout="row" fxLayoutAlign="center center">
-          <search-box placeholder="Search by title"></search-box>
+          <search-box placeholder="Search by title" (searchChange)="searchChange($event)" [searchValue]="searchValue"></search-box>
           <button mat-button [filterToggler]="filter">
             <mat-icon>filter_list</mat-icon> FILTER
           </button>
@@ -28,38 +28,13 @@
     </mat-toolbar>
 
     <filter-toolbar #filter [style.z-index]="10" (valueChanges)="filterChanged($event)">
-      <filter-number title="Award" name="award"></filter-number>
-      <filter-date title="Initial Date" name="initialDate"></filter-date>
-      <filter-autocomplete title="Filter by tags" name="tags" [autocompleteValues]="tags$ | async"></filter-autocomplete>
-      <filter-advanced>
-        <filter-date title="End Date" name="endDate"></filter-date>
-      </filter-advanced>
+      <!--       <filter-number title="Award" name="award"></filter-number>
+ -->
+      <filter-autocomplete title="Filter by tags" name="tags" [autocompleteValues]="tags$ | async" [initialValue]="filterTags"></filter-autocomplete>
     </filter-toolbar>
   </div>
 
   <div class="auto-overflow">
     <router-outlet></router-outlet>
   </div>
-  <!--
-  <mat-tab-group fxFlex="grow" [selectedIndex]="1" backgroundColor="primary">
-    <mat-tab label="Upcoming Contests">
-      <cc-contest-grid fxFlex [contests]="upcomingContests$ | async" (contestSelected)="selectContest($event)" *ngrxLoading="upcomingContests$;empty:'The search returned no contests'">
-      </cc-contest-grid>
-    </mat-tab>
-
-    <mat-tab label="Ongoing Contests">
-      <cc-contest-grid fxFlex [contests]="ongoingContests$ | async" (contestSelected)="selectContest($event)" *ngrxLoading="ongoingContests$;action:action;empty:'The search returned no contests'">
-      </cc-contest-grid>
-    </mat-tab>
-
-    <mat-tab label="On Voting Contests">
-      <cc-contest-grid fxFlex [contests]="votingContests$ | async" (contestSelected)="selectContest($event)" *ngrxLoading="votingContests$;empty:'The search returned no contests'">
-      </cc-contest-grid>
-    </mat-tab>
-
-    <mat-tab label="Ended Contests">
-      <cc-contest-grid fxFlex [contests]="endedContests$ | async" (contestSelected)="selectContest($event)" *ngrxLoading="votingContests$;empty:'The search returned no contests'">
-      </cc-contest-grid>
-    </mat-tab>
-  </mat-tab-group> -->
 </div>

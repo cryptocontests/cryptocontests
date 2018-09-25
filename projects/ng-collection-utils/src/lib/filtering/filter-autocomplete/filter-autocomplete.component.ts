@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { FilterComponent } from '../filter.component';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ChipsAutocompleteComponent } from '../../components';
 
 @Component({
   selector: 'filter-autocomplete',
@@ -11,8 +12,19 @@ import { FormBuilder } from '@angular/forms';
   ]
 })
 export class FilterAutocompleteComponent extends FilterComponent {
-  @Input() autocompleteValues: string[] = [];
+  @ViewChild(ChipsAutocompleteComponent)
+  chipsAutocomplete: ChipsAutocompleteComponent;
+
+  @Input()
+  autocompleteValues: string[] = [];
   constructor(protected formBuilder: FormBuilder) {
     super(formBuilder);
+  }
+
+  /**
+   * Build the form for this particular filter component
+   */
+  protected buildFormControl(): FormGroup {
+    return this.chipsAutocomplete.formGroup;
   }
 }

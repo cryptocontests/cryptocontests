@@ -29,10 +29,13 @@ export class DashboardComponent implements OnInit {
     'End Date'
   ];
   tags$: Observable<string[]>;
+  filterTags: string[];
+  searchValue: string;
 
   constructor(
     private store: Store<fromReducer.State>,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -42,9 +45,32 @@ export class DashboardComponent implements OnInit {
         this.route.firstChild.snapshot.paramMap.get('phase').toUpperCase()
       ]
     );
+    this.searchValue = this.route.firstChild.snapshot.queryParamMap.get(
+      'title'
+    );
+    console.log(this.route.firstChild.snapshot.queryParamMap);
+    this.filterTags = this.route.firstChild.snapshot.queryParamMap[
+      'params'
+    ].tags;
+  }
+
+  searchChange($event) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        title: $event
+      },
+      queryParamsHandling: 'merge'
+    });
   }
 
   filterChanged($event) {
-    console.log($event);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        tags: $event.tags
+      },
+      queryParamsHandling: 'merge'
+    });
   }
 }
