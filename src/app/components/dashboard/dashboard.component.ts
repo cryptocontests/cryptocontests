@@ -4,6 +4,7 @@ import * as fromReducer from '../../state/contest.reducer';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PhasesList, ContestPhase } from '../../state/contest.model';
 import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 // import { filterAnimation } from 'projects/ng-filter-utils/src/public_api';
 
 @Component({
@@ -31,6 +32,7 @@ export class DashboardComponent implements OnInit {
   tags$: Observable<string[]>;
   filterTags: string[];
   searchValue: string;
+  showFilter = false;
 
   constructor(
     private store: Store<fromReducer.State>,
@@ -48,10 +50,12 @@ export class DashboardComponent implements OnInit {
     this.searchValue = this.route.firstChild.snapshot.queryParamMap.get(
       'title'
     );
-    console.log(this.route.firstChild.snapshot.queryParamMap);
-    this.filterTags = this.route.firstChild.snapshot.queryParamMap[
-      'params'
-    ].tags;
+
+    const tags = this.route.firstChild.snapshot.queryParamMap['params'].tags;
+    if (tags && tags.length > 0) this.showFilter = true;
+    if (tags && typeof tags === typeof 'string') {
+      this.filterTags = [tags];
+    } else this.filterTags = tags;
   }
 
   searchChange($event) {
@@ -64,7 +68,22 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  filterToggled($event) {
+    if ($event) {
+      if (this.filterTags) this.filterChanged(this.filterTags);
+    } else {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {
+          tags: []
+        },
+        queryParamsHandling: 'merge'
+      });
+    }
+  }
+
   filterChanged($event) {
+    this.filterTags = $event ? $event.tags : null;
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {

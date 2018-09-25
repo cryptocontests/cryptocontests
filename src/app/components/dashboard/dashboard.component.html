@@ -17,19 +17,14 @@
         </nav>
         <div fxLayout="row" fxLayoutAlign="center center">
           <search-box placeholder="Search by title" (searchChange)="searchChange($event)" [searchValue]="searchValue"></search-box>
-          <button mat-button [filterToggler]="filter">
+          <button mat-button [filterToggler]="filter" (filterToggled)="filterToggled($event)" [filterActive]="showFilter">
             <mat-icon>filter_list</mat-icon> FILTER
-          </button>
-          <button mat-button [sortByMenu]="sortOptions">
-            <mat-icon>sort</mat-icon> SORT BY
           </button>
         </div>
       </mat-toolbar-row>
     </mat-toolbar>
 
     <filter-toolbar #filter [style.z-index]="10" (valueChanges)="filterChanged($event)">
-      <!--       <filter-number title="Award" name="award"></filter-number>
- -->
       <filter-autocomplete title="Filter by tags" name="tags" [autocompleteValues]="tags$ | async" [initialValue]="filterTags"></filter-autocomplete>
     </filter-toolbar>
   </div>

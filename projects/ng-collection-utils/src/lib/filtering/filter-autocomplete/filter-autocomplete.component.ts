@@ -12,11 +12,12 @@ import { ChipsAutocompleteComponent } from '../../components';
   ]
 })
 export class FilterAutocompleteComponent extends FilterComponent {
+  @Input()
+  autocompleteValues: string[] = [];
+
   @ViewChild(ChipsAutocompleteComponent)
   chipsAutocomplete: ChipsAutocompleteComponent;
 
-  @Input()
-  autocompleteValues: string[] = [];
   constructor(protected formBuilder: FormBuilder) {
     super(formBuilder);
   }

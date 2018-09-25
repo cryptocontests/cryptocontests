@@ -36,6 +36,7 @@ export class ChipsAutocompleteComponent implements OnInit {
 
   ngOnInit() {
     this.formGroup = this.formBuilder.group({ [this.controlName]: '' });
+    if (!this.chips) this.chips = [];
     this.formGroup.patchValue({ tags: this.chips });
   }
 
@@ -55,7 +56,6 @@ export class ChipsAutocompleteComponent implements OnInit {
       input.value = '';
     }
 
-    //    this.contestForm.value.tags = null;
     this.formGroup.patchValue({ tags: this.chips });
   }
 
@@ -68,7 +68,6 @@ export class ChipsAutocompleteComponent implements OnInit {
   selected(event: MatAutocompleteSelectedEvent): void {
     this.chips.push(event.option.viewValue);
     this.textInput.nativeElement.value = '';
-    // this.contestForm.value.tags = null;
     this.formGroup.patchValue({ tags: this.chips });
   }
 }

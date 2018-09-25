@@ -30,6 +30,7 @@ export class FilterComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.formGroup = this.buildFormControl();
+    this.formGroup.patchValue({ [this.name]: this.initialValue });
     this.formGroup.valueChanges.pipe(tap(this.valueChanges.emit));
   }
 
@@ -38,7 +39,7 @@ export class FilterComponent implements AfterViewInit {
    */
   protected buildFormControl(): FormGroup {
     return this.formBuilder.group({
-      [this.name]: this.initialValue ? this.initialValue : ''
+      [this.name]: ''
     });
   }
 }
