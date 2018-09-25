@@ -37,6 +37,8 @@ import {
   FileReceipt
 } from 'ng-web3';
 import { sha256, sha224 } from 'js-sha256';
+import { MatDialog } from '@angular/material';
+import { Web3ErrorComponent } from '../components/web3-error/web3-error.component';
 
 declare function require(url: string);
 const ContestController = require('./../../../build/contracts/ContestController.json');
@@ -53,10 +55,12 @@ export class ContestContractService {
     private currencyService: CurrencyService,
     private ipfs: IpfsService
   ) {
-    this.contract = this.web3Service.newContract(
-      ContestController.abi,
-      environment.contractAddress
-    );
+    if (this.web3Service.isWeb3Present()) {
+      this.contract = this.web3Service.newContract(
+        ContestController.abi,
+        environment.contractAddress
+      );
+    }
   }
 
   /**

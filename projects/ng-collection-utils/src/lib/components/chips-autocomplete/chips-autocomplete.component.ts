@@ -66,6 +66,7 @@ export class ChipsAutocompleteComponent implements OnInit {
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
+    if (!this.chips) this.chips = [];
     this.chips.push(event.option.viewValue);
     this.textInput.nativeElement.value = '';
     this.formGroup.patchValue({ tags: this.chips });

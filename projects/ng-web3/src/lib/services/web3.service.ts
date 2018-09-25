@@ -43,7 +43,12 @@ export class Web3Service {
   }
 
   public getAccounts(): Promise<string[]> {
-    return this.web3.eth.getAccounts();
+    if (this.web3) return this.web3.eth.getAccounts();
+    else {
+      return new Promise((resolve, reject) => {
+        reject();
+      });
+    }
   }
 
   public getDefaultAccount(): Promise<string> {

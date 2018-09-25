@@ -4,7 +4,7 @@ import { Action } from '@ngrx/store';
 import { Actions, Effect, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { ContestContractService } from '../services/contest-contract.service';
 import { Observable, of as observableOf } from 'rxjs';
-import { switchMap, map, catchError, tap } from 'rxjs/operators';
+import { switchMap, map, catchError, tap, filter } from 'rxjs/operators';
 import {
   LoadContests,
   LoadedContests,
@@ -35,8 +35,10 @@ import {
 import { Contest, Candidature } from './contest.model';
 import { Router } from '@angular/router';
 import { GlobalLoadingService } from 'ng-collection-utils';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar, MatDialog } from '@angular/material';
 import { FileReceipt } from 'ng-web3';
+import { Web3ErrorComponent } from '../components/web3-error/web3-error.component';
+import { Web3Service } from 'projects/ng-web3/src/public_api';
 
 @Injectable()
 export class ContestEffects {
@@ -45,7 +47,9 @@ export class ContestEffects {
     private contestContract: ContestContractService,
     private router: Router,
     private globalLoading: GlobalLoadingService,
-    public snackBar: MatSnackBar
+    public snackBar: MatSnackBar,
+    private dialog: MatDialog,
+    private web3Service: Web3Service
   ) {}
 
   @Effect()
@@ -59,8 +63,22 @@ export class ContestEffects {
       )
     );
 
+  @Effect({ dispatch: false })
+  checkMetamask$ = this.actions$.ofType(ROOT_EFFECTS_INIT).pipe(
+    map(() => this.web3Service.isWeb3Present()),
+    tap(web3present => {
+      if (!web3present) throw Error();
+    }),
+    switchMap(() => this.web3Service.getDefaultAccount()),
+    tap(address => {
+      console.log(address);
+      if (!address || typeof address !== typeof 'string') throw Error();
+    }),
+    catchError(() => observableOf(this.displayWeb3Error()))
+  );
+
   @Effect()
-  loadTags$: Observable<Action> = this.actions$
+  loadTags$ = this.actions$
     .ofType(ROOT_EFFECTS_INIT)
     .pipe(
       switchMap(() =>
@@ -307,6 +325,12 @@ export class ContestEffects {
       ),
       tap(() => this.showTransactionPending('Solve contest requested'))
     );
+
+  displayWeb3Error() {
+    this.dialog.open(Web3ErrorComponent, {
+      disableClose: true
+    });
+  }
 
   private showTransactionPending(customMessage: string) {
     this.snackBar.open(
