@@ -268,7 +268,7 @@ export class ContestContractService {
       tap(add => (address = add)),
       switchMap(f =>
         this.ipfs.ipfs.files.add(ipfsFiles, {
-          pin: false,
+          pin: true,
           wrapWithDirectory: true
         })
       ),
@@ -451,7 +451,7 @@ export class ContestContractService {
       }),
       switchMap((candidatureHashes: string[]) =>
         this.ipfs.add(candidature.content.content, {
-          pin: false
+          pin: true
         })
       )
     );
