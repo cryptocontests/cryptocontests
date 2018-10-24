@@ -102,7 +102,7 @@ export class ContestDetailComponent implements OnInit {
     );
 
     this.candidatures$ = this.store.select(
-      state => fromReducer.getContestState(state).candidatures[this.contestHash]
+      fromReducer.uploadedCandidatures(this.contestHash)
     );
 
     this.contestService.getDefaultAccount.subscribe(

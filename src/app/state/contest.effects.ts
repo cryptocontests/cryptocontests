@@ -184,7 +184,11 @@ export class ContestEffects {
           )
       ),
       tap(_ => this.globalLoading.hide()),
-      tap(_ => this.snackBar.open('Succesfully uploaded the candidature'))
+      tap(_ =>
+        this.snackBar.open('Succesfully uploaded the candidature', null, {
+          duration: 3000
+        })
+      )
     );
 
   @Effect()
